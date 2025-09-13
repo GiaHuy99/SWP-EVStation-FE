@@ -1,0 +1,7 @@
+.loginPage {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #93c5fd, #bfdbfe);
+}
