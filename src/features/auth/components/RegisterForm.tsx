@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../../app/hooks";
-import { register } from "../authThunks";
+import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
+import { register } from "../AuthThunks";
 import styles from "../styles/RegisterForm.module.css";
 
 const RegisterForm = () => {
@@ -53,6 +53,7 @@ const RegisterForm = () => {
             <p className={styles.loginLink}>
                 Already have an account? <a href="/login">Login</a>
             </p>
+
         </form>
     );
 };

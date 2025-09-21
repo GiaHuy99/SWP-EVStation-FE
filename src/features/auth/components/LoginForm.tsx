@@ -1,7 +1,7 @@
 
 import { useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../../app/hooks";
-import { login } from "../authThunks";
+import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
+import { login } from "../AuthThunks";
 import styles from "../styles/LoginForm.module.css";
 
 const LoginForm = () => {

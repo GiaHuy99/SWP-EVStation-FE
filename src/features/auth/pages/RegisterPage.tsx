@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useAppSelector } from "../../../app/hooks";
+import { useAppSelector } from "../../../app/Hooks";
 import { useNavigate } from "react-router-dom";
 import RegisterForm from "../components/RegisterForm";
 import styles from "../styles/RegisterPage.module.css";
@@ -7,12 +7,13 @@ import styles from "../styles/RegisterPage.module.css";
 const RegisterPage = () => {
     const { token } = useAppSelector((state) => state.auth);
     const navigate = useNavigate();
+    const { registerSuccess } = useAppSelector((state) => state.auth);
 
     useEffect(() => {
-        if (token) {
-            navigate("/hello"); // sau khi register thành công → HelloPage
+        if (registerSuccess) {
+            navigate("/login");
         }
-    }, [token, navigate]);
+    }, [registerSuccess, navigate]);
 
     return (
         <div className={styles.registerPage}>

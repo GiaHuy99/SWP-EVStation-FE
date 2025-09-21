@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import AuthService from "./services/authService";
-import {LoginRequest, LoginResponse, RegisterRequest, RegisterResponse} from "./types/authTypes";
+import AuthService from "./services/AuthService";
+import {LoginRequest, LoginResponse, RegisterRequest, RegisterResponse} from "./types/AuthTypes";
 
 export const login = createAsyncThunk<LoginResponse, LoginRequest>(
     "auth/login",
@@ -8,7 +8,7 @@ export const login = createAsyncThunk<LoginResponse, LoginRequest>(
         try {
             return await AuthService.login(credentials);
         } catch (error: any) {
-            return rejectWithValue(error.response?.data?.message || "Login failed");
+            return rejectWithValue("Sai mật khẩu hoặc username");
         }
     }
 );
@@ -18,7 +18,7 @@ export const register = createAsyncThunk<RegisterResponse, RegisterRequest>(
         try {
             return await AuthService.register(data);
         } catch (error: any) {
-            return rejectWithValue(error.response?.data?.message || "Register failed");
+            return rejectWithValue( "Password phải có ít nhất 6 ký tự, chứa ít nhất 1 số và 1 ký tự đặc biệt");
         }
     }
 );

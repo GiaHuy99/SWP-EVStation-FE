@@ -1,9 +1,9 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { RootState } from "./app/store";
+import { RootState } from "./app/Store";
 import { Navigate } from "react-router-dom";
-import { logout } from "./features/auth/authSlice";
-import {useAppDispatch, useAppSelector} from "./app/hooks";
+import { logout } from "./features/auth/AuthSlice";
+import {useAppDispatch, useAppSelector} from "./app/Hooks";
 import styles from "./features/auth/styles/LogoutButton.module.css";
 
 const HelloPage: React.FC = () => {

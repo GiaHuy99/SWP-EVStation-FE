@@ -1,9 +1,10 @@
-import axiosInstance from "../../../shared/utils/axiosInstance";
-import { LoginRequest, LoginResponse } from "../types/authTypes";
-import { RegisterRequest, RegisterResponse } from "../types/authTypes";
+import axiosInstance from "../../../shared/utils/AxiosInstance";
+import { LoginRequest, LoginResponse } from "../types/AuthTypes";
+import { RegisterRequest, RegisterResponse } from "../types/AuthTypes";
 
 class AuthService {
     async login(credentials: LoginRequest): Promise<LoginResponse> {
+        // chỉ gọi API, không try/catch
         const response = await axiosInstance.post<LoginResponse>(
             "/auth/login",
             credentials

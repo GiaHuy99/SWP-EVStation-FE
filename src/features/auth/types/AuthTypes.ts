@@ -14,6 +14,7 @@ export interface AuthState {
     username: string | null;
     loading: boolean;
     error: string | null;
+    registerSuccess?: boolean;
 }
 export interface RegisterRequest {
     username: string;
