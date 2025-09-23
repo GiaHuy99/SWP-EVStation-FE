@@ -4,9 +4,7 @@ import { createStation } from "../StationThunks";
 import {
     MenuItem,
     Button,
-    Typography,
-    CircularProgress,
-    Alert,
+
 } from "@mui/material";
 import {FormBox, FullWidthBox, StyledTextField} from "../styles/CreateStationForm";
 import {CreateStationPayload} from "../types/StationType";

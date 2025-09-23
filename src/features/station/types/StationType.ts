@@ -14,3 +14,16 @@ export interface CreateStationPayload {
     capacity: number;
     phone: string;
 }
+export interface StationDetailState {
+    station: Station | null;
+    loading: boolean;
+    error: string | null;
+}
+export interface UpdateStationPayload {
+    id: number;
+    name: string;
+    location: string;
+    status: "ACTIVE" | "INACTIVE";
+    capacity: number;
+    phone: string;
+}

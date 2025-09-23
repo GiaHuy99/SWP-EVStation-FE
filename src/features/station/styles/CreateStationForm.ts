@@ -67,3 +67,54 @@ export const StyledTextField = styled(TextField)(({ theme }) => ({
     },
 
 }));
+export const ListCard = styled(Paper)(({ theme }) => ({
+    width: "100%",
+    maxWidth: 1000,
+    padding: theme.spacing(3),
+    borderRadius: theme.shape.borderRadius,
+    boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.08)",
+    backgroundColor: "#ffffff",
+    border: "1px solid #e0e0e0",
+}));
+
+
+export const TableWrapper = styled(Box)(() => ({
+    width: "100%",
+    overflowX: "auto",
+}));
+
+
+
+
+export const DetailCard = styled(Paper)(({ theme }) => ({
+    width: "100%",
+    maxWidth: 500,
+    padding: theme.spacing(4),
+    borderRadius: theme.shape.borderRadius,
+    boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.08)",
+    backgroundColor: "#ffffff",
+    border: "1px solid #e0e0e0",
+}));
+
+export const DetailItem = styled(Box)(({ theme }) => ({ // Changed from 'p' to Box for better layout
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: theme.spacing(1.5),
+    paddingBottom: theme.spacing(1.5),
+    '&:not(:last-child)': { // Add a divider to all but the last item
+        borderBottom: `1px solid ${theme.palette.grey[300]}`
+    }
+}));
+
+export const DetailLabel = styled(MuiTypography)(({ theme }) => ({
+    fontWeight: 600, // Make the label a bit bolder
+    color: theme.palette.grey[700],
+    flexGrow: 1, // Allow the label to grow
+}));
+
+export const DetailValue = styled(MuiTypography)(({ theme }) => ({
+    fontSize: "1rem",
+    color: theme.palette.grey[800],
+    textAlign: 'right', // Align the value to the right
+}));
