@@ -9,6 +9,8 @@ import CreateStationPage from "./features/station/pages/CreateStationPage";
 import ListStationPage from "./features/station/pages/ListStationPage";
 import CreateBatteryPage from "./features/battery/pages/CreateBatteryPage";
 import BatteryListPage from "./features/battery/pages/BatteryListPage";
+import CreateSubscriptionPlanPage from "./features/subcriptionPlan/pages/CreateSubscriptionPlanPage";
+import SubscriptionPlanPage from "./features/subcriptionPlan/pages/SubscriptionPlanPage";
 function App() {
   return (
 
@@ -22,7 +24,8 @@ function App() {
               <Route path="/stations/list" element={<ListStationPage />} />
               <Route path="/battery/create" element={<CreateBatteryPage />} />
               <Route path="/battery/list" element={<BatteryListPage />} />
-
+              <Route path="/subcriptionPlan/create" element={<CreateSubscriptionPlanPage />} />
+              <Route path="/subcriptionPlan/list" element={<SubscriptionPlanPage />} />
           </Routes>
       </BrowserRouter>
 
