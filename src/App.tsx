@@ -11,6 +11,8 @@ import CreateBatteryPage from "./features/battery/pages/CreateBatteryPage";
 import BatteryListPage from "./features/battery/pages/BatteryListPage";
 import CreateSubscriptionPlanPage from "./features/subcriptionPlan/pages/CreateSubscriptionPlanPage";
 import SubscriptionPlanPage from "./features/subcriptionPlan/pages/SubscriptionPlanPage";
+import VehiclePage from "./features/vehicle/pages/VehiclePage";
+import VehicleListPage from "./features/vehicle/pages/VehicleListPage";
 function App() {
   return (
 
@@ -26,6 +28,9 @@ function App() {
               <Route path="/battery/list" element={<BatteryListPage />} />
               <Route path="/subcriptionPlan/create" element={<CreateSubscriptionPlanPage />} />
               <Route path="/subcriptionPlan/list" element={<SubscriptionPlanPage />} />
+              <Route path="/vehicle/create" element={<VehiclePage />} />
+              <Route path="/vehicle/list" element={<VehicleListPage />} />
+
           </Routes>
       </BrowserRouter>
 
