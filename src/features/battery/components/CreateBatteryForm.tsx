@@ -5,9 +5,13 @@ import { createBattery } from "../BatteryThunk";
 import { fetchStations } from "../../station/StationThunks";
 import { CreateBatteryPayload } from "../types/BatteryType";
 import { Button, Card, CardContent, MenuItem, TextField, Typography } from "@mui/material";
+import {showNotification} from "../../../shared/utils/notificationSlice";
+import { useNavigate } from "react-router-dom";
+
 
 const CreateBatteryForm: React.FC = () => {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     const { stations } = useAppSelector((state) => state.station);
     const [form, setForm] = useState<CreateBatteryPayload>({
         serialNumber: "",
@@ -26,7 +30,15 @@ const CreateBatteryForm: React.FC = () => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        dispatch(createBattery(form));
+        dispatch(createBattery(form))
+    .unwrap()
+            .then(() => {
+                dispatch(showNotification({ message: "Battery created successfully!", type: "success" }));
+                navigate("/battery/list"); // chuyển về list
+            })
+            .catch(() => {
+                dispatch(showNotification({ message: "Failed to create battery.", type: "error" }));
+            });
     };
 
     return (

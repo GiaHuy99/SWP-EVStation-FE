@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Box, TextField, Button, MenuItem } from "@mui/material";
 import { useAppDispatch } from "../../../app/Hooks";
-import { updatePlan, deletePlan } from "../SubcriptionPlanThunks";
+import { updatePlan } from "../SubcriptionPlanThunks";
 import { CreateSubscriptionPlanPayload, SubscriptionPlan } from "../types/SubscriptionPlanType";
 
 interface SubscriptionPlanUpdateFormProps {
@@ -34,12 +34,6 @@ const SubscriptionPlanUpdateForm: React.FC<SubscriptionPlanUpdateFormProps> = ({
         onClose();
     };
 
-    const handleDelete = async () => {
-        if (window.confirm("Are you sure to delete this plan?")) {
-            await dispatch(deletePlan(plan.id));
-            onClose();
-        }
-    };
 
     return (
         <Box display="flex" flexDirection="column" gap={2}>
@@ -53,11 +47,11 @@ const SubscriptionPlanUpdateForm: React.FC<SubscriptionPlanUpdateFormProps> = ({
                 <MenuItem value="INACTIVE">INACTIVE</MenuItem>
             </TextField>
             <Box display="flex" justifyContent="space-between" mt={2}>
-                <Button variant="contained" color="primary" onClick={handleUpdate}>
-                    Update
+                <Button onClick={onClose} color="inherit">
+                    Hủy
                 </Button>
-                <Button variant="outlined" color="error" onClick={handleDelete}>
-                    Delete
+                <Button  variant="contained" color="primary"  onClick={handleUpdate}>
+                    Update
                 </Button>
             </Box>
         </Box>

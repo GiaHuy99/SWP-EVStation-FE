@@ -4,6 +4,8 @@ import stationReducer from "../features/station/StationSlice";
 import batteryReducer from "../features/battery/BatterySlice";
 import subscriptionPlanReducer from "../features/subcriptionPlan/SubcriptionPlantSlice";
 import vehicleReducer from "../features/vehicle/VehicleSlices";
+import notificationReducer from "../shared/utils/notificationSlice";
+import { notificationMiddleware } from "../shared/utils/notificationMiddleware";
 export const store = configureStore({
     reducer: {
         auth: authReducer,
@@ -11,7 +13,10 @@ export const store = configureStore({
         battery: batteryReducer,
         subscriptionPlan: subscriptionPlanReducer,
         vehicle:vehicleReducer,
+        notification: notificationReducer,
     },
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware().concat(notificationMiddleware),
 });
 
 

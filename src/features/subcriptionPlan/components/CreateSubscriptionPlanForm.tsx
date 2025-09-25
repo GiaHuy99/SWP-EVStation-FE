@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
     TextField,
     MenuItem,
@@ -18,7 +19,7 @@ const statusOptions: SubscriptionPlan["status"][] = ["ACTIVE", "INACTIVE"];
 
 const CreateSubscriptionPlanForm: React.FC<CreateSubscriptionPlanFormProps> = () => {
     const dispatch = useAppDispatch();
-
+    const navigate = useNavigate(); // tạo navigate
     const [name, setName] = useState("");
     const [price, setPrice] = useState(0);
     const [durationDays, setDurationDays] = useState(0);
@@ -35,7 +36,10 @@ const CreateSubscriptionPlanForm: React.FC<CreateSubscriptionPlanFormProps> = ()
             baseMileage,
             status,
         };
-        dispatch(createSubscriptionPlan(payload));
+        dispatch(createSubscriptionPlan(payload)).then(() => {
+            // sau khi thành công, chuyển sang list page
+            navigate("/subcriptionPlan/list");
+        });
         // reset form
         setName("");
         setPrice(0);

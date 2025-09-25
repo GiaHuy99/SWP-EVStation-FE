@@ -32,6 +32,7 @@ const CreateStationPage: React.FC = () => {
                     <Title variant="h4">Create New Station</Title>
                 </Box>
                 <CreateStationForm />
+
             </FormCard>
         </PageContainer>
     );

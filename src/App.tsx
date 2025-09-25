@@ -13,11 +13,12 @@ import CreateSubscriptionPlanPage from "./features/subcriptionPlan/pages/CreateS
 import SubscriptionPlanPage from "./features/subcriptionPlan/pages/SubscriptionPlanPage";
 import VehiclePage from "./features/vehicle/pages/VehiclePage";
 import VehicleListPage from "./features/vehicle/pages/VehicleListPage";
+import NotificationProvider from "./shared/utils/NotificationProvider";
 function App() {
   return (
 
       <BrowserRouter>
-
+          <NotificationProvider />
           <Routes>
               <Route path="/login" element={<LoginPage/>}/>
               <Route path="/hello" element={<HelloPage/>}/>
@@ -30,10 +31,10 @@ function App() {
               <Route path="/subcriptionPlan/list" element={<SubscriptionPlanPage />} />
               <Route path="/vehicle/create" element={<VehiclePage />} />
               <Route path="/vehicle/list" element={<VehicleListPage />} />
-
           </Routes>
-      </BrowserRouter>
 
+
+      </BrowserRouter>
   );
 }
 

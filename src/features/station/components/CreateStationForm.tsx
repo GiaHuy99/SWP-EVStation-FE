@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
 import { createStation } from "../StationThunks";
+import { useNavigate } from "react-router-dom";
 import {
     MenuItem,
     Button,
@@ -8,11 +9,12 @@ import {
 } from "@mui/material";
 import {FormBox, FullWidthBox, StyledTextField} from "../styles/CreateStationForm";
 import {CreateStationPayload} from "../types/StationType";
+import {showNotification} from "../../../shared/utils/notificationSlice";
 
 const CreateStationForm: React.FC = () => {
     const dispatch = useAppDispatch();
     const { loading, error } = useAppSelector((state) => state.station);
-
+    const navigate = useNavigate();
     const [form, setForm] = useState({
         name: "",
         location: "",
@@ -29,7 +31,14 @@ const CreateStationForm: React.FC = () => {
 
         const handleSubmit = (e: React.FormEvent) => {
             e.preventDefault();
-            dispatch(createStation({...form, capacity: Number(form.capacity)} as CreateStationPayload));
+            dispatch(createStation({...form, capacity: Number(form.capacity)} as CreateStationPayload)).unwrap()
+                .then(() => {
+                    dispatch(showNotification({ message: "Battery created successfully!", type: "success" }));
+                    navigate("/stations/list"); // chuyển về list
+                })
+                .catch(() => {
+                    dispatch(showNotification({ message: "Failed to create battery.", type: "error" }));
+                });
         };
 
     return (

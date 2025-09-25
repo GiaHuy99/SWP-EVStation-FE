@@ -70,16 +70,25 @@ const batterySlice = createSlice({
                     b.id === action.payload.id ? action.payload : b
                 );
             })
+            .addCase(updateBattery.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload as string;
+        })
+            .addCase(deleteBattery.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
             .addCase(deleteBattery.fulfilled, (state, action) => {
-                // action.payload là id của battery vừa xóa
+                state.loading = false;
                 state.batteries = state.batteries.filter(
                     (battery) => battery.id !== action.payload
                 );
             })
-            .addCase(updateBattery.rejected, (state, action) => {
+            .addCase(deleteBattery.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
-            })
+            });
+
     },
 });
 export const { clearSelectedBattery } = batterySlice.actions;

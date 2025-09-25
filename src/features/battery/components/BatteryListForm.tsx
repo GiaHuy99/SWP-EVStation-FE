@@ -20,6 +20,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import BatteryDetail from "./BatteryDetailForm";
 import UpdateBatteryForm from "./UpdateBatteryForm"; // <- popup update
 import { Battery } from "../types/BatteryType";
+import {fetchStations} from "../../station/StationThunks";
 
 const BatteryList: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -30,6 +31,7 @@ const BatteryList: React.FC = () => {
 
     useEffect(() => {
         dispatch(fetchBatteries());
+        dispatch(fetchStations());
     }, [dispatch]);
 
     if (loading && batteries.length === 0) return <CircularProgress />;
