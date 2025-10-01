@@ -3,15 +3,14 @@ export interface Battery {
     serialNumber: string;
     status: "AVAILABLE" | "IN_USE" | "DAMAGED"|"MAINTENANCE"; // có thể mở rộng
     swapCount: number;
-    stationId: number;
-    stationName: string;
+    stationId: number | null;
+    stationName: string | null;  // có thể null
 }
 export interface CreateBatteryPayload {
     serialNumber: string;
     status: "AVAILABLE" | "IN_USE" | "DAMAGED"|"MAINTENANCE";
     swapCount: number;
-    stationId: number;
-}
+    stationId: number | null; }
 export interface BatteryState {
     batteries: Battery[];
     loading: boolean;

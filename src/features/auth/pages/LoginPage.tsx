@@ -10,7 +10,7 @@ const LoginPage = () => {
 
     useEffect(() => {
         if (token) {
-            navigate("/hello"); // login thành công thì sang HelloPage
+            navigate("/stations/list"); // login thành công thì sang HelloPage
         }
     }, [token, navigate]);
 

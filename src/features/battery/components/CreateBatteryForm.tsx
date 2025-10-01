@@ -5,7 +5,7 @@ import { createBattery } from "../BatteryThunk";
 import { fetchStations } from "../../station/StationThunks";
 import { CreateBatteryPayload } from "../types/BatteryType";
 import { Button, Card, CardContent, MenuItem, TextField, Typography } from "@mui/material";
-import {showNotification} from "../../../shared/utils/notificationSlice";
+import {showNotification} from "../../../shared/utils/notification/notificationSlice";
 import { useNavigate } from "react-router-dom";
 
 

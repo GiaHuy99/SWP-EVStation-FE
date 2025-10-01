@@ -23,12 +23,12 @@ interface UpdateBatteryFormProps {
 
 const UpdateBatteryForm: React.FC<UpdateBatteryFormProps> = ({ open, battery, onClose }) => {
     const dispatch = useAppDispatch();
-    const { stations } = useAppSelector((state) => state.station); // lấy list station từ redux
+    const { stations } = useAppSelector((state) => state.station);
 
     const [serialNumber, setSerialNumber] = useState("");
     const [status, setStatus] = useState<Battery["status"]>("AVAILABLE");
     const [swapCount, setSwapCount] = useState(0);
-    const [selectedStationId, setSelectedStationId] = useState<number>(0);
+    const [selectedStationId, setSelectedStationId] = useState<number | null>(null); // ✅ cho phép null
 
     const statusOptions: Battery["status"][] = [
         "AVAILABLE",
@@ -42,15 +42,16 @@ const UpdateBatteryForm: React.FC<UpdateBatteryFormProps> = ({ open, battery, on
             setSerialNumber(battery.serialNumber);
             setStatus(battery.status);
             setSwapCount(battery.swapCount);
-            const exists = stations.some(s => s.id === battery.stationId);
-            setSelectedStationId(exists ? battery.stationId : 0); // ✅ set stationId khi mở dialog
+
+            const exists = stations.some((s) => s.id === battery.stationId);
+            setSelectedStationId(exists ? battery.stationId : null); // ✅ nếu không tồn tại thì null
         }
-    }, [battery]);
+    }, [battery, stations]);
 
     const handleUpdate = () => {
         if (!battery) return;
-        const selectedStation = stations.find((s) => s.id === selectedStationId);
-        if (!selectedStation) return;
+
+        const selectedStation = stations.find((s) => s.id === selectedStationId) || null;
 
         dispatch(
             updateBattery({
@@ -58,8 +59,8 @@ const UpdateBatteryForm: React.FC<UpdateBatteryFormProps> = ({ open, battery, on
                 serialNumber,
                 status,
                 swapCount,
-                stationId: selectedStation.id,
-                stationName: selectedStation.name, // ✅ thêm để khớp UpdateBatteryPayload
+                stationId: selectedStation ? selectedStation.id : null,   // ✅ null nếu không chọn
+                stationName: selectedStation ? selectedStation.name : null, // ✅ null nếu không chọn
             })
         );
 
@@ -82,9 +83,7 @@ const UpdateBatteryForm: React.FC<UpdateBatteryFormProps> = ({ open, battery, on
                     <InputLabel>Status</InputLabel>
                     <Select
                         value={status}
-                        onChange={(e) =>
-                            setStatus(e.target.value as Battery["status"])
-                        }
+                        onChange={(e) => setStatus(e.target.value as Battery["status"])}
                         label="Status"
                     >
                         {statusOptions.map((s) => (
@@ -107,30 +106,28 @@ const UpdateBatteryForm: React.FC<UpdateBatteryFormProps> = ({ open, battery, on
                 <FormControl fullWidth margin="normal">
                     <InputLabel>Station</InputLabel>
                     <Select
-                        value={selectedStationId || ""}
-                        onChange={(e) => setSelectedStationId(Number(e.target.value))}
+                        value={selectedStationId ?? ""} // ✅ null → ""
+                        onChange={(e) => {
+                            const value = String(e.target.value);
+                            setSelectedStationId(value === "" ? null : Number(value));
+                        }}
                         label="Station"
                     >
                         <MenuItem value="">
                             <em>None</em>
                         </MenuItem>
-                        {stations.map(station => (
+                        {stations.map((station) => (
                             <MenuItem key={station.id} value={station.id}>
                                 {station.name}
                             </MenuItem>
                         ))}
                     </Select>
-
                 </FormControl>
             </DialogContent>
 
             <DialogActions>
                 <Button onClick={onClose}>Cancel</Button>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleUpdate}
-                >
+                <Button variant="contained" color="primary" onClick={handleUpdate}>
                     Update
                 </Button>
             </DialogActions>

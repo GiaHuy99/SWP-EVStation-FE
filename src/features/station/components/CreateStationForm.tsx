@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import {FormBox, FullWidthBox, StyledTextField} from "../styles/CreateStationForm";
 import {CreateStationPayload} from "../types/StationType";
-import {showNotification} from "../../../shared/utils/notificationSlice";
+import {showNotification} from "../../../shared/utils/notification/notificationSlice";
 
 const CreateStationForm: React.FC = () => {
     const dispatch = useAppDispatch();

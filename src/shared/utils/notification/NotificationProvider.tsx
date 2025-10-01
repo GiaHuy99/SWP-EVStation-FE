@@ -1,6 +1,6 @@
 // src/features/notification/NotificationProvider.tsx
 import React from "react";
-import { useAppDispatch, useAppSelector } from "../../app/Hooks";
+import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import { hideNotification } from "./notificationSlice";
