@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import {AuthState, LoginResponse, RegisterResponse} from "./types/AuthTypes";
-import {login, register} from "./AuthThunks";
+import { AuthState, LoginResponse, RegisterResponse } from "./types/AuthTypes";
+import { login, register } from "./AuthThunks";
 import AuthService from "./services/AuthService";
 
 const initialState: AuthState = {
@@ -18,7 +18,7 @@ const authSlice = createSlice({
         logout: (state) => {
             state.token = null;
             state.username = null;
-            AuthService.logout();
+            AuthService.logout(); // Xóa localStorage
         },
         loadFromStorage: (state) => {
             const token = localStorage.getItem("token");
@@ -42,33 +42,28 @@ const authSlice = createSlice({
             })
             .addCase(login.rejected, (state, action: any) => {
                 state.loading = false;
-                state.error = action.payload;
-                state.error = action.payload as string; // lấy lỗi backend
-
+                state.error = action.payload as string; // Lấy lỗi backend, sửa trùng lặp
             });
-        // register
+        // Register cases
         builder.addCase(register.pending, (state) => {
             state.loading = true;
             state.error = null;
             state.registerSuccess = false;
         });
-        builder.addCase(register.fulfilled, (state, action: { payload: RegisterResponse }) => {
+        builder.addCase(register.fulfilled, (state, action: PayloadAction<RegisterResponse>) => { // Sửa type cho nhất quán
             state.loading = false;
             state.registerSuccess = true;
-
-
         });
         builder.addCase(register.rejected, (state, action: any) => {
             state.loading = false;
-            state.error = action.payload;
+            state.error = action.payload as string;
             state.registerSuccess = false;
-
         });
     },
-
-
-
 });
+
+// Thêm selector để check login state (dùng trong Navbar)
+export const selectIsLoggedIn = (state: { auth: AuthState }) => !!state.auth.token;
 
 export const { logout, loadFromStorage } = authSlice.actions;
 export default authSlice.reducer;

@@ -8,7 +8,6 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    Paper,
     CircularProgress,
     Button,
     Dialog,
@@ -21,6 +20,33 @@ import BatteryDetail from "./BatteryDetailForm";
 import UpdateBatteryForm from "./UpdateBatteryForm"; // <- popup update
 import { Battery } from "../types/BatteryType";
 import {fetchStations} from "../../station/StationThunks";
+
+// Import styled components từ file trước (giả sử path đúng)
+import { PageContainer, FormCard, StyledTextField /* thêm nếu cần */ } from "../styles/CreateBatteryForm"; // Thay path thực tế
+
+// Styled cho TableRow với theme xanh pastel
+import { styled } from "@mui/material/styles";
+import Paper from "@mui/material/Paper";
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    "&:hover": {
+        backgroundColor: "#E8F5E8", // Xanh pastel giống StyledTextField
+        transition: "background-color 0.3s ease-in-out",
+        transform: "scale(1.01)", // Nâng nhẹ khi hover
+    },
+    "& td": {
+        borderBottom: `1px solid ${theme.palette.divider}`,
+    },
+}));
+
+// Styled cho DialogContent với FormCard
+const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
+    padding: theme.spacing(3),
+    "& .MuiPaper-root": { // Nếu dùng FormCard bên trong
+        backgroundColor: "#ffffff",
+        borderRadius: "12px",
+        boxShadow: "0px 12px 30px rgba(0, 0, 0, 0.06)",
+    },
+}));
 
 const BatteryList: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -38,102 +64,104 @@ const BatteryList: React.FC = () => {
     if (error) return <div>Error: {error}</div>;
 
     return (
-        <>
-            <TableContainer component={Paper} sx={{ mt: 3 }}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>ID</TableCell>
-                            <TableCell>Serial Number</TableCell>
-                            <TableCell>Status</TableCell>
-                            <TableCell>Swap Count</TableCell>
-                            <TableCell>Station</TableCell>
-                            <TableCell align="center">Actions</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {batteries.map((battery: Battery) => (
-                            <TableRow
-                                key={battery.id}
-                                hover
-                                sx={{ cursor: "pointer" }}
-                                onClick={() => setSelectedId(battery.id)}
-                            >
-                                <TableCell>{battery.id}</TableCell>
-                                <TableCell>{battery.serialNumber}</TableCell>
-                                <TableCell>{battery.status}</TableCell>
-                                <TableCell>{battery.swapCount}</TableCell>
-                                <TableCell>{battery.stationName}</TableCell>
-                                <TableCell
-                                    align="center"
-                                    onClick={(e) => e.stopPropagation()} // chặn click row
-                                >
-                                    <Button
-                                        variant="outlined"
-                                        color="primary"
-                                        size="small"
-                                        onClick={() => setEditingBattery(battery)}
-                                        sx={{ mr: 1 }}
-                                    >
-                                        Update
-                                    </Button>
-                                    <Button
-                                        variant="outlined"
-                                        color="error"
-                                        size="small"
-                                        onClick={() => {
-                                            if (window.confirm("Bạn có chắc muốn xóa battery này?")) {
-                                                dispatch(deleteBattery(battery.id));
-                                            }
-                                        }}
-                                    >
-                                        Delete
-                                    </Button>
-                                </TableCell>
+        <PageContainer> {/* Wrap toàn bộ với PageContainer */}
+            <FormCard> {/* Dùng FormCard cho container table */}
+                <TableContainer component={Paper} sx={{ mt: 3 }}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>ID</TableCell>
+                                <TableCell>Serial Number</TableCell>
+                                <TableCell>Status</TableCell>
+                                <TableCell>Swap Count</TableCell>
+                                <TableCell>Station</TableCell>
+                                <TableCell align="center">Actions</TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                        </TableHead>
+                        <TableBody>
+                            {batteries.map((battery: Battery) => (
+                                <StyledTableRow // Dùng styled row
+                                    key={battery.id}
+                                    onClick={() => setSelectedId(battery.id)}
+                                >
+                                    <TableCell>{battery.id}</TableCell>
+                                    <TableCell>{battery.serialNumber}</TableCell>
+                                    <TableCell>{battery.status}</TableCell>
+                                    <TableCell>{battery.swapCount}</TableCell>
+                                    <TableCell>{battery.stationName}</TableCell>
+                                    <TableCell
+                                        align="center"
+                                        onClick={(e) => e.stopPropagation()} // chặn click row
+                                    >
+                                        <Button
+                                            variant="outlined"
+                                            color="primary"
+                                            size="small"
+                                            onClick={() => setEditingBattery(battery)}
+                                            sx={{ mr: 1 }}
+                                        >
+                                            Update
+                                        </Button>
+                                        <Button
+                                            variant="outlined"
+                                            color="error"
+                                            size="small"
+                                            onClick={() => {
+                                                if (window.confirm("Bạn có chắc muốn xóa battery này?")) {
+                                                    dispatch(deleteBattery(battery.id));
+                                                }
+                                            }}
+                                        >
+                                            Delete
+                                        </Button>
+                                    </TableCell>
+                                </StyledTableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
 
-            {/* Popup Update */}
-            <UpdateBatteryForm
-                open={Boolean(editingBattery)}
-                battery={editingBattery}
-                onClose={() => setEditingBattery(null)}
-            />
+                {/* Popup Update - Giả sử đã dùng StyledTextField bên trong */}
+                <UpdateBatteryForm
+                    open={Boolean(editingBattery)}
+                    battery={editingBattery}
+                    onClose={() => setEditingBattery(null)}
+                />
 
-            {/* Popup Detail */}
-            <Dialog
-                open={selectedId !== null}
-                onClose={() => setSelectedId(null)}
-                fullWidth
-                maxWidth="sm"
-            >
-                <DialogTitle>
-                    Battery Detail
-                    <IconButton
-                        aria-label="close"
-                        onClick={() => setSelectedId(null)}
-                        sx={{
-                            position: "absolute",
-                            right: 8,
-                            top: 8,
-                            color: (theme) => theme.palette.grey[500],
-                        }}
-                    >
-                        <CloseIcon />
-                    </IconButton>
-                </DialogTitle>
-                <DialogContent dividers>
-                    {selectedId !== null ? (
-                        <BatteryDetail id={selectedId} />
-                    ) : (
-                        <div>Không có dữ liệu</div>
-                    )}
-                </DialogContent>
-            </Dialog>
-        </>
+                {/* Popup Detail - Wrap nội dung với StyledDialogContent */}
+                <Dialog
+                    open={selectedId !== null}
+                    onClose={() => setSelectedId(null)}
+                    fullWidth
+                    maxWidth="sm"
+                >
+                    <DialogTitle>
+                        Battery Detail
+                        <IconButton
+                            aria-label="close"
+                            onClick={() => setSelectedId(null)}
+                            sx={{
+                                position: "absolute",
+                                right: 8,
+                                top: 8,
+                                color: (theme) => theme.palette.grey[500],
+                            }}
+                        >
+                            <CloseIcon />
+                        </IconButton>
+                    </DialogTitle>
+                    <StyledDialogContent> {/* Styled cho content */}
+                        {selectedId !== null ? (
+                            <FormCard> {/* Wrap detail với FormCard */}
+                                <BatteryDetail id={selectedId} />
+                            </FormCard>
+                        ) : (
+                            <div>Không có dữ liệu</div>
+                        )}
+                    </StyledDialogContent>
+                </Dialog>
+            </FormCard>
+        </PageContainer>
     );
 };
 

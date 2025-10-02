@@ -25,8 +25,6 @@ export const FormCard = styled(Paper)(({ theme }) => ({
     border: "1px solid #e5e7eb",
 }));
 
-
-
 export const FormBox = styled(Box)(({ theme }) => ({
     display: "grid",
     gridTemplateColumns: "1fr",
@@ -41,19 +39,57 @@ export const FullWidthBox = styled(Box)(() => ({
     gridColumn: "1 / -1",
 }));
 
+// Cập nhật StyledTextField với background xanh pastel và hiệu ứng đẹp hơn
 export const StyledTextField = styled(TextField)(({ theme }) => ({
     "& .MuiOutlinedInput-root": {
-        "&.Mui-focused fieldset": {
+        backgroundColor: "#E8F5E8", // Background xanh lá pastel mặc định
+        borderRadius: "12px", // Bo tròn hơn cho vẻ hiện đại
+        padding: "12px 16px", // Padding thoải mái hơn
+        fontWeight: 400, // Font nhẹ, dễ đọc
+        transition: "all 0.3s ease-in-out", // Mượt mà cho mọi thay đổi
+
+        // Hover: Background sáng hơn với gradient nhẹ
+        "&:hover": {
+            background: "linear-gradient(135deg, #E8F5E8 0%, #D4EDDA 100%)", // Gradient pastel
+            borderColor: theme.palette.success.light,
+            transform: "translateY(-1px)", // Nâng nhẹ lên khi hover
+        },
+
+        // Focus: Viền xanh + glow shadow pastel
+        "&.Mui-focused": {
             borderColor: theme.palette.success.main,
-            boxShadow: "0 0 0 3px rgba(34, 197, 94, 0.2)",
+            boxShadow: "0 0 0 3px rgba(34, 197, 94, 0.15)", // Glow nhẹ hơn, pastel
+            backgroundColor: "#E8F5E8", // Giữ nguyên background
+            "& fieldset": {
+                borderColor: theme.palette.success.main,
+            },
+        },
+
+        // Error: Đổi sang đỏ pastel để nhất quán
+        "&.Mui-error": {
+            backgroundColor: "#FDE8E8", // Đỏ pastel cho lỗi
+            "&.Mui-focused": {
+                boxShadow: "0 0 0 3px rgba(220, 53, 69, 0.15)",
+            },
+        },
+
+        // Notched outline (viền mặc định)
+        "& fieldset": {
+            borderColor: "#D1D5DB", // Viền xám nhạt mặc định
+            borderWidth: "1px",
             transition: "all 0.3s ease-in-out",
         },
-    },
-    "&:hover .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
-        borderColor: theme.palette.success.light,
+
+        // Input text bên trong
+        "& .MuiInputBase-input": {
+            color: "#374151", // Màu chữ tối hơn cho tương phản tốt
+            "&::placeholder": {
+                color: "#9CA3AF", // Placeholder xám nhạt
+                opacity: 1,
+            },
+        },
     },
 }));
-
 
 export const DetailCard = styled(Card)({
     padding: "20px",

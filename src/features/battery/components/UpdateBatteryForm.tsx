@@ -5,15 +5,20 @@ import {
     DialogContent,
     DialogActions,
     Button,
-    TextField,
     MenuItem,
-    FormControl,
-    InputLabel,
-    Select,
 } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
 import { updateBattery } from "../BatteryThunk";
 import { Battery } from "../types/BatteryType";
+
+// Import styled components
+import {
+    FormCard, // Wrap content với border pastel
+    StyledTextField, // Cho inputs
+    FormBox, // Grid layout
+    FullWidthBox, // Cho actions
+    Title, // Nếu cần cho title
+} from "../styles/CreateBatteryForm"; // Import đúng path
 
 interface UpdateBatteryFormProps {
     open: boolean;
@@ -28,7 +33,7 @@ const UpdateBatteryForm: React.FC<UpdateBatteryFormProps> = ({ open, battery, on
     const [serialNumber, setSerialNumber] = useState("");
     const [status, setStatus] = useState<Battery["status"]>("AVAILABLE");
     const [swapCount, setSwapCount] = useState(0);
-    const [selectedStationId, setSelectedStationId] = useState<number | null>(null); // ✅ cho phép null
+    const [selectedStationId, setSelectedStationId] = useState<number | null>(null);
 
     const statusOptions: Battery["status"][] = [
         "AVAILABLE",
@@ -44,7 +49,7 @@ const UpdateBatteryForm: React.FC<UpdateBatteryFormProps> = ({ open, battery, on
             setSwapCount(battery.swapCount);
 
             const exists = stations.some((s) => s.id === battery.stationId);
-            setSelectedStationId(exists ? battery.stationId : null); // ✅ nếu không tồn tại thì null
+            setSelectedStationId(exists ? battery.stationId : null);
         }
     }, [battery, stations]);
 
@@ -59,8 +64,8 @@ const UpdateBatteryForm: React.FC<UpdateBatteryFormProps> = ({ open, battery, on
                 serialNumber,
                 status,
                 swapCount,
-                stationId: selectedStation ? selectedStation.id : null,   // ✅ null nếu không chọn
-                stationName: selectedStation ? selectedStation.name : null, // ✅ null nếu không chọn
+                stationId: selectedStation ? selectedStation.id : null,
+                stationName: selectedStation ? selectedStation.name : null,
             })
         );
 
@@ -71,65 +76,67 @@ const UpdateBatteryForm: React.FC<UpdateBatteryFormProps> = ({ open, battery, on
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
             <DialogTitle>Update Battery</DialogTitle>
             <DialogContent dividers>
-                <TextField
-                    label="Serial Number"
-                    fullWidth
-                    margin="normal"
-                    value={serialNumber}
-                    onChange={(e) => setSerialNumber(e.target.value)}
-                />
-
-                <FormControl fullWidth margin="normal">
-                    <InputLabel>Status</InputLabel>
-                    <Select
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value as Battery["status"])}
-                        label="Status"
-                    >
-                        {statusOptions.map((s) => (
-                            <MenuItem key={s} value={s}>
-                                {s}
+                <FormCard sx={{ border: "1px solid #E8F5E8", p: 2 }}> {/* Wrap với viền xanh pastel và padding */}
+                    <FormBox> {/* Grid responsive cho fields */}
+                        <StyledTextField // Serial Number
+                            label="Serial Number"
+                            fullWidth
+                            value={serialNumber}
+                            onChange={(e) => setSerialNumber(e.target.value)}
+                            margin="normal"
+                        />
+                        <StyledTextField // Status select
+                            select
+                            label="Status"
+                            fullWidth
+                            value={status}
+                            onChange={(e) => setStatus(e.target.value as Battery["status"])}
+                            margin="normal"
+                        >
+                            {statusOptions.map((s) => (
+                                <MenuItem key={s} value={s}>
+                                    {s}
+                                </MenuItem>
+                            ))}
+                        </StyledTextField>
+                        <StyledTextField // Swap Count
+                            label="Swap Count"
+                            fullWidth
+                            type="number"
+                            value={swapCount}
+                            onChange={(e) => setSwapCount(Number(e.target.value))}
+                            margin="normal"
+                        />
+                        <StyledTextField // Station select
+                            select
+                            label="Station"
+                            fullWidth
+                            value={selectedStationId ?? ""}
+                            onChange={(e) => {
+                                const value = String(e.target.value);
+                                setSelectedStationId(value === "" ? null : Number(value));
+                            }}
+                            margin="normal"
+                        >
+                            <MenuItem value="">
+                                <em>None</em>
                             </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-
-                <TextField
-                    label="Swap Count"
-                    fullWidth
-                    type="number"
-                    margin="normal"
-                    value={swapCount}
-                    onChange={(e) => setSwapCount(Number(e.target.value))}
-                />
-
-                <FormControl fullWidth margin="normal">
-                    <InputLabel>Station</InputLabel>
-                    <Select
-                        value={selectedStationId ?? ""} // ✅ null → ""
-                        onChange={(e) => {
-                            const value = String(e.target.value);
-                            setSelectedStationId(value === "" ? null : Number(value));
-                        }}
-                        label="Station"
-                    >
-                        <MenuItem value="">
-                            <em>None</em>
-                        </MenuItem>
-                        {stations.map((station) => (
-                            <MenuItem key={station.id} value={station.id}>
-                                {station.name}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
+                            {stations.map((station) => (
+                                <MenuItem key={station.id} value={station.id}>
+                                    {station.name}
+                                </MenuItem>
+                            ))}
+                        </StyledTextField>
+                    </FormBox>
+                </FormCard>
             </DialogContent>
-
             <DialogActions>
-                <Button onClick={onClose}>Cancel</Button>
-                <Button variant="contained" color="primary" onClick={handleUpdate}>
-                    Update
-                </Button>
+                <FullWidthBox> {/* Full width cho buttons */}
+                    <Button onClick={onClose} sx={{ mr: 1 }}>Cancel</Button>
+                    <Button variant="contained" color="success" onClick={handleUpdate}> {/* Màu xanh khớp theme */}
+                        Update
+                    </Button>
+                </FullWidthBox>
             </DialogActions>
         </Dialog>
     );
