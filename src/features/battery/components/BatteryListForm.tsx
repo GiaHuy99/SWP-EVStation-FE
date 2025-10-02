@@ -95,12 +95,24 @@ const BatteryList: React.FC = () => {
                                     >
                                         <Button
                                             variant="outlined"
-                                            color="primary"
+                                            color="success" // Xanh lá khớp theme
                                             size="small"
                                             onClick={() => setEditingBattery(battery)}
-                                            sx={{ mr: 1 }}
+                                            sx={{
+                                                mr: 1,
+                                                backgroundColor: "transparent", // Nền trắng như hình
+                                                borderColor: "#22C55E", // Viền xanh lá đậm nhạt
+                                                textTransform: "uppercase", // In hoa "UPDATE"
+                                                borderRadius: "8px", // Bo tròn mỏng
+                                                transition: "all 0.3s ease-in-out", // Mượt mà
+                                                "&:hover": {
+                                                    backgroundColor: "rgba(34, 197, 94, 0.05)", // Nền nhạt nhẹ khi hover
+                                                    borderColor: "#16A34A", // Viền sáng hơn (success.dark)
+                                                    transform: "translateY(-1px)", // Nâng nhẹ
+                                                },
+                                            }}
                                         >
-                                            Update
+                                            UPDATE
                                         </Button>
                                         <Button
                                             variant="outlined"

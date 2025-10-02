@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { TextField, MenuItem, Button, Box, CircularProgress } from "@mui/material";
+import { MenuItem, CircularProgress, Alert, Typography, Button } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
 import { fetchVehicles, fetchPlans, linkVehicle } from "../Link_SubcriptionThunk";
 import { LinkVehiclePayload } from "../types/LinkVehicleType";
-import { PageContainer, FormCard, Title, FormRow, SingleRow } from "../styles/LinkVehicleFormStyles";
+import { PageContainer, FormCard, Title, FormRow, SingleRow, StyledTextField } from "../styles/LinkVehicleFormStyles";
 import { clearResult } from "../Link_SubcriptionSlices";
 
 const LinkVehicleForm: React.FC = () => {
@@ -36,18 +36,17 @@ const LinkVehicleForm: React.FC = () => {
 
     return (
         <PageContainer>
-            <FormCard>
+            <FormCard sx={{ border: "1px solid #E8F5E8" }}> {/* Viền ngoài pastel đồng bộ */}
                 <Title variant="h5">Đăng ký xe</Title>
 
-                <FormRow>
-                    <TextField
+                <FormRow> {/* Grid responsive từ styles */}
+                    <StyledTextField // Xe select với pastel green
                         select
                         label="Chọn xe"
                         name="vehicleId"
                         value={form.vehicleId || ""}
                         onChange={handleChange}
                         fullWidth
-                        placeholder="Chọn xe"
                     >
                         <MenuItem value="">
                             <em>Chọn</em>
@@ -57,9 +56,9 @@ const LinkVehicleForm: React.FC = () => {
                                 {v.model} — {v.vin}
                             </MenuItem>
                         ))}
-                    </TextField>
+                    </StyledTextField>
 
-                    <TextField
+                    <StyledTextField // Gói select cạnh xe
                         select
                         label="Chọn gói"
                         name="subscriptionPlanId"
@@ -75,25 +74,50 @@ const LinkVehicleForm: React.FC = () => {
                                 {p.name} — {p.price?.toLocaleString?.() ?? p.price} VND
                             </MenuItem>
                         ))}
-                    </TextField>
+                    </StyledTextField>
                 </FormRow>
 
-                <SingleRow display="flex" justifyContent="flex-end">
-                    <Button variant="contained" color="primary" onClick={handleSubmit} disabled={loading}>
-                        {loading ? <CircularProgress size={20} /> : "Đăng ký"}
+                <SingleRow sx={{ display: "flex", justifyContent: "center" }}> {/* Căn giữa nút */}
+                    <Button
+                        variant="contained"
+                        color="success" // Xanh lá đồng bộ như Update
+                        onClick={handleSubmit}
+                        disabled={loading}
+                        sx={{
+                            px: 4, // Padding ngang rộng
+                            py: 1.5, // Dọc mượt
+                            borderRadius: "8px", // Bo tròn
+                            textTransform: "uppercase", // "ĐĂNG KÝ" in hoa
+                            fontWeight: 600, // Đậm
+                            backgroundColor: "#E8F5E8", // Nền pastel xanh
+                            color: "#22C55E", // Chữ xanh đậm
+                            "&:hover": {
+                                backgroundColor: "#D4EDDA", // Hover sáng pastel
+                                transform: "translateY(-1px)", // Nâng nhẹ như Update
+                                transition: "all 0.3s ease-in-out",
+                            },
+                            "&.Mui-disabled": {
+                                backgroundColor: "#F3F4F6", // Disabled xám nhạt
+                                color: "#9CA3AF",
+                            },
+                        }}
+                    >
+                        {loading ? <CircularProgress size={20} color="inherit" /> : "ĐĂNG KÝ"}
                     </Button>
                 </SingleRow>
 
                 {result && (
-                    <Box mt={3} p={2} border="1px solid #eee" borderRadius={1}>
-                        <div style={{ fontWeight: 600 }}>{result.message}</div>
-                        <div>Xe: {result.vehicle.model} ({result.vehicle.vin})</div>
-                        <div>Gói: {result.subscription.planName}</div>
-                        <div>Pin được gán: {result.batteries.length}</div>
-                    </Box>
+                    <Alert severity="success" sx={{ mt: 3 }}> {/* Alert xanh pastel cho result */}
+                        <Typography variant="body1" fontWeight={600} mb={1}>{result.message}</Typography>
+                        <Typography>Xe: {result.vehicle.model} ({result.vehicle.vin})</Typography>
+                        <Typography>Gói: {result.subscription.planName}</Typography>
+                        <Typography>Pin được gán: {result.batteries.length}</Typography>
+                    </Alert>
                 )}
 
-                {error && <Box mt={2} color="error.main">{String(error)}</Box>}
+                {error && <Alert severity="error" sx={{ mt: 2 }}> {/* Alert đỏ pastel cho error */}
+                    {String(error)}
+                </Alert>}
             </FormCard>
         </PageContainer>
     );

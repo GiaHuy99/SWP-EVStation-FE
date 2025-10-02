@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
 import { getSubscriptionPlanById } from "../SubcriptionPlanThunks";
 import {
     PageContainer,
+    FormCard, // Wrap viền pastel
     PlanCard,
     Title,
     DetailItem,
@@ -33,29 +34,31 @@ const SubscriptionPlanDetailForm: React.FC<SubscriptionPlanDetailFormProps> = ({
 
     return (
         <PageContainer>
-            <PlanCard>
-                <Title variant="h5">{selectedPlan.name}</Title>
-                <DetailItem>
-                    <DetailLabel>Price:</DetailLabel>
-                    <DetailValue>{selectedPlan.price}</DetailValue>
-                </DetailItem>
-                <DetailItem>
-                    <DetailLabel>Duration (days):</DetailLabel>
-                    <DetailValue>{selectedPlan.durationDays}</DetailValue>
-                </DetailItem>
-                <DetailItem>
-                    <DetailLabel>Max Batteries:</DetailLabel>
-                    <DetailValue>{selectedPlan.maxBatteries}</DetailValue>
-                </DetailItem>
-                <DetailItem>
-                    <DetailLabel>Base Mileage:</DetailLabel>
-                    <DetailValue>{selectedPlan.baseMileage}</DetailValue>
-                </DetailItem>
-                <DetailItem>
-                    <DetailLabel>Status:</DetailLabel>
-                    <DetailValue>{selectedPlan.status}</DetailValue>
-                </DetailItem>
-            </PlanCard>
+            <FormCard sx={{ border: "1px solid #E8F5E8" }}> {/* Viền pastel */}
+                <PlanCard> {/* Nội dung detail */}
+                    <Title variant="h5">Plan Detail - {selectedPlan.name}</Title> {/* Đồng bộ title */}
+                    <DetailItem>
+                        <DetailLabel>Price:</DetailLabel>
+                        <DetailValue>{selectedPlan.price}</DetailValue>
+                    </DetailItem>
+                    <DetailItem>
+                        <DetailLabel>Duration (days):</DetailLabel>
+                        <DetailValue>{selectedPlan.durationDays}</DetailValue>
+                    </DetailItem>
+                    <DetailItem>
+                        <DetailLabel>Max Batteries:</DetailLabel>
+                        <DetailValue>{selectedPlan.maxBatteries}</DetailValue>
+                    </DetailItem>
+                    <DetailItem>
+                        <DetailLabel>Base Mileage:</DetailLabel>
+                        <DetailValue>{selectedPlan.baseMileage}</DetailValue>
+                    </DetailItem>
+                    <DetailItem>
+                        <DetailLabel>Status:</DetailLabel>
+                        <DetailValue>{selectedPlan.status}</DetailValue>
+                    </DetailItem>
+                </PlanCard>
+            </FormCard>
         </PageContainer>
     );
 };

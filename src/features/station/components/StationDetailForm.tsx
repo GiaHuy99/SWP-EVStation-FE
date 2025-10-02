@@ -3,9 +3,12 @@ import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
 import { getStationById } from "../StationThunks";
 import {
     PageContainer,
+    FormCard, // Wrap với viền pastel
     DetailCard,
     Title,
-    DetailItem, DetailValue,DetailLabel,
+    DetailItem,
+    DetailValue,
+    DetailLabel,
 } from "../styles/CreateStationForm";
 import { CircularProgress, Alert } from "@mui/material";
 
@@ -24,6 +27,7 @@ const StationDetail: React.FC<StationDetailProps> = ({ id }) => {
             dispatch(getStationById(id));
         }
     }, [id, dispatch]);
+
     if (loading) return <CircularProgress />;
     if (error) return <Alert severity="error">{error}</Alert>;
 
@@ -33,25 +37,27 @@ const StationDetail: React.FC<StationDetailProps> = ({ id }) => {
 
     return (
         <PageContainer>
-            <DetailCard>
-                <Title variant="h5">{selectedStation.name}</Title>
-                <DetailItem>
-                    <DetailLabel>Location:</DetailLabel>
-                    <DetailValue>{selectedStation.location}</DetailValue>
-                </DetailItem>
-                <DetailItem>
-                    <DetailLabel>Status:</DetailLabel>
-                    <DetailValue>{selectedStation.status}</DetailValue>
-                </DetailItem>
-                <DetailItem>
-                    <DetailLabel>Capacity:</DetailLabel>
-                    <DetailValue>{selectedStation.capacity}</DetailValue>
-                </DetailItem>
-                <DetailItem>
-                    <DetailLabel>Phone:</DetailLabel>
-                    <DetailValue>{selectedStation.phone}</DetailValue>
-                </DetailItem>
-            </DetailCard>
+            <FormCard sx={{ border: "1px solid #E8F5E8" }}> {/* Wrap với viền xanh pastel */}
+                <DetailCard> {/* Nội dung detail */}
+                    <Title variant="h5">Station Detail - {selectedStation.name}</Title> {/* Title đồng bộ */}
+                    <DetailItem>
+                        <DetailLabel>Location:</DetailLabel>
+                        <DetailValue>{selectedStation.location}</DetailValue>
+                    </DetailItem>
+                    <DetailItem>
+                        <DetailLabel>Status:</DetailLabel>
+                        <DetailValue>{selectedStation.status}</DetailValue>
+                    </DetailItem>
+                    <DetailItem>
+                        <DetailLabel>Capacity:</DetailLabel>
+                        <DetailValue>{selectedStation.capacity}</DetailValue>
+                    </DetailItem>
+                    <DetailItem>
+                        <DetailLabel>Phone:</DetailLabel>
+                        <DetailValue>{selectedStation.phone}</DetailValue>
+                    </DetailItem>
+                </DetailCard>
+            </FormCard>
         </PageContainer>
     );
 };

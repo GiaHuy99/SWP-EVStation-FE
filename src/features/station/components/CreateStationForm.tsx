@@ -5,11 +5,17 @@ import { useNavigate } from "react-router-dom";
 import {
     MenuItem,
     Button,
-
 } from "@mui/material";
-import {FormBox, FullWidthBox, StyledTextField} from "../styles/CreateStationForm";
-import {CreateStationPayload} from "../types/StationType";
-import {showNotification} from "../../../shared/utils/notification/notificationSlice";
+import {
+    PageContainer, // Thêm wrap background
+    FormCard, // Thêm card với viền pastel
+    FormBox,
+    FullWidthBox,
+    StyledTextField,
+    Title, // Thêm title
+} from "../styles/CreateStationForm";
+import { CreateStationPayload } from "../types/StationType";
+import { showNotification } from "../../../shared/utils/notification/notificationSlice";
 
 const CreateStationForm: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -23,97 +29,90 @@ const CreateStationForm: React.FC = () => {
         phone: "",
     });
 
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setForm({ ...form, [e.target.name]: e.target.value });
+    };
 
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        dispatch(createStation({ ...form, capacity: Number(form.capacity) } as CreateStationPayload))
+            .unwrap()
+            .then(() => {
+                dispatch(showNotification({ message: "Station created successfully!", type: "success" })); // Fix message
+                navigate("/stations/list"); // chuyển về list
+            })
+            .catch(() => {
+                dispatch(showNotification({ message: "Failed to create station.", type: "error" })); // Fix message
+            });
+    };
 
-        const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-            setForm({ ...form, [e.target.name]: e.target.value });
-        };
-
-        const handleSubmit = (e: React.FormEvent) => {
-            e.preventDefault();
-            dispatch(createStation({...form, capacity: Number(form.capacity)} as CreateStationPayload)).unwrap()
-                .then(() => {
-                    dispatch(showNotification({ message: "Battery created successfully!", type: "success" }));
-                    navigate("/stations/list"); // chuyển về list
-                })
-                .catch(() => {
-                    dispatch(showNotification({ message: "Failed to create battery.", type: "error" }));
-                });
-        };
+    if (loading) return <div>Đang tạo station...</div>; // Thêm handle loading
+    if (error) return <div>Lỗi: {error}</div>; // Thêm handle error
 
     return (
-        <form onSubmit={handleSubmit}>
-            <FormBox>
-                <FullWidthBox>
-                    <StyledTextField
-                        label="Station Name"
-                        name="name"
-                        value={form.name}
-                        onChange={handleChange}
-                        fullWidth
-                        required
-                    />
-                </FullWidthBox>
-
-                <FullWidthBox>
-                    <StyledTextField
-                        label="Location"
-                        name="location"
-                        value={form.location}
-                        onChange={handleChange}
-                        fullWidth
-                        required
-                    />
-                </FullWidthBox>
-
-                <StyledTextField
-                    select
-                    label="Status"
-                    name="status"
-                    value={form.status}
-                    onChange={handleChange}
-                    fullWidth
-                >
-                    <MenuItem value="ACTIVE">Active</MenuItem>
-                    <MenuItem value="INACTIVE">Inactive</MenuItem>
-                </StyledTextField>
-
-                <StyledTextField
-                    label="Capacity"
-                    name="capacity"
-                    type="number"
-                    value={form.capacity}
-                    onChange={handleChange}
-                    fullWidth
-                    required
-                />
-
-                <FullWidthBox>
-                    <StyledTextField
-                        label="Phone"
-                        name="phone"
-                        value={form.phone}
-                        onChange={handleChange}
-                        fullWidth
-                        required
-                    />
-                </FullWidthBox>
-
-                <FullWidthBox>
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        color="primary"
-                        size="large"
-                        fullWidth
-                        sx={{ mt: 2 }}
-                    >
-                        Create Station
-                    </Button>
-                </FullWidthBox>
-            </FormBox>
-        </form>
+        <PageContainer> {/* Wrap với background nhẹ #F9FAFB */}
+            <FormCard sx={{ border: "1px solid #E8F5E8" }}> {/* Card với viền ngoài xanh lá pastel */}
+                <Title>Create Station</Title> {/* Title bold, center */}
+                <form onSubmit={handleSubmit}>
+                    <FormBox> {/* Grid responsive: 1fr mobile, 1fr 1fr desktop */}
+                        <StyledTextField // Name
+                            label="Station Name"
+                            name="name"
+                            value={form.name}
+                            onChange={handleChange}
+                            required
+                        />
+                        <StyledTextField // Location cạnh name trên desktop
+                            label="Location"
+                            name="location"
+                            value={form.location}
+                            onChange={handleChange}
+                            required
+                        />
+                        <StyledTextField // Status select
+                            select
+                            label="Status"
+                            name="status"
+                            value={form.status}
+                            onChange={handleChange}
+                        >
+                            <MenuItem value="ACTIVE">Active</MenuItem>
+                            <MenuItem value="INACTIVE">Inactive</MenuItem>
+                        </StyledTextField>
+                        <StyledTextField // Capacity cạnh status
+                            label="Capacity"
+                            name="capacity"
+                            type="number"
+                            value={form.capacity}
+                            onChange={handleChange}
+                            required
+                        />
+                        <FullWidthBox> {/* Phone full width */}
+                            <StyledTextField
+                                label="Phone"
+                                name="phone"
+                                value={form.phone}
+                                onChange={handleChange}
+                                required
+                            />
+                        </FullWidthBox>
+                        <FullWidthBox> {/* Button full width */}
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                color="success" // Đổi thành xanh lá khớp theme
+                                size="large"
+                                fullWidth
+                                sx={{ mt: 2, py: 1.5 }} // Padding mượt hơn
+                            >
+                                Create Station
+                            </Button>
+                        </FullWidthBox>
+                    </FormBox>
+                </form>
+            </FormCard>
+        </PageContainer>
     );
-    };
+};
 
 export default CreateStationForm;

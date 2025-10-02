@@ -9,11 +9,3 @@ export interface ChangePlanResponse {
     };
     message: string;
 }
- export interface SubscriptionPlanState {
-     plans: { id: number; name: string }[];
-     loading: boolean;
-     error: string | null;
-     changeMessage: string | null;
-}
-
-
