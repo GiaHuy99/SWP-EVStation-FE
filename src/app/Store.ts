@@ -7,7 +7,7 @@ import vehicleReducer from "../features/vehicle/VehicleSlices";
 import notificationReducer from "../shared/utils/notification/notificationSlice";
 import { notificationMiddleware } from "../shared/utils/notification/notificationMiddleware";
 import link_SubcriptionReducer from "../features/link-subcription/Link_SubcriptionSlices";
-import subcriptionReducer from "../features/link-subcription/SubscriptionSlice";
+import subcriptionReducer from "../features/link-subcription/ChangeSubscriptionSlice";
 import subcription from "../features/subcription/subscriptionSlice"
 export const store = configureStore({
     reducer: {

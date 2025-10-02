@@ -1,13 +1,20 @@
-// src/features/subscription/SubscriptionSlice.ts
+// src/features/subscription/ChangeSubscriptionSlice.ts
 import { createSlice } from "@reduxjs/toolkit";
 import {
     fetchSubscriptionPlans,
+
     changeSubscriptionPlan,
-} from "./SubscriptionThunks";
-import { ChangePlanResponse } from "./types/SubscriptionType";
+} from "./ChangeSubscriptionThunks";
+import { fetchVehicles } from "../link-subcription/Link_SubcriptionThunk";
+interface Vehicle {
+    id: number;
+    model: string;
+    vin: string;
+}
 
 interface SubscriptionState {
-    plans: { id: number; name: string }[];
+    plans: { id: number; name: string; price?: number }[];
+    vehicles: Vehicle[];
     loading: boolean;
     error: string | null;
     changeMessage: string | null;
@@ -15,21 +22,24 @@ interface SubscriptionState {
 
 const initialState: SubscriptionState = {
     plans: [],
+    vehicles: [],
     loading: false,
     error: null,
     changeMessage: null,
 };
 
-const subscriptionSlice = createSlice({
+const changeSubscriptionSlice = createSlice({
     name: "subscription",
     initialState,
     reducers: {
         clearMessage(state) {
             state.changeMessage = null;
+            state.error = null;
         },
     },
     extraReducers: (builder) => {
         builder
+            // Plans
             .addCase(fetchSubscriptionPlans.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -42,6 +52,22 @@ const subscriptionSlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message || "Failed to fetch plans";
             })
+
+            // Vehicles
+            .addCase(fetchVehicles.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchVehicles.fulfilled, (state, action) => {
+                state.loading = false;
+                state.vehicles = action.payload;
+            })
+            .addCase(fetchVehicles.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to fetch vehicles";
+            })
+
+            // Change Plan
             .addCase(changeSubscriptionPlan.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -57,5 +83,6 @@ const subscriptionSlice = createSlice({
     },
 });
 
-export const { clearMessage } = subscriptionSlice.actions;
-export default subscriptionSlice.reducer;
+export const { clearMessage } = changeSubscriptionSlice.actions;
+
+export default changeSubscriptionSlice.reducer;

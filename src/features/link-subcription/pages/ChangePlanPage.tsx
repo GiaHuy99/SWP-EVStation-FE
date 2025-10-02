@@ -1,7 +1,7 @@
 // src/features/subscription/pages/ChangePlanPage.tsx
 import React, { useEffect } from "react";
 import { useAppDispatch } from "../../../app/Hooks";
-import { fetchSubscriptionPlans } from "../SubscriptionThunks";
+import { fetchSubscriptionPlans } from "../ChangeSubscriptionThunks";
 import ChangePlanForm from "../components/ChangePlanForm";
 
 const ChangePlanPage: React.FC = () => {
