@@ -1,5 +1,5 @@
 import { styled } from "@mui/material/styles";
-import { Card, Typography, Box } from "@mui/material";
+import { Card, Typography, Box, Button } from "@mui/material";
 
 // Container tổng cho trang
 export const PageContainer = styled("div")({
@@ -39,4 +39,41 @@ export const FormRow = styled(Box)({
     width: "100%", // input chiếm toàn bộ width của FormCard
     maxWidth: 400, // giới hạn độ rộng input
 });
+
+// Styles for action buttons (View, Edit, Delete)
+export const ActionButton = styled(Button)(({ theme }) => ({
+    marginRight: theme.spacing(1),
+    minWidth: 80,
+    fontWeight: 500,
+    textTransform: "none",
+    boxShadow: "none",
+    borderRadius: 6,
+    '&:last-child': {
+        marginRight: 0,
+    },
+}));
+
+// Dialog container for view/edit/delete
+export const DialogContainer = styled(Box)({
+    padding: "16px 0",
+    display: "flex",
+    flexDirection: "column",
+    gap: "12px",
+});
+
+// Title for dialogs
+export const DialogTitleStyled = styled(Typography)({
+    fontWeight: 600,
+    fontSize: "1.25rem",
+    marginBottom: 8,
+    textAlign: "center",
+});
+
+// Style for delete warning text
+export const DeleteWarning = styled(Typography)(({ theme }) => ({
+    color: theme.palette.error.main,
+    fontWeight: 500,
+    textAlign: "center",
+    margin: "12px 0",
+}));
 

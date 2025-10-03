@@ -10,4 +10,19 @@ export class VehicleService {
         const res = await axiosInstance.get<Vehicle[]>("/admin/vehicles");
         return res.data;
     }
+    static async getById(id: number): Promise<Vehicle> {
+        const res = await axiosInstance.get<Vehicle>(`/admin/vehicles/${id}`);
+        return res.data;
+    }
+
+    static async update(id: number, payload: Partial<CreateVehiclePayload>): Promise<Vehicle> {
+        const res = await axiosInstance.put<Vehicle>(`/admin/vehicles/${id}`, payload);
+        return res.data;
+    }
+
+    static async delete(id: number): Promise<{ message: string }> {
+        const res = await axiosInstance.delete<{ message: string }>(`/admin/vehicles/${id}`);
+        return res.data;
+    }
+
 }
