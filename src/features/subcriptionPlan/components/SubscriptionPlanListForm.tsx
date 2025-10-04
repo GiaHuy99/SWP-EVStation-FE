@@ -1,14 +1,7 @@
-// src/components/SubscriptionPlanList.tsx
 import React, { useEffect, useState } from "react";
 import {
     Typography,
     CircularProgress,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
     Button,
     Dialog,
     DialogTitle,
@@ -21,27 +14,19 @@ import { fetchSubscriptionPlans, deletePlan } from "../SubcriptionPlanThunks";
 import SubscriptionPlanUpdateForm from "./SubscriptionPlanUpdateForm";
 import SubscriptionPlanDetail from "./SubscriptionPlanDetailForm";
 import { SubscriptionPlan } from "../types/SubscriptionPlanType";
-import { styled } from "@mui/material/styles";
+
+// Import DataGrid và types
+import { DataGrid, GridColDef, GridActionsCellItem, GridRowParams } from "@mui/x-data-grid";
 
 // Import styled
 import {
     PageContainer,
-    ListCard, // Wrap table
-    TableWrapper, // Overflow
+    ListCard, // Wrap grid
+    TableWrapper, // Overflow – adapt cho grid nếu cần
 } from "../styles/SubscriptionPlanStyles";
-import Paper from "@mui/material/Paper";
-
-// StyledTableRow hover xanh
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    "&:hover": {
-        backgroundColor: "#E8F5E8",
-        transition: "background-color 0.3s ease-in-out",
-        transform: "scale(1.01)",
-    },
-    "& td": { borderBottom: `1px solid ${theme.palette.divider}` },
-}));
 
 // StyledDialogContent
+import { styled } from "@mui/material/styles";
 const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
     padding: theme.spacing(3),
     "& .MuiPaper-root": {
@@ -68,6 +53,70 @@ const SubscriptionPlanList: React.FC = () => {
         }
     };
 
+    // Định nghĩa columns với GridColDef
+    const columns: GridColDef[] = [
+        { field: 'id', headerName: 'ID', width: 70, sortable: true },
+        { field: 'name', headerName: 'Name', width: 150, sortable: true },
+        { field: 'price', headerName: 'Price', width: 120, type: 'number', sortable: true },
+        { field: 'durationDays', headerName: 'Duration (days)', width: 150, type: 'number', sortable: true },
+        { field: 'status', headerName: 'Status', width: 120, sortable: true },
+        {
+            field: 'actions',
+            headerName: 'Actions',
+            type: 'actions',
+            width: 200,
+            getActions: (params: GridRowParams) => [
+                <GridActionsCellItem
+                    key="update"
+                    icon={
+                        <Button
+                            variant="outlined"
+                            color="success"
+                            size="small"
+                            sx={{
+                                backgroundColor: "transparent",
+                                borderColor: "#22C55E",
+                                textTransform: "uppercase",
+                                borderRadius: "8px",
+                                transition: "all 0.3s ease-in-out",
+                                "&:hover": {
+                                    backgroundColor: "rgba(34, 197, 94, 0.05)",
+                                    borderColor: "#16A34A",
+                                    transform: "translateY(-1px)",
+                                },
+                            }}
+                        >
+                            UPDATE
+                        </Button>
+                    }
+                    label="Update"
+                    onClick={() => setEditingPlan(params.row as SubscriptionPlan)}
+                    showInMenu={false}
+                />,
+                <GridActionsCellItem
+                    key="delete"
+                    icon={
+                        <Button
+                            variant="outlined"
+                            color="error"
+                            size="small"
+                        >
+                            Delete
+                        </Button>
+                    }
+                    label="Delete"
+                    onClick={() => handleDelete(params.row.id)}
+                    showInMenu={false}
+                />,
+            ],
+        },
+    ];
+
+    // Function cho row class (tùy chọn)
+    const getRowClassName = (params: any) => {
+        return params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd';
+    };
+
     return (
         <PageContainer> {/* Wrap background */}
             <ListCard sx={{ border: "1px solid #E8F5E8" }}> {/* Viền pastel */}
@@ -79,54 +128,32 @@ const SubscriptionPlanList: React.FC = () => {
                 {error && <Typography color="error" align="center">{error}</Typography>}
 
                 {!loading && !error && plans.length > 0 && (
-                    <TableWrapper> {/* Overflow auto */}
-                        <TableContainer component={Paper}>
-                            <Table>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>ID</TableCell>
-                                        <TableCell>Name</TableCell>
-                                        <TableCell>Price</TableCell>
-                                        <TableCell>Duration (days)</TableCell>
-                                        <TableCell>Status</TableCell>
-                                        <TableCell align="center">Actions</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {plans.map(plan => (
-                                        <StyledTableRow // Hover xanh
-                                            key={plan.id}
-                                            onClick={() => setDetailId(plan.id)}
-                                        >
-                                            <TableCell>{plan.id}</TableCell>
-                                            <TableCell>{plan.name}</TableCell>
-                                            <TableCell>{plan.price}</TableCell>
-                                            <TableCell>{plan.durationDays}</TableCell>
-                                            <TableCell>{plan.status}</TableCell>
-                                            <TableCell align="center" onClick={(e) => e.stopPropagation()}>
-                                                <Button
-                                                    variant="outlined"
-                                                    color="success" // Xanh lá
-                                                    size="small"
-                                                    sx={{ mr: 1 }}
-                                                    onClick={() => setEditingPlan(plan)}
-                                                >
-                                                    Update
-                                                </Button>
-                                                <Button
-                                                    variant="outlined"
-                                                    color="error"
-                                                    size="small"
-                                                    onClick={() => handleDelete(plan.id)}
-                                                >
-                                                    Delete
-                                                </Button>
-                                            </TableCell>
-                                        </StyledTableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
+                    <TableWrapper> {/* Overflow auto – giữ nếu cần */}
+                        <div style={{ height: 500, width: '100%' }}> {/* Height cho DataGrid */}
+                            <DataGrid
+                                rows={plans} // Toàn bộ list – tự chia pagination
+                                columns={columns}
+                                initialState={{
+                                    pagination: {
+                                        paginationModel: { page: 0, pageSize: 10 }, // Bắt đầu trang 1, 10 items/trang
+                                    },
+                                }}
+                                pageSizeOptions={[5, 10, 25]} // User chọn size
+                                onRowClick={(params) => setDetailId(params.row.id)} // Click row mở detail
+                                getRowClassName={getRowClassName} // Custom styles nếu cần
+                                disableRowSelectionOnClick // Không select khi click row
+                                sx={{
+                                    '& .MuiDataGrid-row:hover': {
+                                        backgroundColor: "#E8F5E8", // Xanh pastel khi hover
+                                        transition: "background-color 0.3s ease-in-out",
+                                        transform: "scale(1.01)",
+                                    },
+                                    '& .MuiDataGrid-cell': {
+                                        borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
+                                    },
+                                }}
+                            />
+                        </div>
                     </TableWrapper>
                 )}
 

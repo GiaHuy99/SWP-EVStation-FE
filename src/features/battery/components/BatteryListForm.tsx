@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
-import {deleteBattery, fetchBatteries} from "../BatteryThunk";
+import { deleteBattery, fetchBatteries } from "../BatteryThunk";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
     CircularProgress,
     Button,
     Dialog,
@@ -19,26 +13,16 @@ import CloseIcon from "@mui/icons-material/Close";
 import BatteryDetail from "./BatteryDetailForm";
 import UpdateBatteryForm from "./UpdateBatteryForm"; // <- popup update
 import { Battery } from "../types/BatteryType";
-import {fetchStations} from "../../station/StationThunks";
+import { fetchStations } from "../../station/StationThunks";
+
+// Import DataGrid và types cần thiết
+import { DataGrid, GridColDef, GridActionsCellItem, GridRowParams } from "@mui/x-data-grid";
 
 // Import styled components từ file trước (giả sử path đúng)
 import { PageContainer, FormCard, StyledTextField /* thêm nếu cần */ } from "../styles/CreateBatteryForm"; // Thay path thực tế
 
-// Styled cho TableRow với theme xanh pastel
-import { styled } from "@mui/material/styles";
-import Paper from "@mui/material/Paper";
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    "&:hover": {
-        backgroundColor: "#E8F5E8", // Xanh pastel giống StyledTextField
-        transition: "background-color 0.3s ease-in-out",
-        transform: "scale(1.01)", // Nâng nhẹ khi hover
-    },
-    "& td": {
-        borderBottom: `1px solid ${theme.palette.divider}`,
-    },
-}));
-
 // Styled cho DialogContent với FormCard
+import { styled } from "@mui/material/styles";
 const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
     padding: theme.spacing(3),
     "& .MuiPaper-root": { // Nếu dùng FormCard bên trong
@@ -63,84 +47,112 @@ const BatteryList: React.FC = () => {
     if (loading && batteries.length === 0) return <CircularProgress />;
     if (error) return <div>Error: {error}</div>;
 
+    // Định nghĩa columns với GridColDef
+    const columns: GridColDef[] = [
+        { field: 'id', headerName: 'ID', width: 70, sortable: true },
+        { field: 'serialNumber', headerName: 'Serial Number', width: 150, sortable: true },
+        { field: 'status', headerName: 'Status', width: 120, sortable: true },
+        { field: 'swapCount', headerName: 'Swap Count', width: 120, type: 'number', sortable: true },
+        { field: 'stationName', headerName: 'Station', width: 150, sortable: true },
+        {
+            field: 'actions',
+            headerName: 'Actions',
+            type: 'actions',
+            width: 200,
+            // SỬA LỖI: Dùng GridRowParams thay vì GridRenderCellParams
+            getActions: (params: GridRowParams) => [
+                <GridActionsCellItem
+                    key="update"
+                    icon={
+                        <Button
+                            variant="outlined"
+                            color="success"
+                            size="small"
+                            sx={{
+                                backgroundColor: "transparent",
+                                borderColor: "#22C55E",
+                                textTransform: "uppercase",
+                                borderRadius: "8px",
+                                transition: "all 0.3s ease-in-out",
+                                "&:hover": {
+                                    backgroundColor: "rgba(34, 197, 94, 0.05)",
+                                    borderColor: "#16A34A",
+                                    transform: "translateY(-1px)",
+                                },
+                            }}
+                        >
+                            UPDATE
+                        </Button>
+                    }
+                    label="Update"
+                    onClick={() => setEditingBattery(params.row as Battery)}
+                    showInMenu={false}
+                />,
+                <GridActionsCellItem
+                    key="delete"
+                    icon={
+                        <Button
+                            variant="outlined"
+                            color="error"
+                            size="small"
+                        >
+                            Delete
+                        </Button>
+                    }
+                    label="Delete"
+                    onClick={() => {
+                        if (window.confirm("Bạn có chắc muốn xóa battery này?")) {
+                            dispatch(deleteBattery(params.row.id));
+                        }
+                    }}
+                    showInMenu={false}
+                />,
+            ],
+        },
+    ];
+
+    // Function cho row class (adapt từ StyledTableRow)
+    const getRowClassName = (params: any) => {
+        return params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd'; // Optional: zebra stripes
+    };
+
     return (
         <PageContainer> {/* Wrap toàn bộ với PageContainer */}
-            <FormCard> {/* Dùng FormCard cho container table */}
-                <TableContainer component={Paper} sx={{ mt: 3 }}>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>ID</TableCell>
-                                <TableCell>Serial Number</TableCell>
-                                <TableCell>Status</TableCell>
-                                <TableCell>Swap Count</TableCell>
-                                <TableCell>Station</TableCell>
-                                <TableCell align="center">Actions</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {batteries.map((battery: Battery) => (
-                                <StyledTableRow // Dùng styled row
-                                    key={battery.id}
-                                    onClick={() => setSelectedId(battery.id)}
-                                >
-                                    <TableCell>{battery.id}</TableCell>
-                                    <TableCell>{battery.serialNumber}</TableCell>
-                                    <TableCell>{battery.status}</TableCell>
-                                    <TableCell>{battery.swapCount}</TableCell>
-                                    <TableCell>{battery.stationName}</TableCell>
-                                    <TableCell
-                                        align="center"
-                                        onClick={(e) => e.stopPropagation()} // chặn click row
-                                    >
-                                        <Button
-                                            variant="outlined"
-                                            color="success" // Xanh lá khớp theme
-                                            size="small"
-                                            onClick={() => setEditingBattery(battery)}
-                                            sx={{
-                                                mr: 1,
-                                                backgroundColor: "transparent", // Nền trắng như hình
-                                                borderColor: "#22C55E", // Viền xanh lá đậm nhạt
-                                                textTransform: "uppercase", // In hoa "UPDATE"
-                                                borderRadius: "8px", // Bo tròn mỏng
-                                                transition: "all 0.3s ease-in-out", // Mượt mà
-                                                "&:hover": {
-                                                    backgroundColor: "rgba(34, 197, 94, 0.05)", // Nền nhạt nhẹ khi hover
-                                                    borderColor: "#16A34A", // Viền sáng hơn (success.dark)
-                                                    transform: "translateY(-1px)", // Nâng nhẹ
-                                                },
-                                            }}
-                                        >
-                                            UPDATE
-                                        </Button>
-                                        <Button
-                                            variant="outlined"
-                                            color="error"
-                                            size="small"
-                                            onClick={() => {
-                                                if (window.confirm("Bạn có chắc muốn xóa battery này?")) {
-                                                    dispatch(deleteBattery(battery.id));
-                                                }
-                                            }}
-                                        >
-                                            Delete
-                                        </Button>
-                                    </TableCell>
-                                </StyledTableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+            <FormCard> {/* Dùng FormCard cho container grid */}
+                <div style={{ height: 500, width: '100%' }}> {/* Height cho DataGrid */}
+                    <DataGrid
+                        rows={batteries} // Toàn bộ list – tự chia pagination
+                        columns={columns}
+                        initialState={{
+                            pagination: {
+                                paginationModel: { page: 0, pageSize: 10 }, // Bắt đầu trang 1, 10 items/trang
+                            },
+                        }}
+                        pageSizeOptions={[5, 10, 25]} // User chọn size
+                        onRowClick={(params) => setSelectedId(params.row.id)} // Click row mở detail
+                        getRowClassName={getRowClassName} // Custom styles nếu cần
+                        disableRowSelectionOnClick // Không select khi click row
+                        sx={{
+                            '& .MuiDataGrid-row:hover': {
+                                backgroundColor: "#E8F5E8", // Xanh pastel khi hover
+                                transition: "background-color 0.3s ease-in-out",
+                                transform: "scale(1.01)",
+                            },
+                            '& .MuiDataGrid-cell': {
+                                borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
+                            },
+                        }}
+                    />
+                </div>
 
-                {/* Popup Update - Giả sử đã dùng StyledTextField bên trong */}
+                {/* Popup Update - Giữ nguyên */}
                 <UpdateBatteryForm
                     open={Boolean(editingBattery)}
                     battery={editingBattery}
                     onClose={() => setEditingBattery(null)}
                 />
 
-                {/* Popup Detail - Wrap nội dung với StyledDialogContent */}
+                {/* Popup Detail - Giữ nguyên với StyledDialogContent */}
                 <Dialog
                     open={selectedId !== null}
                     onClose={() => setSelectedId(null)}
@@ -162,9 +174,9 @@ const BatteryList: React.FC = () => {
                             <CloseIcon />
                         </IconButton>
                     </DialogTitle>
-                    <StyledDialogContent> {/* Styled cho content */}
+                    <StyledDialogContent>
                         {selectedId !== null ? (
-                            <FormCard> {/* Wrap detail với FormCard */}
+                            <FormCard>
                                 <BatteryDetail id={selectedId} />
                             </FormCard>
                         ) : (
