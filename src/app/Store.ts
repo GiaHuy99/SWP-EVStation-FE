@@ -9,6 +9,7 @@ import { notificationMiddleware } from "../shared/utils/notification/notificatio
 import link_SubcriptionReducer from "../features/link-subcription/Link_SubcriptionSlices";
 import subcriptionReducer from "../features/link-subcription/ChangeSubscriptionSlice";
 import subcription from "../features/subcription/subscriptionSlice"
+import userReducer from "../features/user/UserSlices";
 export const store = configureStore({
     reducer: {
         auth: authReducer,
@@ -20,6 +21,7 @@ export const store = configureStore({
         link_Subcription:link_SubcriptionReducer,
         subcription:subcriptionReducer,
         subcsription1:subcription,
+        user: userReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(notificationMiddleware),
