@@ -1,57 +1,66 @@
-// src/features/battery/BatteryThunks.ts
+// src/features/batteryType/batteryTypeThunks.ts
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import {Battery, CreateBatteryPayload, UpdateBatteryPayload} from "./types/BatteryType";
-import BatteryServices from "./services/BatteryServices";
+import { BatteryTypes, CreateBatteryTypePayload, UpdateBatteryTypePayload } from "././types/BatteryTypes";
+import BatteryTypeServices from "./services/BatteryTypeServices";
 
-export const createBattery = createAsyncThunk<Battery, CreateBatteryPayload>(
-    "battery/createBattery",
+// Create a new battery type
+export const createBatteryType = createAsyncThunk<BatteryTypes, CreateBatteryTypePayload>(
+    "batteryType/create",
     async (payload, { rejectWithValue }) => {
         try {
-            const res = await BatteryServices.createBatteryService(payload); // ✅ gọi đúng
+            const res = await BatteryTypeServices.createBatteryService(payload);
             return res;
         } catch (err: any) {
-            return rejectWithValue(err.response?.data || "Error creating battery");
+            return rejectWithValue(err.response?.data || "Error creating battery type");
         }
     }
 );
-export const fetchBatteries = createAsyncThunk<Battery[]>(
-    "battery/fetchBatteries",
+
+// Fetch all battery types
+export const fetchBatteryTypes = createAsyncThunk<BatteryTypes[]>(
+    "batteryType/fetchAll",
     async (_, { rejectWithValue }) => {
         try {
-            return await BatteryServices.getAll();
+            return await BatteryTypeServices.getAll();
         } catch (err: any) {
-            return rejectWithValue(err.response?.data || "Error fetching batteries");
+            return rejectWithValue(err.response?.data || "Error fetching battery types");
         }
     }
 );
-export const getBatteryById = createAsyncThunk<Battery, number>(
-    "battery/getBatteryById",
+
+// Get a single battery type by its ID
+export const getBatteryTypeById = createAsyncThunk<BatteryTypes, number>(
+    "batteryType/getById",
     async (id, { rejectWithValue }) => {
         try {
-            return await BatteryServices.getBatteryById(id);
+            return await BatteryTypeServices.getBatteryById(id);
         } catch (err: any) {
-            return rejectWithValue(err.response?.data || "Error fetching battery detail");
+            return rejectWithValue(err.response?.data || "Error fetching battery type detail");
         }
     }
 );
-export const updateBattery = createAsyncThunk<Battery, UpdateBatteryPayload>(
-    "battery/update",
+
+// Update an existing battery type
+export const updateBatteryType = createAsyncThunk<BatteryTypes, UpdateBatteryTypePayload>(
+    "batteryType/update",
     async (payload, { rejectWithValue }) => {
         try {
-            return await BatteryServices.update(payload);
+            return await BatteryTypeServices.update(payload);
         } catch (err: any) {
-            return rejectWithValue(err.response?.data || "Failed to update battery");
+            return rejectWithValue(err.response?.data || "Failed to update battery type");
         }
     }
 );
-export const deleteBattery = createAsyncThunk<number, number>(
-    "battery/deleteBattery",
+
+// Delete a battery type
+export const deleteBatteryType = createAsyncThunk<number, number>(
+    "batteryType/delete",
     async (id, { rejectWithValue }) => {
         try {
-            await BatteryServices.delete(id);
-            return id; // trả về id đã xóa
+            await BatteryTypeServices.delete(id);
+            return id; // Return the deleted id for reducer logic
         } catch (err: any) {
-            return rejectWithValue(err.response?.data || "Failed to delete battery");
+            return rejectWithValue(err.response?.data || "Failed to delete battery type");
         }
     }
 );

@@ -5,141 +5,131 @@ import {
     DialogContent,
     DialogActions,
     Button,
-    MenuItem,
 } from "@mui/material";
-import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
-import { updateBattery } from "../BatteryThunk";
-import { Battery } from "../types/BatteryType";
+import { useAppDispatch } from "../../../app/Hooks";
 
-// Import styled components
+// ✨ 1. Import các thành phần cần thiết cho BatteryType
+import { updateBatteryType } from "../BatteryThunk";
+import { BatteryTypes, UpdateBatteryTypePayload } from "../types/BatteryTypes"; // Sửa lại tên file types nếu cần
+import { showNotification } from "../../../shared/utils/notification/notificationSlice";
+
+// ✨ 2. Import các styled components
 import {
-    FormCard, // Wrap content với border pastel
-    StyledTextField, // Cho inputs
-    FormBox, // Grid layout
-    FullWidthBox, // Cho actions
-    Title, // Nếu cần cho title
-} from "../styles/CreateBatteryForm"; // Import đúng path
+    StyledTextField,
+    FormBox,
+} from '../styles/CreateBatteryForm'; // <-- Thay đổi đường dẫn này cho đúng
 
-interface UpdateBatteryFormProps {
+// --- Định nghĩa Props ---
+interface UpdateBatteryTypeFormProps {
     open: boolean;
-    battery: Battery | null;
+    batteryType: BatteryTypes | null; // <-- Prop nhận vào là BatteryType
     onClose: () => void;
 }
 
-const UpdateBatteryForm: React.FC<UpdateBatteryFormProps> = ({ open, battery, onClose }) => {
+// --- Component chính ---
+const UpdateBatteryTypeForm: React.FC<UpdateBatteryTypeFormProps> = ({ open, batteryType, onClose }) => {
     const dispatch = useAppDispatch();
-    const { stations } = useAppSelector((state) => state.station);
 
-    const [serialNumber, setSerialNumber] = useState("");
-    const [status, setStatus] = useState<Battery["status"]>("AVAILABLE");
-    const [swapCount, setSwapCount] = useState(0);
-    const [selectedStationId, setSelectedStationId] = useState<number | null>(null);
+    // ✨ 3. State của form được cập nhật để khớp với BatteryType
+    const [formState, setFormState] = useState<Omit<UpdateBatteryTypePayload, 'id'>>({
+        name: "",
+        type: "",
+        designCapacity: 0,
+        description: "",
+    });
 
-    const statusOptions: Battery["status"][] = [
-        "AVAILABLE",
-        "IN_USE",
-        "DAMAGED",
-        "MAINTENANCE",
-    ];
-
+    // ✨ 4. useEffect để điền dữ liệu vào form khi prop `batteryType` thay đổi
     useEffect(() => {
-        if (battery) {
-            setSerialNumber(battery.serialNumber);
-            setStatus(battery.status);
-            setSwapCount(battery.swapCount);
-
-            const exists = stations.some((s) => s.id === battery.stationId);
-            setSelectedStationId(exists ? battery.stationId : null);
+        if (batteryType) {
+            setFormState({
+                name: batteryType.name,
+                type: batteryType.type,
+                designCapacity: batteryType.designCapacity,
+                description: batteryType.description,
+            });
         }
-    }, [battery, stations]);
+    }, [batteryType]);
 
+    // Hàm xử lý khi input thay đổi
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value, type } = e.target;
+        setFormState(prevState => ({
+            ...prevState,
+            [name]: type === 'number' ? parseFloat(value) || 0 : value,
+        }));
+    };
+
+    // ✨ 5. Hàm xử lý khi nhấn nút "Update"
     const handleUpdate = () => {
-        if (!battery) return;
+        if (!batteryType) return;
 
-        const selectedStation = stations.find((s) => s.id === selectedStationId) || null;
+        const payload: UpdateBatteryTypePayload = {
+            id: batteryType.id,
+            ...formState,
+        };
 
-        dispatch(
-            updateBattery({
-                id: battery.id,
-                serialNumber,
-                status,
-                swapCount,
-                stationId: selectedStation ? selectedStation.id : null,
-                stationName: selectedStation ? selectedStation.name : null,
+        dispatch(updateBatteryType(payload))
+            .unwrap()
+            .then(() => {
+                dispatch(showNotification({ message: 'Battery type updated successfully!', type: 'success' }));
+                onClose(); // Đóng dialog sau khi thành công
             })
-        );
-
-        onClose();
+            .catch((error) => {
+                dispatch(showNotification({ message: error || 'Failed to update battery type.', type: 'error' }));
+            });
     };
 
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-            <DialogTitle>Update Battery</DialogTitle>
+            <DialogTitle sx={{ fontWeight: 'bold' }}>Update Battery Type</DialogTitle>
             <DialogContent dividers>
-                <FormCard sx={{ border: "1px solid #E8F5E8", p: 2 }}> {/* Wrap với viền xanh pastel và padding */}
-                    <FormBox> {/* Grid responsive cho fields */}
-                        <StyledTextField // Serial Number
-                            label="Serial Number"
-                            fullWidth
-                            value={serialNumber}
-                            onChange={(e) => setSerialNumber(e.target.value)}
-                            margin="normal"
-                        />
-                        <StyledTextField // Status select
-                            select
-                            label="Status"
-                            fullWidth
-                            value={status}
-                            onChange={(e) => setStatus(e.target.value as Battery["status"])}
-                            margin="normal"
-                        >
-                            {statusOptions.map((s) => (
-                                <MenuItem key={s} value={s}>
-                                    {s}
-                                </MenuItem>
-                            ))}
-                        </StyledTextField>
-                        <StyledTextField // Swap Count
-                            label="Swap Count"
-                            fullWidth
-                            type="number"
-                            value={swapCount}
-                            onChange={(e) => setSwapCount(Number(e.target.value))}
-                            margin="normal"
-                        />
-                        <StyledTextField // Station select
-                            select
-                            label="Station"
-                            fullWidth
-                            value={selectedStationId ?? ""}
-                            onChange={(e) => {
-                                const value = String(e.target.value);
-                                setSelectedStationId(value === "" ? null : Number(value));
-                            }}
-                            margin="normal"
-                        >
-                            <MenuItem value="">
-                                <em>None</em>
-                            </MenuItem>
-                            {stations.map((station) => (
-                                <MenuItem key={station.id} value={station.id}>
-                                    {station.name}
-                                </MenuItem>
-                            ))}
-                        </StyledTextField>
-                    </FormBox>
-                </FormCard>
+                {/* ✨ 6. Các trường input đã được cập nhật */}
+                <FormBox sx={{ pt: 1 }}> {/* pt: 1 để có khoảng cách với DialogTitle */}
+                    <StyledTextField
+                        label="Model Name"
+                        name="name"
+                        fullWidth
+                        value={formState.name}
+                        onChange={handleChange}
+                        required
+                    />
+                    <StyledTextField
+                        label="Vehicle Type"
+                        name="type"
+                        fullWidth
+                        value={formState.type}
+                        onChange={handleChange}
+                        required
+                    />
+                    <StyledTextField
+                        label="Design Capacity (Ah)"
+                        name="designCapacity"
+                        fullWidth
+                        type="number"
+                        value={formState.designCapacity}
+                        onChange={handleChange}
+                        required
+                        inputProps={{ step: "0.1", min: "0" }}
+                    />
+                    <StyledTextField
+                        label="Description"
+                        name="description"
+                        fullWidth
+                        multiline
+                        rows={4}
+                        value={formState.description}
+                        onChange={handleChange}
+                    />
+                </FormBox>
             </DialogContent>
-            <DialogActions>
-                <FullWidthBox> {/* Full width cho buttons */}
-                    <Button onClick={onClose} sx={{ mr: 1 }}>Cancel</Button>
-                    <Button variant="contained" color="success" onClick={handleUpdate}> {/* Màu xanh khớp theme */}
-                        Update
-                    </Button>
-                </FullWidthBox>
+            <DialogActions sx={{ p: '16px 24px' }}>
+                <Button onClick={onClose}>Cancel</Button>
+                <Button variant="contained" color="success" onClick={handleUpdate}>
+                    Update
+                </Button>
             </DialogActions>
         </Dialog>
     );
 };
 
-export default UpdateBatteryForm;
+export default UpdateBatteryTypeForm;

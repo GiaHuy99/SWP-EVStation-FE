@@ -1,14 +1,9 @@
-// src/components/CreateBatteryForm.tsx
-import React, { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
-import { createBattery } from "../BatteryThunk";
-import { fetchStations } from "../../station/StationThunks";
-import { CreateBatteryPayload } from "../types/BatteryType";
-import { Button, MenuItem } from "@mui/material";
-import { showNotification } from "../../../shared/utils/notification/notificationSlice";
-import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from '../../../app/Hooks'
+import { useNavigate } from 'react-router-dom'
+import { Button, Grid } from '@mui/material'
+import React, { useState } from 'react'
 
-// Import styled components từ file trước (thay path thực tế)
+// ✨ 1. Import các styled components từ file style dùng chung của bạn
 import {
     PageContainer,
     FormCard,
@@ -16,101 +11,122 @@ import {
     FullWidthBox,
     StyledTextField,
     Title,
-} from "../styles/CreateBatteryForm"; // Ví dụ: '../../../styles/BatteryStyles'
+} from '../styles/CreateBatteryForm' // <-- Thay đổi đường dẫn này cho đúng
 
-const CreateBatteryForm: React.FC = () => {
-    const dispatch = useAppDispatch();
-    const navigate = useNavigate();
-    const { stations } = useAppSelector((state) => state.station);
-    const [form, setForm] = useState<CreateBatteryPayload>({
-        serialNumber: "",
-        status: "AVAILABLE",
-        swapCount: 0,
-        stationId: 0,
-    });
+// ✨ 2. Import các types và thunks cần thiết
+import { CreateBatteryTypePayload } from '../types/BatteryTypes' // <-- Sửa lại tên file nếu cần
+import { createBatteryType } from '../BatteryThunk' // <-- Sửa lại tên file nếu cần
+import { showNotification } from '../../../shared/utils/notification/notificationSlice'
 
-    useEffect(() => {
-        dispatch(fetchStations());
-    }, [dispatch]);
+// --- Component chính ---
+
+const CreateBatteryTypeForm: React.FC = () => {
+    const dispatch = useAppDispatch()
+    const navigate = useNavigate()
+
+    const [form, setForm] = useState<CreateBatteryTypePayload>({
+        name: '',
+        type: '',
+        designCapacity: 0.0,
+        description: '',
+    })
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
-    };
+        const { name, value, type } = e.target
+        const processedValue = type === 'number' ? parseFloat(value) || 0 : value
+        setForm({ ...form, [name]: processedValue })
+    }
 
     const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        dispatch(createBattery(form))
+        e.preventDefault()
+        dispatch(createBatteryType(form))
             .unwrap()
             .then(() => {
-                dispatch(showNotification({ message: "Battery created successfully!", type: "success" }));
-                navigate("/battery/list"); // chuyển về list
+                dispatch(
+                    showNotification({
+                        message: 'Battery type created successfully!',
+                        type: 'success',
+                    }),
+                )
+                navigate('/battery-types') // Điều hướng đến trang danh sách loại pin
             })
-            .catch(() => {
-                dispatch(showNotification({ message: "Failed to create battery.", type: "error" }));
-            });
-    };
+            .catch((error) => {
+                dispatch(
+                    showNotification({
+                        message: error || 'Failed to create battery type.',
+                        type: 'error',
+                    }),
+                )
+            })
+    }
 
     return (
-        <PageContainer> {/* Wrap toàn bộ với background nhẹ */}
-            <FormCard sx={{ border: "1px solid #E8F5E8" }}> {/* Thêm viền ngoài xanh lá pastel */}
-                <Title>Create Battery</Title> {/* Title styled bold, center */}
+        // ✨ 3. Áp dụng các styled components đã import
+        <PageContainer>
+            <FormCard>
+                <Title variant="h5" gutterBottom>
+                    Create New Battery Type
+                </Title>
                 <form onSubmit={handleSubmit}>
-                    <FormBox> {/* Grid responsive: 1fr mobile, 1fr 1fr desktop */}
-                        <StyledTextField // Serial Number với pastel background
-                            label="Serial Number"
-                            name="serialNumber"
-                            value={form.serialNumber}
+                    {/* ✨ 4. Sử dụng FormBox để thay thế Grid container cho layout gọn hơn */}
+                    <FormBox>
+                        {/* Các trường input nằm trong FormBox sẽ tự động chia cột */}
+                        <StyledTextField
+                            label="Model Name"
+                            name="name"
+                            value={form.name}
                             onChange={handleChange}
                             required
+                            fullWidth
                         />
-                        <StyledTextField // Status select
-                            select
-                            label="Status"
-                            name="status"
-                            value={form.status}
-                            onChange={handleChange}
-                        >
-                            <MenuItem value="AVAILABLE">AVAILABLE</MenuItem>
-                            <MenuItem value="IN_USE">IN_USE</MenuItem>
-                            <MenuItem value="DAMAGED">DAMAGED</MenuItem>
-                        </StyledTextField>
-                        <StyledTextField // Swap Count number
-                            type="number"
-                            label="Swap Count"
-                            name="swapCount"
-                            value={form.swapCount}
-                            onChange={handleChange}
-                        />
-                        <StyledTextField // Station select
-                            select
-                            label="Station"
-                            name="stationId"
-                            value={form.stationId}
+                        <StyledTextField
+                            label="Vehicle Type (e.g., Scooter)"
+                            name="type"
+                            value={form.type}
                             onChange={handleChange}
                             required
-                        >
-                            {stations.map((s) => (
-                                <MenuItem key={s.id} value={s.id}>
-                                    {s.name}
-                                </MenuItem>
-                            ))}
-                        </StyledTextField>
-                        <FullWidthBox> {/* Button full width */}
+                            fullWidth
+                        />
+                        {/* ✨ 5. Sử dụng FullWidthBox cho các phần tử chiếm toàn bộ chiều rộng */}
+                        <FullWidthBox>
+                            <StyledTextField
+                                type="number"
+                                label="Design Capacity (Ah)"
+                                name="designCapacity"
+                                value={form.designCapacity}
+                                onChange={handleChange}
+                                required
+                                fullWidth
+                                inputProps={{ step: '0.1', min: '0' }}
+                            />
+                        </FullWidthBox>
+                        <FullWidthBox>
+                            <StyledTextField
+                                label="Description"
+                                name="description"
+                                value={form.description}
+                                onChange={handleChange}
+                                multiline
+                                rows={4}
+                                fullWidth
+                            />
+                        </FullWidthBox>
+                        <FullWidthBox>
                             <Button
                                 type="submit"
                                 variant="contained"
-                                color="success" // Màu xanh để khớp theme
+                                color="success"
                                 fullWidth
-                                sx={{ mt: 2, py: 1.5 }} // Padding thoải mái hơn
+                                sx={{ mt: 2, py: 1.5, borderRadius: '8px', fontWeight: 'bold' }}
                             >
-                                Save
+                                Save Battery Type
                             </Button>
                         </FullWidthBox>
                     </FormBox>
                 </form>
             </FormCard>
         </PageContainer>
-    );
-};
+    )
+}
 
-export default CreateBatteryForm;
+export default CreateBatteryTypeForm

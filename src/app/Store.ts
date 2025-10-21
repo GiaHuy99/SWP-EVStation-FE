@@ -13,7 +13,7 @@ export const store = configureStore({
     reducer: {
         auth: authReducer,
         station: stationReducer,
-        battery: batteryReducer,
+        batteryType: batteryReducer,
         subscriptionPlan: subscriptionPlanReducer,
         vehicle:vehicleReducer,
         notification: notificationReducer,

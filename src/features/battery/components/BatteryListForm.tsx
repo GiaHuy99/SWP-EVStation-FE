@@ -1,108 +1,100 @@
-import React, { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
-import { deleteBattery, fetchBatteries } from "../BatteryThunk";
+import React, { useEffect, useState } from 'react';
+import { useAppDispatch, useAppSelector } from '../../../app/Hooks';
+import { useNavigate } from 'react-router-dom';
+
+// ✨ 1. Imports cho Dialog và các component cần thiết
 import {
-    CircularProgress,
-    Button,
     Dialog,
-    DialogContent,
     DialogTitle,
+    DialogContent,
     IconButton,
-} from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import BatteryDetail from "./BatteryDetailForm";
-import UpdateBatteryForm from "./UpdateBatteryForm"; // <- popup update
-import { Battery } from "../types/BatteryType";
-import { fetchStations } from "../../station/StationThunks";
+    Box,
+    Button,
+    CircularProgress,
+    Typography
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import { DataGrid, GridColDef, GridActionsCellItem, GridRowParams, GridRenderCellParams } from '@mui/x-data-grid';
 
-// Import DataGrid và types cần thiết
-import { DataGrid, GridColDef, GridActionsCellItem, GridRowParams } from "@mui/x-data-grid";
+// Component con cho popup
+import UpdateBatteryTypeForm from './UpdateBatteryForm'; // <-- Đổi tên file cho đúng
+import BatteryTypeDetail from './BatteryTypeDetail'; // <-- Import component chi tiết
 
-// Import styled components từ file trước (giả sử path đúng)
-import { PageContainer, FormCard, StyledTextField /* thêm nếu cần */ } from "../styles/CreateBatteryForm"; // Thay path thực tế
+// Actions và Types
+import { fetchBatteryTypes, deleteBatteryType } from '../BatteryThunk'; // <-- Đổi tên file cho đúng
+import { BatteryTypes } from '../types/BatteryTypes'; // <-- Đổi tên file cho đúng
+import { showNotification } from '../../../shared/utils/notification/notificationSlice';
 
-// Styled cho DialogContent với FormCard
-import { styled } from "@mui/material/styles";
-const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
-    padding: theme.spacing(3),
-    "& .MuiPaper-root": { // Nếu dùng FormCard bên trong
-        backgroundColor: "#ffffff",
-        borderRadius: "12px",
-        boxShadow: "0px 12px 30px rgba(0, 0, 0, 0.06)",
-    },
-}));
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-const BatteryList: React.FC = () => {
+// --- Component chính ---
+
+const BatteryTypeList: React.FC = () => {
     const dispatch = useAppDispatch();
-    const { batteries, loading, error } = useAppSelector((state) => state.battery);
+    const navigate = useNavigate();
 
-    const [selectedId, setSelectedId] = useState<number | null>(null);
-    const [editingBattery, setEditingBattery] = useState<Battery | null>(null);
+    const { batteryTypes, loading, error } = useAppSelector((state) => state.batteryType); // <-- Đổi tên state cho đúng
+
+    const [editingBatteryType, setEditingBatteryType] = useState<BatteryTypes | null>(null);
+    // ✨ 2. Thêm state mới để quản lý ID của item cần xem chi tiết
+    const [detailId, setDetailId] = useState<number | null>(null);
 
     useEffect(() => {
-        dispatch(fetchBatteries());
-        dispatch(fetchStations());
+        dispatch(fetchBatteryTypes());
     }, [dispatch]);
 
-    if (loading && batteries.length === 0) return <CircularProgress />;
-    if (error) return <div>Error: {error}</div>;
-
-    // Định nghĩa columns với GridColDef
     const columns: GridColDef[] = [
-        { field: 'id', headerName: 'ID', width: 70, sortable: true },
-        { field: 'serialNumber', headerName: 'Serial Number', width: 150, sortable: true },
-        { field: 'status', headerName: 'Status', width: 120, sortable: true },
-        { field: 'swapCount', headerName: 'Swap Count', width: 120, type: 'number', sortable: true },
-        { field: 'stationName', headerName: 'Station', width: 150, sortable: true },
+        // ... các cột khác không đổi
+        { field: 'id', headerName: 'ID', width: 90 },
+        { field: 'name', headerName: 'Model Name', flex: 1, minWidth: 200 },
+        { field: 'type', headerName: 'Vehicle Type', width: 150 },
+        // {
+        //     field: 'designCapacity',
+        //     headerName: 'Capacity (Ah)',
+        //     type: 'number',
+        //     width: 150,
+        //     align: 'right',
+        //     headerAlign: 'right',
+        // },
+        // {
+        //     field: 'createdAt',
+        //     headerName: 'Created At',
+        //     width: 200,
+        //     renderCell: (params: GridRenderCellParams<any, string>) => {
+        //         if (!params.value) return '';
+        //         const date = new Date(params.value);
+        //         return <span>{date.toLocaleString('vi-VN')}</span>;
+        //     },
+        // },
         {
             field: 'actions',
             headerName: 'Actions',
             type: 'actions',
-            width: 200,
-            // SỬA LỖI: Dùng GridRowParams thay vì GridRenderCellParams
+            width: 120,
             getActions: (params: GridRowParams) => [
                 <GridActionsCellItem
                     key="update"
-                    icon={
-                        <Button
-                            variant="outlined"
-                            color="success"
-                            size="small"
-                            sx={{
-                                backgroundColor: "transparent",
-                                borderColor: "#22C55E",
-                                textTransform: "uppercase",
-                                borderRadius: "8px",
-                                transition: "all 0.3s ease-in-out",
-                                "&:hover": {
-                                    backgroundColor: "rgba(34, 197, 94, 0.05)",
-                                    borderColor: "#16A34A",
-                                    transform: "translateY(-1px)",
-                                },
-                            }}
-                        >
-                            UPDATE
-                        </Button>
-                    }
+                    icon={<EditIcon />}
                     label="Update"
-                    onClick={() => setEditingBattery(params.row as Battery)}
+                    onClick={() => setEditingBatteryType(params.row as BatteryTypes)}
                     showInMenu={false}
                 />,
                 <GridActionsCellItem
                     key="delete"
-                    icon={
-                        <Button
-                            variant="outlined"
-                            color="error"
-                            size="small"
-                        >
-                            Delete
-                        </Button>
-                    }
+                    icon={<DeleteIcon />}
                     label="Delete"
                     onClick={() => {
-                        if (window.confirm("Bạn có chắc muốn xóa battery này?")) {
-                            dispatch(deleteBattery(params.row.id));
+                        if (window.confirm("Are you sure you want to delete this battery type?")) {
+                            dispatch(deleteBatteryType(params.row.id as number))
+                                .unwrap()
+                                .then(() => {
+                                    dispatch(showNotification({ message: 'Deleted successfully!', type: 'success' }));
+                                })
+                                .catch((err) => {
+                                    dispatch(showNotification({ message: err, type: 'error' }));
+                                });
                         }
                     }}
                     showInMenu={false}
@@ -111,82 +103,92 @@ const BatteryList: React.FC = () => {
         },
     ];
 
-    // Function cho row class (adapt từ StyledTableRow)
-    const getRowClassName = (params: any) => {
-        return params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd'; // Optional: zebra stripes
-    };
+    if (loading && batteryTypes.length === 0) {
+        return <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}><CircularProgress /></Box>;
+    }
+
+    if (error) {
+        return <Box sx={{ p: 4 }}>Error: {error}</Box>;
+    }
 
     return (
-        <PageContainer> {/* Wrap toàn bộ với PageContainer */}
-            <FormCard> {/* Dùng FormCard cho container grid */}
-                <div style={{ height: 500, width: '100%' }}> {/* Height cho DataGrid */}
-                    <DataGrid
-                        rows={batteries} // Toàn bộ list – tự chia pagination
-                        columns={columns}
-                        initialState={{
-                            pagination: {
-                                paginationModel: { page: 0, pageSize: 10 }, // Bắt đầu trang 1, 10 items/trang
-                            },
-                        }}
-                        pageSizeOptions={[5, 10, 25]} // User chọn size
-                        onRowClick={(params) => setSelectedId(params.row.id)} // Click row mở detail
-                        getRowClassName={getRowClassName} // Custom styles nếu cần
-                        disableRowSelectionOnClick // Không select khi click row
-                        sx={{
-                            '& .MuiDataGrid-row:hover': {
-                                backgroundColor: "#E8F5E8", // Xanh pastel khi hover
-                                transition: "background-color 0.3s ease-in-out",
-                                transform: "scale(1.01)",
-                            },
-                            '& .MuiDataGrid-cell': {
-                                borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
-                            },
-                        }}
-                    />
-                </div>
-
-                {/* Popup Update - Giữ nguyên */}
-                <UpdateBatteryForm
-                    open={Boolean(editingBattery)}
-                    battery={editingBattery}
-                    onClose={() => setEditingBattery(null)}
-                />
-
-                {/* Popup Detail - Giữ nguyên với StyledDialogContent */}
-                <Dialog
-                    open={selectedId !== null}
-                    onClose={() => setSelectedId(null)}
-                    fullWidth
-                    maxWidth="sm"
+        <Box sx={{ p: 3, width: '100%' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                <Typography variant="h4" component="h1" fontWeight="bold">
+                    Battery Types
+                </Typography>
+                <Button
+                    variant="contained"
+                    color="success"
+                    startIcon={<AddIcon />}
+                    onClick={() => navigate('/battery-types/create')}
                 >
-                    <DialogTitle>
-                        Battery Detail
-                        <IconButton
-                            aria-label="close"
-                            onClick={() => setSelectedId(null)}
-                            sx={{
-                                position: "absolute",
-                                right: 8,
-                                top: 8,
-                                color: (theme) => theme.palette.grey[500],
-                            }}
-                        >
-                            <CloseIcon />
-                        </IconButton>
-                    </DialogTitle>
-                    <StyledDialogContent>
-                        {selectedId !== null ? (
-                            <FormCard>
-                                <BatteryDetail id={selectedId} />
-                            </FormCard>
-                        ) : (
-                            <div>Không có dữ liệu</div>
-                        )}
-                    </StyledDialogContent>
-                </Dialog>
-            </FormCard>
-        </PageContainer>
+                    Create New
+                </Button>
+            </Box>
+
+            <Box sx={{ height: 'calc(100vh - 200px)', width: '100%' }}>
+                <DataGrid
+                    rows={batteryTypes}
+                    columns={columns}
+                    initialState={{
+                        pagination: { paginationModel: { pageSize: 10 } },
+                    }}
+                    pageSizeOptions={[10, 25, 50]}
+                    // ✨ 3. Thay đổi onRowClick để mở popup thay vì navigate
+                    onRowClick={(params) => setDetailId(params.row.id)}
+                    disableRowSelectionOnClick
+                    sx={{
+                        border: 'none',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                        borderRadius: '12px',
+                        '& .MuiDataGrid-row:hover': {
+                            backgroundColor: '#f5f5f5',
+                            cursor: 'pointer',
+                        },
+                        '& .MuiDataGrid-cell': {
+                            borderBottom: '1px solid #e0e0e0',
+                        },
+                        '& .MuiDataGrid-columnHeaders': {
+                            backgroundColor: '#fafafa',
+                            borderBottom: '1px solid #e0e0e0',
+                            fontWeight: 'bold',
+                        },
+                    }}
+                />
+            </Box>
+
+            {/* Popup Update Form */}
+            <UpdateBatteryTypeForm
+                open={Boolean(editingBatteryType)}
+                batteryType={editingBatteryType}
+                onClose={() => setEditingBatteryType(null)}
+            />
+
+            {/* ✨ 4. Thêm Dialog cho popup chi tiết */}
+            <Dialog open={detailId !== null} onClose={() => setDetailId(null)} fullWidth maxWidth="sm">
+                <DialogTitle>
+                    Battery Type Detail
+                    <IconButton
+                        aria-label="close"
+                        onClick={() => setDetailId(null)}
+                        sx={{
+                            position: 'absolute',
+                            right: 8,
+                            top: 8,
+                            color: (theme) => theme.palette.grey[500],
+                        }}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                </DialogTitle>
+                <DialogContent dividers>
+                    {/* Chỉ render component detail khi có ID */}
+                    {detailId !== null && <BatteryTypeDetail id={detailId} />}
+                </DialogContent>
+            </Dialog>
+        </Box>
     );
 };
 
-export default BatteryList;
+export default BatteryTypeList;
