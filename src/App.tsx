@@ -6,8 +6,8 @@ import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import RegisterPage from "./features/auth/pages/RegisterPage";
 import CreateStationPage from "./features/station/pages/CreateStationPage";
 import ListStationPage from "./features/station/pages/ListStationPage";
-import CreateBatteryPage from "./features/battery/pages/CreateBatteryPage";
-import BatteryListPage from "./features/battery/pages/BatteryListPage";
+import BatteryTypeCreatePage from "./features/batteryType/pages/BatteryTypeCreatePage";
+import BatteryTypeListPage from "./features/batteryType/pages/BatteryTypeListPage";
 import CreateSubscriptionPlanPage from "./features/subcriptionPlan/pages/CreateSubscriptionPlanPage";
 import SubscriptionPlanPage from "./features/subcriptionPlan/pages/SubscriptionPlanPage";
 import VehiclePage from "./features/vehicle/pages/VehiclePage";
@@ -17,6 +17,9 @@ import LinkVehiclePage from "./features/link-subcription/pages/LinkVehiclePage";
 import ChangePlanPage from "./features/link-subcription/pages/ChangePlanPage";
 import UserSubscriptionsPage from './features/subcription/pages/UserSubscriptionsPage';
 import Layout from "./shared/utils/navbar/Layout";
+import BatteryListPage from "./features/Battery/pages/List";
+import CreateBatteryPage from "./features/Battery/pages/create";
+
 function App() {
   return (
       <BrowserRouter>
@@ -30,8 +33,10 @@ function App() {
               <Route element={<Layout />}>
                   <Route path="/stations/create" element={<CreateStationPage />} />
                   <Route path="/stations/list" element={<ListStationPage />} />
-                  <Route path="/batteryType/create" element={<CreateBatteryPage />} />
-                  <Route path="/batteryType/list" element={<BatteryListPage />} />
+                  <Route path="/batteryType/create" element={<BatteryTypeCreatePage />} />
+                  <Route path="/batteryType/list" element={<BatteryTypeListPage />} />
+                  <Route path="/battery/create" element={<CreateBatteryPage />} />
+                  <Route path="/battery/list" element={<BatteryListPage />} />
                   <Route path="/subcriptionPlan/create" element={<CreateSubscriptionPlanPage />} />
                   <Route path="/subcriptionPlan/list" element={<SubscriptionPlanPage />} />
                   <Route path="/vehicle/create" element={<VehiclePage />} />

@@ -1,9 +1,9 @@
-// src/pages/CreateBatteryPage.tsx
+// src/pages/BatteryTypeCreatePage.tsx
 import React from "react";
 import CreateBatteryForm from "../components/CreateBatteryForm";
 
-const CreateBatteryPage: React.FC = () => {
+const BatteryTypeCreatePage: React.FC = () => {
     return <CreateBatteryForm />;
 };
 
-export default CreateBatteryPage;
+export default BatteryTypeCreatePage;

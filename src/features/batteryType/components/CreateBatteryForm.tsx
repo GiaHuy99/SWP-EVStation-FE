@@ -15,7 +15,7 @@ import {
 
 // ✨ 2. Import các types và thunks cần thiết
 import { CreateBatteryTypePayload } from '../types/BatteryTypes' // <-- Sửa lại tên file nếu cần
-import { createBatteryType } from '../BatteryThunk' // <-- Sửa lại tên file nếu cần
+import { createBatteryType } from '../BatteryThunkType' // <-- Sửa lại tên file nếu cần
 import { showNotification } from '../../../shared/utils/notification/notificationSlice'
 
 // --- Component chính ---

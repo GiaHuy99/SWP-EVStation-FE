@@ -21,7 +21,7 @@ import UpdateBatteryTypeForm from './UpdateBatteryForm'; // <-- Đổi tên file
 import BatteryTypeDetail from './BatteryTypeDetail'; // <-- Import component chi tiết
 
 // Actions và Types
-import { fetchBatteryTypes, deleteBatteryType } from '../BatteryThunk'; // <-- Đổi tên file cho đúng
+import { fetchBatteryTypes, deleteBatteryType } from '../BatteryThunkType'; // <-- Đổi tên file cho đúng
 import { BatteryTypes } from '../types/BatteryTypes'; // <-- Đổi tên file cho đúng
 import { showNotification } from '../../../shared/utils/notification/notificationSlice';
 

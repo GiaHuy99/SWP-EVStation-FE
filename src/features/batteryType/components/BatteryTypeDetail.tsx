@@ -7,8 +7,8 @@ import { Box, CircularProgress, Alert, Typography } from '@mui/material'; // Th�
 // ✨ 1. Xóa `useNavigate` và `useParams`
 // import { useNavigate, useParams } from 'react-router-dom';
 
-import { getBatteryTypeById } from '../BatteryThunk';
-import { clearSelectedBatteryType } from '../BatterySlice';
+import { getBatteryTypeById } from '../BatteryThunkType';
+import { clearSelectedBatteryType } from '../BatterySliceType';
 
 import {
     DetailCard,

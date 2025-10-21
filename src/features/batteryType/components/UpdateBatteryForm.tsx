@@ -9,7 +9,7 @@ import {
 import { useAppDispatch } from "../../../app/Hooks";
 
 // ✨ 1. Import các thành phần cần thiết cho BatteryType
-import { updateBatteryType } from "../BatteryThunk";
+import { updateBatteryType } from "../BatteryThunkType";
 import { BatteryTypes, UpdateBatteryTypePayload } from "../types/BatteryTypes"; // Sửa lại tên file types nếu cần
 import { showNotification } from "../../../shared/utils/notification/notificationSlice";
 

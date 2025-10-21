@@ -6,7 +6,7 @@ import {
     fetchBatteryTypes,
     getBatteryTypeById,
     updateBatteryType
-} from "./BatteryThunk";
+} from "./BatteryThunkType";
 
 /**
  * Interface định nghĩa cấu trúc state cho feature "BatteryType".
