@@ -1,0 +1,79 @@
+import { styled } from "@mui/material/styles";
+import { Card, Typography, Box, Button } from "@mui/material";
+
+// Container tổng cho trang
+export const PageContainer = styled("div")({
+    padding: "24px",
+    display: "flex",
+    justifyContent: "center",   // căn giữa ngang
+    alignItems: "center",       // căn giữa dọc
+    minHeight: "100vh",         // chiều cao 100% viewport
+    backgroundColor: "#f5f5f5",
+});
+
+export const FormCard = styled(Card)({
+    width: "100%",
+    maxWidth: 600,
+    padding: "24px",
+    borderRadius: "8px",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+    backgroundColor: "#fff",
+    margin: "40px auto", // căn giữa ngang
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center", // căn giữa các nội dung bên trong
+});
+
+// Tiêu đề form
+export const Title = styled(Typography)({
+    fontWeight: 600,
+    marginBottom: 24,
+    textAlign: "center",
+});
+
+// Hàng input trong form
+export const FormRow = styled(Box)({
+    display: "flex",
+    flexDirection: "column",
+    gap: "16px",
+    width: "100%", // input chiếm toàn bộ width của FormCard
+    maxWidth: 400, // giới hạn độ rộng input
+});
+
+// Styles for action buttons (View, Edit, Delete)
+export const ActionButton = styled(Button)(({ theme }) => ({
+    marginRight: theme.spacing(1),
+    minWidth: 80,
+    fontWeight: 500,
+    textTransform: "none",
+    boxShadow: "none",
+    borderRadius: 6,
+    '&:last-child': {
+        marginRight: 0,
+    },
+}));
+
+// Dialog container for view/edit/delete
+export const DialogContainer = styled(Box)({
+    padding: "16px 0",
+    display: "flex",
+    flexDirection: "column",
+    gap: "12px",
+});
+
+// Title for dialogs
+export const DialogTitleStyled = styled(Typography)({
+    fontWeight: 600,
+    fontSize: "1.25rem",
+    marginBottom: 8,
+    textAlign: "center",
+});
+
+// Style for delete warning text
+export const DeleteWarning = styled(Typography)(({ theme }) => ({
+    color: theme.palette.error.main,
+    fontWeight: 500,
+    textAlign: "center",
+    margin: "12px 0",
+}));
+
