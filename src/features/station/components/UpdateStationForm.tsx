@@ -41,7 +41,8 @@ const UpdateStationForm: React.FC<Props> = ({ open, station, onClose }) => {
 
     const handleSubmit = () => {
         if (!formData) return;
-        dispatch(updateStationThunk(formData));
+        const { id, ...payload } = formData;
+        dispatch(updateStationThunk({ id, payload }));
         onClose();
     };
 

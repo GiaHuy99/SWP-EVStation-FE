@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { CreateSubscriptionPlanPayload, SubscriptionPlan } from "./types/SubscriptionPlanType";
-import { SubscriptionPlanServices } from "./services/SubscriptionPlanServices";
+import { SubscriptionPlanMockService } from "./services/SubscriptionPlanMockService";
 
 export const createSubscriptionPlan = createAsyncThunk<
     SubscriptionPlan,
@@ -10,9 +10,9 @@ export const createSubscriptionPlan = createAsyncThunk<
     "subscriptionPlan/create",
     async (payload, { rejectWithValue }) => {
         try {
-            return await SubscriptionPlanServices.create(payload);
+            return await SubscriptionPlanMockService.create(payload);
         } catch (err: any) {
-            return rejectWithValue(err.response?.data || "Failed to create subscription plan");
+            return rejectWithValue(err.message || "Failed to create subscription plan");
         }
     }
 );
@@ -23,9 +23,9 @@ export const fetchSubscriptionPlans = createAsyncThunk<
     { rejectValue: string }
 >("subscriptionPlan/fetch", async (_, { rejectWithValue }) => {
     try {
-        return await SubscriptionPlanServices.fetchAll();
+        return await SubscriptionPlanMockService.fetchAll();
     } catch (err: any) {
-        return rejectWithValue(err.response?.data || "Failed to fetch plans");
+        return rejectWithValue(err.message || "Failed to fetch plans");
     }
 });
 export const getSubscriptionPlanById = createAsyncThunk<
@@ -34,19 +34,19 @@ export const getSubscriptionPlanById = createAsyncThunk<
     { rejectValue: string }
 >("subscriptionPlan/getById", async (id, { rejectWithValue }) => {
     try {
-        return await SubscriptionPlanServices.getById(id);
+        return await SubscriptionPlanMockService.getById(id);
     } catch (err: any) {
-        return rejectWithValue(err.response?.data || "Failed to fetch subscription plan by id");
+        return rejectWithValue(err.message || "Failed to fetch subscription plan by id");
     }
 });
 export const updatePlan = createAsyncThunk(
     "subscriptionPlan/updatePlan",
     async ({ id, payload }: { id: number; payload: CreateSubscriptionPlanPayload }, thunkAPI) => {
         try {
-            const data: SubscriptionPlan = await SubscriptionPlanServices.update(id, payload);
+            const data: SubscriptionPlan = await SubscriptionPlanMockService.update(id, payload);
             return data;
         } catch (error: any) {
-            return thunkAPI.rejectWithValue(error.response?.data || "Update failed");
+            return thunkAPI.rejectWithValue(error.message || "Update failed");
         }
     }
 );
@@ -54,10 +54,10 @@ export const deletePlan = createAsyncThunk(
     "subscriptionPlan/delete",
     async (id: number, thunkAPI) => {
         try {
-            await SubscriptionPlanServices.delete(id); // gọi API DELETE
+            await SubscriptionPlanMockService.delete(id); // gọi API DELETE
             return id;
         } catch (error: any) {
-            return thunkAPI.rejectWithValue(error.response?.data || "Delete failed");
+            return thunkAPI.rejectWithValue(error.message || "Delete failed");
         }
     }
 );

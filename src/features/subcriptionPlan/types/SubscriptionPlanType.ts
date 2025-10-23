@@ -5,6 +5,8 @@ export interface SubscriptionPlan {
     durationDays: number;
     maxBatteries: number;
     baseMileage: number;
+    baseEnergy: number;
+    planType: "DISTANCE" | "ENERGY" | "UNLIMITED";
     status: "ACTIVE" | "INACTIVE";
 }
 
@@ -14,6 +16,8 @@ export interface CreateSubscriptionPlanPayload {
     durationDays: number;
     maxBatteries: number;
     baseMileage: number;
+    baseEnergy: number;
+    planType: "DISTANCE" | "ENERGY" | "UNLIMITED";
     status: "ACTIVE" | "INACTIVE";
 }
 export interface SubscriptionPlanState {

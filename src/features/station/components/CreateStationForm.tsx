@@ -52,18 +52,18 @@ const CreateStationForm: React.FC = () => {
     return (
         <PageContainer> {/* Wrap với background nhẹ #F9FAFB */}
             <FormCard sx={{ border: "1px solid #E8F5E8" }}> {/* Card với viền ngoài xanh lá pastel */}
-                <Title>Create Station</Title> {/* Title bold, center */}
+                <Title>Thêm Trạm Mới</Title> {/* Title bold, center */}
                 <form onSubmit={handleSubmit}>
                     <FormBox> {/* Grid responsive: 1fr mobile, 1fr 1fr desktop */}
                         <StyledTextField // Name
-                            label="Station Name"
+                            label="Tên Trạm"
                             name="name"
                             value={form.name}
                             onChange={handleChange}
                             required
                         />
                         <StyledTextField // Location cạnh name trên desktop
-                            label="Location"
+                            label="Địa điểm"
                             name="location"
                             value={form.location}
                             onChange={handleChange}
@@ -71,16 +71,16 @@ const CreateStationForm: React.FC = () => {
                         />
                         <StyledTextField // Status select
                             select
-                            label="Status"
+                            label="Trạng thái"
                             name="status"
                             value={form.status}
                             onChange={handleChange}
                         >
-                            <MenuItem value="ACTIVE">Active</MenuItem>
-                            <MenuItem value="INACTIVE">Inactive</MenuItem>
+                            <MenuItem value="ACTIVE">Hoạt động</MenuItem>
+                            <MenuItem value="INACTIVE">Ngừng hoạt động</MenuItem>
                         </StyledTextField>
                         <StyledTextField // Capacity cạnh status
-                            label="Capacity"
+                            label="Sức chứa (số pin)"
                             name="capacity"
                             type="number"
                             value={form.capacity}
@@ -89,7 +89,7 @@ const CreateStationForm: React.FC = () => {
                         />
                         <FullWidthBox> {/* Phone full width */}
                             <StyledTextField
-                                label="Phone"
+                                label="Điện thoại"
                                 name="phone"
                                 value={form.phone}
                                 onChange={handleChange}
@@ -105,7 +105,7 @@ const CreateStationForm: React.FC = () => {
                                 fullWidth
                                 sx={{ mt: 2, py: 1.5 }} // Padding mượt hơn
                             >
-                                Create Station
+                                Tạo Mới
                             </Button>
                         </FullWidthBox>
                     </FormBox>

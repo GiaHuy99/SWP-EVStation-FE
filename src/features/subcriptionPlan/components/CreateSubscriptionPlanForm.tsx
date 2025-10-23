@@ -20,6 +20,8 @@ import {
 
 const statusOptions: SubscriptionPlan["status"][] = ["ACTIVE", "INACTIVE"];
 
+const planTypeOptions: SubscriptionPlan["planType"][] = ["DISTANCE", "ENERGY", "UNLIMITED"];
+
 const CreateSubscriptionPlanForm: React.FC = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
@@ -28,6 +30,8 @@ const CreateSubscriptionPlanForm: React.FC = () => {
     const [durationDays, setDurationDays] = useState(0);
     const [maxBatteries, setMaxBatteries] = useState(1);
     const [baseMileage, setBaseMileage] = useState(0);
+    const [baseEnergy, setBaseEnergy] = useState(0);
+    const [planType, setPlanType] = useState<SubscriptionPlan["planType"]>("DISTANCE");
     const [status, setStatus] = useState<SubscriptionPlan["status"]>("ACTIVE");
 
     const handleCreate = () => {
@@ -37,6 +41,8 @@ const CreateSubscriptionPlanForm: React.FC = () => {
             durationDays,
             maxBatteries,
             baseMileage,
+            baseEnergy,
+            planType,
             status,
         };
         dispatch(createSubscriptionPlan(payload)).then(() => {
@@ -48,36 +54,38 @@ const CreateSubscriptionPlanForm: React.FC = () => {
         setDurationDays(0);
         setMaxBatteries(1);
         setBaseMileage(0);
+        setBaseEnergy(0);
+        setPlanType("DISTANCE");
         setStatus("ACTIVE");
     };
 
     return (
-        <PageContainer> {/* Wrap background #F9FAFB */}
-            <FormCard sx={{ border: "1px solid #E8F5E8" }}> {/* Viền pastel */}
-                <Title>Create Subscription Plan</Title> {/* Title đồng bộ */}
-                <FormBox> {/* Grid responsive */}
-                    <StyledTextField // Name
-                        label="Name"
+        <PageContainer>
+            <FormCard sx={{ border: "1px solid #E8F5E8" }}>
+                <Title>Tạo Gói Đăng Ký Mới</Title>
+                <FormBox>
+                    <StyledTextField
+                        label="Tên Gói"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         required
                     />
                     <StyledTextField // Price cạnh name
-                        label="Price"
+                        label="Giá"
                         type="number"
                         value={price}
                         onChange={(e) => setPrice(Number(e.target.value))}
                         required
                     />
                     <StyledTextField // Duration
-                        label="Duration (days)"
+                        label="Thời gian (ngày)"
                         type="number"
                         value={durationDays}
                         onChange={(e) => setDurationDays(Number(e.target.value))}
                         required
                     />
                     <StyledTextField // Max Batteries cạnh duration
-                        label="Max Batteries"
+                        label="Số Pin Tối Đa"
                         type="number"
                         value={maxBatteries}
                         onChange={(e) => setMaxBatteries(Number(e.target.value))}
@@ -85,17 +93,41 @@ const CreateSubscriptionPlanForm: React.FC = () => {
                     />
                     <FullWidthBox> {/* Base Mileage full */}
                         <StyledTextField
-                            label="Base Mileage"
+                            label="Quá trình (km)"
                             type="number"
                             value={baseMileage}
                             onChange={(e) => setBaseMileage(Number(e.target.value))}
                             required
                         />
                     </FullWidthBox>
-                    <FullWidthBox> {/* Status full */}
+                    <FullWidthBox>
+                        <StyledTextField
+                            label="Năng lượng cơ bản"
+                            type="number"
+                            value={baseEnergy}
+                            onChange={(e) => setBaseEnergy(Number(e.target.value))}
+                            required
+                        />
+                    </FullWidthBox>
+                    <FullWidthBox>
                         <StyledTextField
                             select
-                            label="Status"
+                            label="Loại Gói"
+                            value={planType}
+                            onChange={(e) => setPlanType(e.target.value as SubscriptionPlan["planType"])}
+                            required
+                        >
+                            {planTypeOptions.map((option) => (
+                                <MenuItem key={option} value={option}>
+                                    {option}
+                                </MenuItem>
+                            ))}
+                        </StyledTextField>
+                    </FullWidthBox>
+                    <FullWidthBox>
+                        <StyledTextField
+                            select
+                            label="Trạng thái"
                             value={status}
                             onChange={(e) => setStatus(e.target.value as SubscriptionPlan["status"])}
                         >

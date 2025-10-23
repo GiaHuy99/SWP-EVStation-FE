@@ -1,5 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { VehicleState } from "./types/VehicleType";
+import { Vehicle } from "./types/VehicleMockType";
+
+interface VehicleState {
+    vehicles: Vehicle[];
+    loading: boolean;
+    error: string | null;
+}
 import {createVehicle, fetchVehicles} from "./VehicleThunks";
 import {
 

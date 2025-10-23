@@ -26,6 +26,8 @@ const SubscriptionPlanUpdateForm: React.FC<SubscriptionPlanUpdateFormProps> = ({
         durationDays: plan.durationDays,
         maxBatteries: plan.maxBatteries,
         baseMileage: plan.baseMileage,
+        baseEnergy: plan.baseEnergy,
+        planType: plan.planType,
         status: plan.status
     });
 
@@ -46,14 +48,14 @@ const SubscriptionPlanUpdateForm: React.FC<SubscriptionPlanUpdateFormProps> = ({
         <FormCard sx={{ border: "1px solid #E8F5E8", p: 2 }}> {/* Viền pastel + padding */}
             <FormBox> {/* Grid */}
                 <StyledTextField // Name
-                    label="Name"
+                    label="Tên Gói"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
                     fullWidth
                 />
                 <StyledTextField // Price cạnh
-                    label="Price"
+                    label="Giá"
                     name="price"
                     type="number"
                     value={formData.price}
@@ -61,7 +63,7 @@ const SubscriptionPlanUpdateForm: React.FC<SubscriptionPlanUpdateFormProps> = ({
                     fullWidth
                 />
                 <StyledTextField // Duration
-                    label="Duration Days"
+                    label="Thời gian (ngày)"
                     name="durationDays"
                     type="number"
                     value={formData.durationDays}
@@ -69,7 +71,7 @@ const SubscriptionPlanUpdateForm: React.FC<SubscriptionPlanUpdateFormProps> = ({
                     fullWidth
                 />
                 <StyledTextField // Max Batteries
-                    label="Max Batteries"
+                    label="Số Pin Tối Đa"
                     name="maxBatteries"
                     type="number"
                     value={formData.maxBatteries}
@@ -78,7 +80,7 @@ const SubscriptionPlanUpdateForm: React.FC<SubscriptionPlanUpdateFormProps> = ({
                 />
                 <FullWidthBox> {/* Base Mileage full */}
                     <StyledTextField
-                        label="Base Mileage"
+                        label="Quá trình (km)"
                         name="baseMileage"
                         type="number"
                         value={formData.baseMileage}
@@ -86,10 +88,34 @@ const SubscriptionPlanUpdateForm: React.FC<SubscriptionPlanUpdateFormProps> = ({
                         fullWidth
                     />
                 </FullWidthBox>
-                <FullWidthBox> {/* Status full */}
+                <FullWidthBox>
+                    <StyledTextField
+                        label="Năng lượng cơ bản"
+                        name="baseEnergy"
+                        type="number"
+                        value={formData.baseEnergy}
+                        onChange={handleChange}
+                        fullWidth
+                    />
+                </FullWidthBox>
+                <FullWidthBox>
                     <StyledTextField
                         select
-                        label="Status"
+                        label="Loại Gói"
+                        name="planType"
+                        value={formData.planType}
+                        onChange={handleChange}
+                        fullWidth
+                    >
+                        <MenuItem value="DISTANCE">DISTANCE</MenuItem>
+                        <MenuItem value="ENERGY">ENERGY</MenuItem>
+                        <MenuItem value="UNLIMITED">UNLIMITED</MenuItem>
+                    </StyledTextField>
+                </FullWidthBox>
+                <FullWidthBox>
+                    <StyledTextField
+                        select
+                        label="Trạng thái"
                         name="status"
                         value={formData.status}
                         onChange={handleChange}
@@ -102,10 +128,10 @@ const SubscriptionPlanUpdateForm: React.FC<SubscriptionPlanUpdateFormProps> = ({
                 <FullWidthBox> {/* Buttons */}
                     <Box display="flex" justifyContent="space-between" mt={2}>
                         <Button onClick={onClose} color="inherit">
-                            Cancel
+                            Hủy
                         </Button>
                         <Button variant="contained" color="success" onClick={handleUpdate}> {/* Xanh lá */}
-                            Update
+                            Cập nhật
                         </Button>
                     </Box>
                 </FullWidthBox>

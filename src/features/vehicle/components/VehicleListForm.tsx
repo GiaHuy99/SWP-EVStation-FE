@@ -2,23 +2,58 @@ import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
 import { fetchVehicles, fetchVehicleById, updateVehicle, deleteVehicle } from "../VehicleThunks";
 import {
+    Typography,
+    CircularProgress,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TableHead,
     TableRow,
-    Paper,
-    CircularProgress,
-    Typography,
     Button,
     Dialog,
     DialogTitle,
     DialogContent,
+    IconButton,
+    Box,
     DialogActions,
     TextField,
-    Box
+    Paper,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import AddIcon from "@mui/icons-material/Add";
+import { useNavigate } from "react-router-dom";
+import { Vehicle } from "../types/VehicleMockType";
+import VehicleDetail from "./VehicleDetailForm";
+import { styled } from "@mui/material/styles";
+import {
+    PageContainer,
+    ListCard,
+    TableWrapper,
+} from "../styles/VehicleStyles";
+
+// StyledTableRow hover effect
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    "&:hover": {
+        backgroundColor: "#E8F5E8",
+        transition: "background-color 0.3s ease-in-out",
+        transform: "scale(1.01)",
+    },
+    "& td": { borderBottom: `1px solid ${theme.palette.divider}` },
+}));
+
+// Styled cho DialogContent
+const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
+    padding: theme.spacing(3),
+    "& .MuiPaper-root": {
+        backgroundColor: "#ffffff",
+        borderRadius: "12px",
+        boxShadow: "0px 12px 30px rgba(0, 0, 0, 0.06)",
+    },
+}));
 
 const VehicleList: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -29,6 +64,12 @@ const VehicleList: React.FC = () => {
     const [editData, setEditData] = useState<any>(null);
     const [deleteId, setDeleteId] = useState<number | null>(null);
     const [confirmDelete, setConfirmDelete] = useState(false);
+
+    const navigate = useNavigate();
+    
+    const handleAdd = () => {
+        navigate("/vehicle/create");
+    };
 
     useEffect(() => {
         dispatch(fetchVehicles());
@@ -60,6 +101,8 @@ const VehicleList: React.FC = () => {
         if (editData && editData.id) {
             await dispatch(updateVehicle({ id: editData.id, payload: editData }));
             setOpenEdit(false);
+            // Refresh the vehicles list after update
+            dispatch(fetchVehicles());
         }
     };
 
@@ -75,36 +118,68 @@ const VehicleList: React.FC = () => {
     if (error) return <Typography color="error" align="center">{error}</Typography>;
 
     return (
-        <>
-            <TableContainer component={Paper} sx={{ mt: 3 }}>
-                <Table>
+        <PageContainer>
+            <ListCard sx={{ border: "1px solid #E8F5E8" }}>
+                {/* <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography variant="h5">Vehicle List</Typography>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        startIcon={<AddIcon />}
+                        onClick={handleAdd}
+                    >
+                        Create Vehicle
+                    </Button>
+                </Box> */}
+                <TableContainer component={Paper} sx={{ mt: 3 }}>
+                    <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>ID</TableCell>
+                            {/* <TableCell>ID</TableCell> */}
                             <TableCell>VIN</TableCell>
-                            <TableCell>Model</TableCell>
-                            <TableCell>Wheelbase</TableCell>
-                            <TableCell>Seat Height</TableCell>
-                            <TableCell>Weight</TableCell>
-                            <TableCell>Actions</TableCell>
+                            <TableCell>Mẫu</TableCell>
+                            <TableCell>Chiều dài cơ sở</TableCell>
+                            <TableCell>Chiều cao yên</TableCell>
+                            <TableCell>Trọng lượng</TableCell>
+                            <TableCell>Thao tác</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {vehicles.map((v) => (
                             typeof v.id === "number" ? (
-                                <TableRow key={v.id} hover>
-                                    <TableCell>{v.id}</TableCell>
+                                <StyledTableRow 
+                                    key={v.id}
+                                    onClick={() => handleView(v.id!)}
+                                >
+                                    {/* <TableCell>{v.id}</TableCell> */}
                                     <TableCell>{v.vin}</TableCell>
                                     <TableCell>{v.model}</TableCell>
                                     <TableCell>{v.wheelbase}</TableCell>
                                     <TableCell>{v.seatHeight}</TableCell>
                                     <TableCell>{v.weightWithBattery} kg</TableCell>
-                                    <TableCell>
-                                        <Button size="small" onClick={() => handleView(v.id!)}>View</Button>
-                                        <Button size="small" color="warning" onClick={() => handleEdit(v.id!)}>Edit</Button>
-                                        <Button size="small" color="error" onClick={() => { setDeleteId(v.id!); setConfirmDelete(true); }}>Delete</Button>
+                                    <TableCell
+                                        align="center"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        <Button
+                                            variant="outlined"
+                                            color="success"
+                                            size="small"
+                                            onClick={() => handleEdit(v.id!)}
+                                            sx={{ mr: 1 }}
+                                        >
+                                            Cập nhật
+                                        </Button>
+                                        <Button
+                                            variant="outlined"
+                                            color="error"
+                                            size="small"
+                                            onClick={() => { setDeleteId(v.id!); setConfirmDelete(true); }}
+                                        >
+                                            Xóa
+                                        </Button>
                                     </TableCell>
-                                </TableRow>
+                                </StyledTableRow>
                             ) : null
                         ))}
                     </TableBody>
@@ -113,37 +188,62 @@ const VehicleList: React.FC = () => {
 
             {/* View Dialog */}
             <Dialog open={openView} onClose={() => setOpenView(false)} maxWidth="sm" fullWidth>
-                <DialogTitle>Vehicle Details</DialogTitle>
-                <DialogContent>
+                <DialogTitle>
+                    Chi Tiết Xe
+                    <IconButton
+                        aria-label="close"
+                        onClick={() => setOpenView(false)}
+                        sx={{
+                            position: "absolute",
+                            right: 8,
+                            top: 8,
+                            color: (theme) => theme.palette.grey[500],
+                        }}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                </DialogTitle>
+                <StyledDialogContent>
                     {selectedVehicle && (
                         <Box>
                             <Typography>ID: {selectedVehicle.id}</Typography>
                             <Typography>VIN: {selectedVehicle.vin}</Typography>
-                            <Typography>Model: {selectedVehicle.model}</Typography>
-                            <Typography>Dimensions: {selectedVehicle.dimensions}</Typography>
-                            <Typography>Wheelbase: {selectedVehicle.wheelbase}</Typography>
-                            <Typography>Ground Clearance: {selectedVehicle.groundClearance}</Typography>
-                            <Typography>Seat Height: {selectedVehicle.seatHeight}</Typography>
-                            <Typography>Front Tire: {selectedVehicle.frontTire}</Typography>
-                            <Typography>Rear Tire: {selectedVehicle.rearTire}</Typography>
-                            <Typography>Front Suspension: {selectedVehicle.frontSuspension}</Typography>
-                            <Typography>Rear Suspension: {selectedVehicle.rearSuspension}</Typography>
-                            <Typography>Brake System: {selectedVehicle.brakeSystem}</Typography>
-                            <Typography>Trunk Capacity: {selectedVehicle.trunkCapacity}</Typography>
-                            <Typography>Weight Without Battery: {selectedVehicle.weightWithoutBattery} kg</Typography>
-                            <Typography>Weight With Battery: {selectedVehicle.weightWithBattery} kg</Typography>
+                            <Typography>Mẫu: {selectedVehicle.model}</Typography>
+                            <Typography>Kích thước: {selectedVehicle.dimensions}</Typography>
+                            <Typography>Chiều dài cơ sở: {selectedVehicle.wheelbase}</Typography>
+                            <Typography>Khoảng sáng gầm: {selectedVehicle.groundClearance}</Typography>
+                            <Typography>Chiều cao yên: {selectedVehicle.seatHeight}</Typography>
+                            <Typography>Vỏ trước: {selectedVehicle.frontTire}</Typography>
+                            <Typography>Vỏ sau: {selectedVehicle.rearTire}</Typography>
+                            <Typography>Phuộc trước: {selectedVehicle.frontSuspension}</Typography>
+                            <Typography>Phuộc sau: {selectedVehicle.rearSuspension}</Typography>
+                            <Typography>Hệ thống phanh: {selectedVehicle.brakeSystem}</Typography>
+                            <Typography>Thể tích cốp: {selectedVehicle.trunkCapacity}</Typography>
+                            <Typography>Trọng lượng không có pin: {selectedVehicle.weightWithoutBattery} kg</Typography>
+                            <Typography>Trọng lượng có pin: {selectedVehicle.weightWithBattery} kg</Typography>
                         </Box>
                     )}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setOpenView(false)}>Close</Button>
-                </DialogActions>
+                </StyledDialogContent>
             </Dialog>
 
             {/* Edit Dialog */}
             <Dialog open={openEdit} onClose={() => setOpenEdit(false)} maxWidth="sm" fullWidth>
-                <DialogTitle>Edit Vehicle</DialogTitle>
-                <DialogContent>
+                <DialogTitle>
+                    Edit Vehicle
+                    <IconButton
+                        aria-label="close"
+                        onClick={() => setOpenEdit(false)}
+                        sx={{
+                            position: "absolute",
+                            right: 8,
+                            top: 8,
+                            color: (theme) => theme.palette.grey[500],
+                        }}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                </DialogTitle>
+                <StyledDialogContent>
                     {editData && (
                         <Box display="flex" flexDirection="column" gap={2}>
                             <TextField label="VIN" name="vin" value={editData.vin} onChange={handleEditChange} fullWidth />
@@ -162,25 +262,40 @@ const VehicleList: React.FC = () => {
                             <TextField label="Weight With Battery" name="weightWithBattery" type="number" value={editData.weightWithBattery} onChange={handleEditChange} fullWidth />
                         </Box>
                     )}
-                </DialogContent>
+                </StyledDialogContent>
                 <DialogActions>
                     <Button onClick={() => setOpenEdit(false)}>Cancel</Button>
-                    <Button variant="contained" color="primary" onClick={handleUpdate}>Save</Button>
+                    <Button variant="contained" color="success" onClick={handleUpdate}>Save</Button>
                 </DialogActions>
             </Dialog>
 
             {/* Delete Confirmation Dialog */}
             <Dialog open={confirmDelete} onClose={() => setConfirmDelete(false)}>
-                <DialogTitle>Confirm Delete</DialogTitle>
-                <DialogContent>
+                <DialogTitle>
+                    Confirm Delete
+                    <IconButton
+                        aria-label="close"
+                        onClick={() => setConfirmDelete(false)}
+                        sx={{
+                            position: "absolute",
+                            right: 8,
+                            top: 8,
+                            color: (theme) => theme.palette.grey[500],
+                        }}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                </DialogTitle>
+                <StyledDialogContent>
                     <Typography>Are you sure you want to delete this vehicle?</Typography>
-                </DialogContent>
+                </StyledDialogContent>
                 <DialogActions>
-                    <Button onClick={() => setConfirmDelete(false)}>Cancel</Button>
-                    <Button color="error" onClick={handleDelete}>Delete</Button>
+                    <Button variant="outlined" onClick={() => setConfirmDelete(false)}>Cancel</Button>
+                    <Button variant="outlined" color="error" onClick={handleDelete}>Delete</Button>
                 </DialogActions>
             </Dialog>
-        </>
+            </ListCard>
+        </PageContainer>
     );
 };
 

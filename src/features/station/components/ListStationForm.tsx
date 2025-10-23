@@ -2,6 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
 import { deleteStation, fetchStations } from "../StationThunks";
 import {
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
     CircularProgress,
     Button,
     Dialog,
@@ -13,19 +19,29 @@ import CloseIcon from "@mui/icons-material/Close";
 import UpdateStationForm from "./UpdateStationForm";
 import StationDetail from "./StationDetailForm";
 import { Station } from "../types/StationType";
-
-// Import DataGrid và types
-import { DataGrid, GridColDef, GridActionsCellItem, GridRowParams } from "@mui/x-data-grid";
+import { styled } from "@mui/material/styles"; // Để styled TableRow
 
 // Import styled từ file styles
 import {
     PageContainer,
-    ListCard, // Wrap grid
+    ListCard, // Wrap table
     Title, // Nếu cần
 } from "../styles/CreateStationForm";
+import Paper from "@mui/material/Paper";
+
+// Styled cho TableRow với hover xanh pastel đồng bộ
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    "&:hover": {
+        backgroundColor: "#E8F5E8", // Xanh pastel
+        transition: "background-color 0.3s ease-in-out",
+        transform: "scale(1.01)", // Nâng nhẹ
+    },
+    "& td": {
+        borderBottom: `1px solid ${theme.palette.divider}`,
+    },
+}));
 
 // Styled cho DialogContent
-import { styled } from "@mui/material/styles";
 const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
     padding: theme.spacing(3),
     "& .MuiPaper-root": {
@@ -55,99 +71,61 @@ const StationList: React.FC = () => {
     if (loading && stations.length === 0) return <CircularProgress />;
     if (error) return <div>Error: {error}</div>;
 
-    // Định nghĩa columns với GridColDef
-    const columns: GridColDef[] = [
-        { field: 'id', headerName: 'ID', width: 70, sortable: true },
-        { field: 'name', headerName: 'Tên', width: 150, sortable: true },
-        { field: 'location', headerName: 'Địa điểm', width: 200, sortable: true },
-        { field: 'status', headerName: 'Trạng thái', width: 120, sortable: true },
-        { field: 'capacity', headerName: 'Sản lượng', width: 120, type: 'number', sortable: true },
-        { field: 'phone', headerName: 'Điện thoại', width: 150, sortable: true },
-        {
-            field: 'actions',
-            headerName: 'Hành động',
-            type: 'actions',
-            width: 200,
-            getActions: (params: GridRowParams) => [
-                <GridActionsCellItem
-                    key="update"
-                    icon={
-                        <Button
-                            variant="outlined"
-                            color="success"
-                            size="small"
-                            sx={{
-                                backgroundColor: "transparent",
-                                borderColor: "#22C55E",
-                                textTransform: "uppercase",
-                                borderRadius: "8px",
-                                transition: "all 0.3s ease-in-out",
-                                "&:hover": {
-                                    backgroundColor: "rgba(34, 197, 94, 0.05)",
-                                    borderColor: "#16A34A",
-                                    transform: "translateY(-1px)",
-                                },
-                            }}
-                        >
-                            UPDATE
-                        </Button>
-                    }
-                    label="Update"
-                    onClick={() => setEditingStation(params.row as Station)}
-                    showInMenu={false}
-                />,
-                <GridActionsCellItem
-                    key="delete"
-                    icon={
-                        <Button
-                            variant="outlined"
-                            color="error"
-                            size="small"
-                        >
-                            Delete
-                        </Button>
-                    }
-                    label="Delete"
-                    onClick={() => handleDelete(params.row.id)}
-                    showInMenu={false}
-                />,
-            ],
-        },
-    ];
-
-    // Function cho row class (tùy chọn zebra stripes)
-    const getRowClassName = (params: any) => {
-        return params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd';
-    };
-
     return (
         <PageContainer> {/* Wrap với background #F9FAFB */}
             <ListCard sx={{ border: "1px solid #E8F5E8" }}> {/* Card với viền pastel */}
-                <div style={{ height: 500, width: '100%' }}> {/* Height cho DataGrid */}
-                    <DataGrid
-                        rows={stations} // Toàn bộ list – tự chia pagination
-                        columns={columns}
-                        initialState={{
-                            pagination: {
-                                paginationModel: { page: 0, pageSize: 10 }, // Bắt đầu trang 1, 10 items/trang
-                            },
-                        }}
-                        pageSizeOptions={[5, 10, 25]} // User chọn size
-                        onRowClick={(params) => setSelectedId(params.row.id)} // Click row mở detail
-                        getRowClassName={getRowClassName} // Custom styles nếu cần
-                        disableRowSelectionOnClick // Không select khi click row
-                        sx={{
-                            '& .MuiDataGrid-row:hover': {
-                                backgroundColor: "#E8F5E8", // Xanh pastel khi hover
-                                transition: "background-color 0.3s ease-in-out",
-                                transform: "scale(1.01)",
-                            },
-                            '& .MuiDataGrid-cell': {
-                                borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
-                            },
-                        }}
-                    />
-                </div>
+                <TableContainer component={Paper} sx={{ mt: 3 }}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                {/* <TableCell>ID</TableCell> */}
+                                <TableCell>Tên</TableCell>
+                                <TableCell>Địa điểm</TableCell>
+                                <TableCell>Trạng thái</TableCell>
+                                <TableCell>Sức chứa</TableCell>
+                                <TableCell>Điện thoại</TableCell>
+                                <TableCell align="center">Hành động</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {stations.map((station) => (
+                                <StyledTableRow // Styled hover xanh
+                                    key={station.id}
+                                    onClick={() => setSelectedId(station.id)}
+                                >
+                                    {/* <TableCell>{station.id}</TableCell> */}
+                                    <TableCell>{station.name}</TableCell>
+                                    <TableCell>{station.location}</TableCell>
+                                    <TableCell>{station.status === 'ACTIVE' ? 'Đang hoạt động' : 'Ngừng hoạt động'}</TableCell>
+                                    <TableCell>{station.capacity}</TableCell>
+                                    <TableCell>{station.phone}</TableCell>
+                                    <TableCell
+                                        align="center"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        <Button
+                                            variant="outlined"
+                                            color="success" // Xanh lá khớp theme
+                                            size="small"
+                                            onClick={() => setEditingStation(station)}
+                                            sx={{ mr: 1 }}
+                                        >
+                                            Update
+                                        </Button>
+                                        <Button
+                                            variant="outlined"
+                                            color="error"
+                                            size="small"
+                                            onClick={() => handleDelete(station.id)}
+                                        >
+                                            Delete
+                                        </Button>
+                                    </TableCell>
+                                </StyledTableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
 
                 {/* Popup Update */}
                 <UpdateStationForm
@@ -164,7 +142,7 @@ const StationList: React.FC = () => {
                     maxWidth="sm"
                 >
                     <DialogTitle>
-                        Detail Station
+                        Chi Tiết Trạm Sạc
                         <IconButton
                             aria-label="close"
                             onClick={() => setSelectedId(null)}

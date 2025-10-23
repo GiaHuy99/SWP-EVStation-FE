@@ -6,7 +6,7 @@ const VehiclePage: React.FC = () => {
     return (
         <Container sx={{ mt: 5 }}>
             <Typography variant="h4" align="center" gutterBottom>
-                Vehicle List
+                Danh Sách Xe
             </Typography>
             <VehicleList />
         </Container>
