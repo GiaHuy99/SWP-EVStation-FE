@@ -320,6 +320,18 @@ const Navbar: FC = () => {
                 >
                     Thay Đổi Gói
                 </Button>
+                <Button
+                    component={Link as any}
+                    to="/swapBattery"
+                    sx={{
+                        color: 'white',
+                        textDecoration: 'none',
+                        fontWeight: location.pathname === 'swapBattery' ? 'bold' : 'normal',
+                        '&:hover': { backgroundColor: 'secondary.main' },
+                    }}
+                    >
+                    Swap Pin
+                    </Button>
 
                 {/* Phần auth */}
                 {!isLoggedIn ? (

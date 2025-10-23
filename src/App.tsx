@@ -18,6 +18,7 @@ import LinkVehiclePage from "./features/link-subcription/pages/LinkVehiclePage";
 import ChangePlanPage from "./features/link-subcription/pages/ChangePlanPage";
 import UserSubscriptionsPage from './features/subcription/pages/UserSubscriptionsPage';
 import Layout from "./shared/utils/navbar/Layout";
+import SwapBatteryPage from "./features/swapBattery/pages/SwapBatteryPage";
 function App() {
   return (
       <BrowserRouter>
@@ -41,6 +42,7 @@ function App() {
                   <Route path="/linkVehicle/regist" element={<LinkVehiclePage />} />
                   <Route path="/subcriptionPlan/changePlanPage" element={<ChangePlanPage />} />
                   <Route path="/subscriptions" element={<UserSubscriptionsPage />} />
+                  <Route path="/swapBattery" element={<SwapBatteryPage />} />
               </Route>
           </Routes>
       </BrowserRouter>
