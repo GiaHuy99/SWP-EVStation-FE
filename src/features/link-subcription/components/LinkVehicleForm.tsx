@@ -3,19 +3,31 @@ import { MenuItem, CircularProgress, Alert, Typography, Button } from "@mui/mate
 import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
 import { fetchVehicles, fetchPlans, linkVehicle } from "../Link_SubcriptionThunk";
 import { LinkVehiclePayload } from "../types/LinkVehicleType";
-import { PageContainer, FormCard, Title, FormRow, SingleRow, StyledTextField } from "../styles/LinkVehicleFormStyles";
+import {
+    PageContainer,
+    FormCard,
+    Title,
+    FormRow,
+    SingleRow,
+    StyledTextField,
+} from "../styles/LinkVehicleFormStyles";
 import { clearResult } from "../Link_SubcriptionSlices";
 
 const LinkVehicleForm: React.FC = () => {
     const dispatch = useAppDispatch();
-    const { vehicles, plans, loading, result, error } = useAppSelector((state) => state.link_Subcription);
+    const { vehicles, plans, loading, result, error } = useAppSelector(
+        (state) => state.link_Subcription
+    );
 
-    const [form, setForm] = useState<LinkVehiclePayload>({ vehicleId: 0, subscriptionPlanId: 0 });
+    // ✅ Đổi "vehicleId" thành "vehicleModelId" để khớp với type LinkVehiclePayload
+    const [form, setForm] = useState<LinkVehiclePayload>({
+        vehicleModelId: 0,
+        subscriptionPlanId: 0,
+    });
 
     useEffect(() => {
         dispatch(fetchVehicles());
         dispatch(fetchPlans());
-        // clear previous result if any
         return () => {
             dispatch(clearResult());
         };
@@ -27,7 +39,7 @@ const LinkVehicleForm: React.FC = () => {
     };
 
     const handleSubmit = () => {
-        if (!form.vehicleId || !form.subscriptionPlanId) {
+        if (!form.vehicleModelId || !form.subscriptionPlanId) {
             alert("Vui lòng chọn xe và gói đăng ký");
             return;
         }
@@ -36,15 +48,15 @@ const LinkVehicleForm: React.FC = () => {
 
     return (
         <PageContainer>
-            <FormCard sx={{ border: "1px solid #E8F5E8" }}> {/* Viền ngoài pastel đồng bộ */}
+            <FormCard sx={{ border: "1px solid #E8F5E8" }}>
                 <Title variant="h5">Đăng ký xe</Title>
 
-                <FormRow> {/* Grid responsive từ styles */}
-                    <StyledTextField // Xe select với pastel green
+                <FormRow>
+                    <StyledTextField
                         select
                         label="Chọn xe"
-                        name="vehicleId"
-                        value={form.vehicleId || ""}
+                        name="vehicleModelId"
+                        value={form.vehicleModelId || ""}
                         onChange={handleChange}
                         fullWidth
                     >
@@ -58,7 +70,7 @@ const LinkVehicleForm: React.FC = () => {
                         ))}
                     </StyledTextField>
 
-                    <StyledTextField // Gói select cạnh xe
+                    <StyledTextField
                         select
                         label="Chọn gói"
                         name="subscriptionPlanId"
@@ -77,27 +89,27 @@ const LinkVehicleForm: React.FC = () => {
                     </StyledTextField>
                 </FormRow>
 
-                <SingleRow sx={{ display: "flex", justifyContent: "center" }}> {/* Căn giữa nút */}
+                <SingleRow sx={{ display: "flex", justifyContent: "center" }}>
                     <Button
                         variant="contained"
-                        color="success" // Xanh lá đồng bộ như Update
+                        color="success"
                         onClick={handleSubmit}
                         disabled={loading}
                         sx={{
-                            px: 4, // Padding ngang rộng
-                            py: 1.5, // Dọc mượt
-                            borderRadius: "8px", // Bo tròn
-                            textTransform: "uppercase", // "ĐĂNG KÝ" in hoa
-                            fontWeight: 600, // Đậm
-                            backgroundColor: "#E8F5E8", // Nền pastel xanh
-                            color: "#22C55E", // Chữ xanh đậm
+                            px: 4,
+                            py: 1.5,
+                            borderRadius: "8px",
+                            textTransform: "uppercase",
+                            fontWeight: 600,
+                            backgroundColor: "#E8F5E8",
+                            color: "#22C55E",
                             "&:hover": {
-                                backgroundColor: "#D4EDDA", // Hover sáng pastel
-                                transform: "translateY(-1px)", // Nâng nhẹ như Update
+                                backgroundColor: "#D4EDDA",
+                                transform: "translateY(-1px)",
                                 transition: "all 0.3s ease-in-out",
                             },
                             "&.Mui-disabled": {
-                                backgroundColor: "#F3F4F6", // Disabled xám nhạt
+                                backgroundColor: "#F3F4F6",
                                 color: "#9CA3AF",
                             },
                         }}
@@ -107,17 +119,23 @@ const LinkVehicleForm: React.FC = () => {
                 </SingleRow>
 
                 {result && (
-                    <Alert severity="success" sx={{ mt: 3 }}> {/* Alert xanh pastel cho result */}
-                        <Typography variant="body1" fontWeight={600} mb={1}>{result.message}</Typography>
-                        <Typography>Xe: {result.vehicle.model} ({result.vehicle.vin})</Typography>
+                    <Alert severity="success" sx={{ mt: 3 }}>
+                        <Typography variant="body1" fontWeight={600} mb={1}>
+                            {result.message}
+                        </Typography>
+                        <Typography>
+                            Xe: {result.vehicle.model.name} ({result.vehicle.vin})
+                        </Typography>
                         <Typography>Gói: {result.subscription.planName}</Typography>
                         <Typography>Pin được gán: {result.batteries.length}</Typography>
                     </Alert>
                 )}
 
-                {error && <Alert severity="error" sx={{ mt: 2 }}> {/* Alert đỏ pastel cho error */}
-                    {String(error)}
-                </Alert>}
+                {error && (
+                    <Alert severity="error" sx={{ mt: 2 }}>
+                        {String(error)}
+                    </Alert>
+                )}
             </FormCard>
         </PageContainer>
     );
