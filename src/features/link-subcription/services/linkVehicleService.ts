@@ -10,7 +10,7 @@ class LinkVehicleService {
     // Lấy danh sách vehicles (nếu endpoint admin)
     async getVehicles(): Promise<any[]> {
         // Nếu backend expose /admin/vehicles thì đổi lại thành "/admin/vehicles"
-        const res = await axiosInstance.get<any[]>("/admin/vehicles");
+        const res = await axiosInstance.get<any[]>("/admin/vehicle-models");
         return res.data;
     }
 

@@ -9,7 +9,8 @@ import { notificationMiddleware } from "../shared/utils/notification/notificatio
 import link_SubcriptionReducer from "../features/link-subcription/Link_SubcriptionSlices";
 import subcriptionReducer from "../features/link-subcription/ChangeSubscriptionSlice";
 import subcription from "../features/subcription/subscriptionSlice"
-import batteryReducer from "../features/Battery/BatterySlice";
+import batteryReducer from "../features/BatterySerial/BatterySlice";
+import SwapBatteryReducer from "../features/swapBattery/SwapSlice";
 export const store = configureStore({
     reducer: {
         auth: authReducer,
@@ -22,6 +23,7 @@ export const store = configureStore({
         subcription:subcriptionReducer,
         subcsription1:subcription,
         battery:batteryReducer,
+        swapBattery:SwapBatteryReducer,
         
     },
     middleware: (getDefaultMiddleware) =>

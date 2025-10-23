@@ -1,21 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { MenuItem, CircularProgress, Alert, Typography, Button } from "@mui/material";
+import React, { useEffect, useState } from "react";  // Bỏ useMemo vì gọi bình thường
+import { MenuItem, CircularProgress, Alert, Typography, Button, Snackbar } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
 import { fetchVehicles, fetchPlans, linkVehicle } from "../Link_SubcriptionThunk";
-import { LinkVehiclePayload } from "../types/LinkVehicleType";
-import { PageContainer, FormCard, Title, FormRow, SingleRow, StyledTextField } from "../styles/LinkVehicleFormStyles";
+import { LinkVehiclePayload, VehicleModelSummary, PlanSummary, LinkedVehicleResponse } from "../types/LinkVehicleType";
 import { clearResult } from "../Link_SubcriptionSlices";
+import { PageContainer, FormCard, Title, FormRow, SingleRow, StyledTextField } from "../styles/LinkVehicleFormStyles";
 
 const LinkVehicleForm: React.FC = () => {
     const dispatch = useAppDispatch();
-    const { vehicles, plans, loading, result, error } = useAppSelector((state) => state.link_Subcription);
+    const linkVehicleState = useAppSelector((state) => state.link_Subcription || { vehicles: [], plans: [], loading: false, result: null, error: null });
+    const { vehicles, plans, loading, result, error } = linkVehicleState;
 
-    const [form, setForm] = useState<LinkVehiclePayload>({ vehicleId: 0, subscriptionPlanId: 0 });
+    const [form, setForm] = useState<LinkVehiclePayload>({ vehicleModelId: -1, subscriptionPlanId: -1 });
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
 
     useEffect(() => {
         dispatch(fetchVehicles());
         dispatch(fetchPlans());
-        // clear previous result if any
         return () => {
             dispatch(clearResult());
         };
@@ -27,98 +28,100 @@ const LinkVehicleForm: React.FC = () => {
     };
 
     const handleSubmit = () => {
-        if (!form.vehicleId || !form.subscriptionPlanId) {
-            alert("Vui lòng chọn xe và gói đăng ký");
+        if (!form.vehicleModelId || !form.subscriptionPlanId || form.vehicleModelId < 0 || form.subscriptionPlanId < 0) {
+            setSnackbarOpen(true);
             return;
         }
         dispatch(linkVehicle(form));
     };
 
+    const handleCloseSnackbar = () => setSnackbarOpen(false);
+
+    // Debug tạm: Check vehicles trước map (bỏ sau khi fix)
+    console.log("Debug - Vehicles (type/array?):", vehicles, Array.isArray(vehicles));
+
     return (
         <PageContainer>
-            <FormCard sx={{ border: "1px solid #E8F5E8" }}> {/* Viền ngoài pastel đồng bộ */}
+            <FormCard sx={{ border: "1px solid #E8F5E8" }}>
                 <Title variant="h5">Đăng ký xe</Title>
 
-                <FormRow> {/* Grid responsive từ styles */}
-                    <StyledTextField // Xe select với pastel green
+                <FormRow>
+                    <StyledTextField
                         select
                         label="Chọn xe"
-                        name="vehicleId"
-                        value={form.vehicleId || ""}
+                        name="vehicleModelId"
+                        value={form.vehicleModelId}
                         onChange={handleChange}
                         fullWidth
                     >
-                        <MenuItem value="">
+                        <MenuItem value={-1}>
                             <em>Chọn</em>
                         </MenuItem>
-                        {vehicles.map((v: any) => (
+                        {/* Fix: Map trực tiếp, fallback || [] – Gọi bình thường, không useMemo */}
+                        {(vehicles || []).map((v: VehicleModelSummary) => (
                             <MenuItem key={v.id} value={v.id}>
-                                {v.model} — {v.vin}
+                                {v.name} — {v.brand}
                             </MenuItem>
                         ))}
                     </StyledTextField>
 
-                    <StyledTextField // Gói select cạnh xe
+                    <StyledTextField
                         select
                         label="Chọn gói"
                         name="subscriptionPlanId"
-                        value={form.subscriptionPlanId || ""}
+                        value={form.subscriptionPlanId}
                         onChange={handleChange}
                         fullWidth
                     >
-                        <MenuItem value="">
+                        <MenuItem value={-1}>
                             <em>Chọn</em>
                         </MenuItem>
-                        {plans.map((p: any) => (
+                        {/* Tương tự cho plans */}
+                        {(plans || []).map((p: PlanSummary) => (
                             <MenuItem key={p.id} value={p.id}>
-                                {p.name} — {p.price?.toLocaleString?.() ?? p.price} VND
+                                {p.planName} — {p.price?.toLocaleString() ?? p.price} VND
                             </MenuItem>
                         ))}
                     </StyledTextField>
                 </FormRow>
 
-                <SingleRow sx={{ display: "flex", justifyContent: "center" }}> {/* Căn giữa nút */}
+                <SingleRow sx={{ display: "flex", justifyContent: "center" }}>
                     <Button
+                        type="button"
                         variant="contained"
-                        color="success" // Xanh lá đồng bộ như Update
+                        color="success"
                         onClick={handleSubmit}
                         disabled={loading}
-                        sx={{
-                            px: 4, // Padding ngang rộng
-                            py: 1.5, // Dọc mượt
-                            borderRadius: "8px", // Bo tròn
-                            textTransform: "uppercase", // "ĐĂNG KÝ" in hoa
-                            fontWeight: 600, // Đậm
-                            backgroundColor: "#E8F5E8", // Nền pastel xanh
-                            color: "#22C55E", // Chữ xanh đậm
-                            "&:hover": {
-                                backgroundColor: "#D4EDDA", // Hover sáng pastel
-                                transform: "translateY(-1px)", // Nâng nhẹ như Update
-                                transition: "all 0.3s ease-in-out",
-                            },
-                            "&.Mui-disabled": {
-                                backgroundColor: "#F3F4F6", // Disabled xám nhạt
-                                color: "#9CA3AF",
-                            },
-                        }}
+                        sx={{ /* Custom nếu cần */ }}
                     >
                         {loading ? <CircularProgress size={20} color="inherit" /> : "ĐĂNG KÝ"}
                     </Button>
                 </SingleRow>
 
                 {result && (
-                    <Alert severity="success" sx={{ mt: 3 }}> {/* Alert xanh pastel cho result */}
-                        <Typography variant="body1" fontWeight={600} mb={1}>{result.message}</Typography>
-                        <Typography>Xe: {result.vehicle.model} ({result.vehicle.vin})</Typography>
+                    <Alert severity="success" sx={{ mt: 3 }}>
+                        <Typography variant="body1" fontWeight={600} mb={1}>
+                            {result.message}
+                        </Typography>
+                        <Typography>Xe: {result.vehicle.model.name} ({result.vehicle.vin})</Typography>
                         <Typography>Gói: {result.subscription.planName}</Typography>
                         <Typography>Pin được gán: {result.batteries.length}</Typography>
                     </Alert>
                 )}
 
-                {error && <Alert severity="error" sx={{ mt: 2 }}> {/* Alert đỏ pastel cho error */}
-                    {String(error)}
-                </Alert>}
+                {error && (
+                    <Alert severity="error" sx={{ mt: 2 }}>
+                        {String(error)}
+                    </Alert>
+                )}
             </FormCard>
+
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={3000}
+                onClose={handleCloseSnackbar}
+                message="Vui lòng chọn xe và gói đăng ký"
+            />
         </PageContainer>
     );
 };

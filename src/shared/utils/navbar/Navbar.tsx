@@ -120,7 +120,7 @@ const Navbar: FC = () => {
 
                 {createMenu('battery', 'Pin', [
                     { to: '/batteryType/list', label: 'Danh Sách Pin Type', activeCheck: () => location.pathname.startsWith('/batteryType/list') },
-                    { to: '/batteryType/create', label: 'Tạo Pin Type', activeCheck: () => location.pathname === '/batteryType/create' },
+                    { to    : '/batteryType/create', label: 'Tạo Pin Type', activeCheck: () => location.pathname === '/batteryType/create' },
                     { to: '/battery/create', label: 'Tạo Serial', activeCheck: () => location.pathname.startsWith('/battery/create') },
                     { to: '/battery/list', label: 'Danh Sách Serial', activeCheck: () => location.pathname.startsWith('/battery/list') },
                 ])}
@@ -145,6 +145,9 @@ const Navbar: FC = () => {
                 </Button>
                 <Button component={Link} to="/subcriptionPlan/changePlanPage" sx={{ color: 'white', textDecoration: 'none', fontWeight: location.pathname === '/subcriptionPlan/changePlanPage' ? 'bold' : 'normal', '&:hover': { backgroundColor: 'secondary.main' } }}>
                     Thay Đổi Gói
+                </Button>
+                <Button component={Link} to="/swapBattery" sx={{ color: 'white', textDecoration: 'none', fontWeight: location.pathname === '/swapBattery' ? 'bold' : 'normal', '&:hover': { backgroundColor: 'secondary.main' } }}>
+                    Đổi Pin
                 </Button>
 
                 {/* Phần auth */}

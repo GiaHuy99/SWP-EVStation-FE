@@ -1,21 +1,21 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { linkVehicle, fetchVehicles, fetchPlans } from "./Link_SubcriptionThunk";
-import { LinkedVehicleResponse } from "./types/LinkVehicleType";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";  // Thêm PayloadAction
+import { linkVehicle, fetchVehicles, fetchPlans } from "./Link_SubcriptionThunk";  // Fix: Sửa tên file (thêm 's')
+import { LinkedVehicleResponse, PlanSummary, VehicleModelSummary } from "./types/LinkVehicleType";
 
 interface LinkVehicleState {
-    loading: boolean;
-    error: string | null;
-    vehicles: any[];
-    plans: any[];
+    vehicles: VehicleModelSummary[];
+    plans: PlanSummary[];
+    loading: boolean;  // Có thể tách thành listLoading/linkLoading nếu cần
     result: LinkedVehicleResponse | null;
+    error: string | null;
 }
 
 const initialState: LinkVehicleState = {
-    loading: false,
-    error: null,
     vehicles: [],
     plans: [],
+    loading: false,
     result: null,
+    error: null,
 };
 
 const linkVehicleSlice = createSlice({
@@ -29,19 +29,9 @@ const linkVehicleSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(linkVehicle.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(linkVehicle.fulfilled, (state, action) => {
-                state.loading = false;
-                state.result = action.payload;
-            })
-            .addCase(linkVehicle.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload as string || "Link failed";
-            })
 
+
+            // Fetch Vehicles cases
             .addCase(fetchVehicles.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -52,9 +42,10 @@ const linkVehicleSlice = createSlice({
             })
             .addCase(fetchVehicles.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload as string || "Failed to fetch vehicles";
+                state.error = (action.payload as string) || action.error?.message || "Failed to fetch vehicles";  // Fix tương tự
             })
 
+            // Fetch Plans cases
             .addCase(fetchPlans.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -65,7 +56,7 @@ const linkVehicleSlice = createSlice({
             })
             .addCase(fetchPlans.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload as string || "Failed to fetch plans";
+                state.error = (action.payload as string) || action.error?.message || "Failed to fetch plans";  // Fix tương tự
             });
     },
 });
