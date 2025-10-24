@@ -120,9 +120,9 @@ const LinkVehicleForm: React.FC = () => {
 
                 {result && (
                     <Alert severity="success" sx={{ mt: 3 }}>
-                        <Typography variant="body1" fontWeight={600} mb={1}>
-                            {result.message}
-                        </Typography>
+                        {/*<Typography variant="body1" fontWeight={600} mb={1}>*/}
+                        {/*    {result.message}*/}
+                        {/*</Typography>*/}
                         <Typography>
                             Xe: {result.vehicle.model.name} ({result.vehicle.vin})
                         </Typography>

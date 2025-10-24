@@ -135,17 +135,17 @@ const ChangePlanForm: React.FC<ChangePlanFormProps> = ({ subscriptionId }) => {
                 {loading ? <CircularProgress size={20} color="inherit" /> : "ĐỔI GÓI"}
             </Button>
 
-            {changeMessage && (
-                <Alert severity="success" sx={{ mt: 2 }}> {/* Alert xanh pastel */}
-                    {changeMessage}
-                </Alert>
-            )}
+            {/*{changeMessage && (*/}
+            {/*    <Alert severity="success" sx={{ mt: 2 }}> /!* Alert xanh pastel *!/*/}
+            {/*        {changeMessage}*/}
+            {/*    </Alert>*/}
+            {/*)}*/}
 
-            {error && (
-                <Alert severity="error" sx={{ mt: 2 }}> {/* Alert đỏ pastel */}
-                    {String(error)}
-                </Alert>
-            )}
+            {/*{error && (*/}
+            {/*    <Alert severity="error" sx={{ mt: 2 }}> /!* Alert đỏ pastel *!/*/}
+            {/*        {String(error)}*/}
+            {/*    </Alert>*/}
+            {/*)}*/}
         </Box>
     );
 };
