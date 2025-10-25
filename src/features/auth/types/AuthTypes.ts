@@ -12,6 +12,7 @@ export interface LoginResponse {
 export interface AuthState {
     token: string | null;
     username: string | null;
+    role: string | null; // <-- THÊM DÒNG NÀY
     loading: boolean;
     error: string | null;
     registerSuccess?: boolean;

@@ -1,14 +1,37 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import AuthService from "./services/AuthService";
 import {LoginRequest, LoginResponse, RegisterRequest, RegisterResponse} from "./types/AuthTypes";
+import { jwtDecode } from "jwt-decode"; // <-- 1. IMPORT
 
-export const login = createAsyncThunk<LoginResponse, LoginRequest>(
+interface JwtPayload {
+    sub: string; // Thường là username
+    role: string; // Đây là trường chúng ta cần
+    iat: number;
+    exp: number;
+}
+type LoginSuccessPayload = {
+    token: string;
+    username: string;
+    role: string;
+};
+export const login = createAsyncThunk<LoginSuccessPayload, LoginRequest>(
     "auth/login",
     async (credentials, { rejectWithValue }) => {
         try {
-            return await AuthService.login(credentials);
+            const response = await AuthService.login(credentials);
+            const { token, username } = response;
+
+            // 4. GIẢI MÃ TOKEN VÀ LẤY ROLE
+            const decodedToken = jwtDecode<JwtPayload>(token);
+            const role = decodedToken.role;
+
+            // 5. TRẢ VỀ PAYLOAD HOÀN CHỈNH
+            return { token, username, role };
+
         } catch (error: any) {
-            return rejectWithValue("Sai mật khẩu hoặc username");
+            // 6. Cải thiện xử lý lỗi: trả về lỗi từ API thay vì chuỗi cứng
+            const errorMessage = error.response?.data?.message || "Sai tên đăng nhập hoặc mật khẩu";
+            return rejectWithValue(errorMessage);
         }
     }
 );
