@@ -1,5 +1,7 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '../../app/Hooks';
+import { logout } from '../auth/AuthSlice';
 import { 
     Box, 
     AppBar, 
@@ -28,7 +30,8 @@ import {
     SwapHoriz,
     Battery6Bar,
     LocalGasStation,
-    Dashboard
+    Dashboard,
+    Logout
 } from '@mui/icons-material';
 
 // Secondary Navigation Bar Component
@@ -36,9 +39,47 @@ const SecondaryNavbar: React.FC = () => {
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
+    };
+
+    const handleLogout = () => {
+        try {
+            console.log('Logout initiated...');
+            console.log('Current auth state before logout:', {
+                token: localStorage.getItem('token'),
+                username: localStorage.getItem('username'),
+                role: localStorage.getItem('role')
+            });
+            
+            // Dispatch Redux logout action to clear authentication state
+            dispatch(logout());
+            
+            console.log('Redux logout action dispatched');
+            
+            // Verify localStorage is cleared
+            setTimeout(() => {
+                console.log('Auth state after logout:', {
+                    token: localStorage.getItem('token'),
+                    username: localStorage.getItem('username'),
+                    role: localStorage.getItem('role')
+                });
+                
+                console.log('Navigating to login page...');
+                navigate('/login', { replace: true });
+            }, 100);
+            
+        } catch (error) {
+            console.error('Error during logout:', error);
+            // Fallback: clear localStorage manually and navigate
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            localStorage.removeItem('role');
+            navigate('/login', { replace: true });
+        }
     };
 
     const navItems = [
@@ -89,6 +130,24 @@ const SecondaryNavbar: React.FC = () => {
                         </ListItemButton>
                     </ListItem>
                 ))}
+                
+                {/* Logout Button in Mobile Drawer */}
+                <ListItem disablePadding>
+                    <ListItemButton
+                        onClick={handleLogout}
+                        sx={{
+                            color: '#f44336',
+                            '&:hover': {
+                                backgroundColor: 'rgba(244, 67, 54, 0.1)',
+                            },
+                        }}
+                    >
+                        <ListItemIcon sx={{ color: '#f44336' }}>
+                            <Logout />
+                        </ListItemIcon>
+                        <ListItemText primary="Logout" />
+                    </ListItemButton>
+                </ListItem>
             </List>
         </Box>
     );
@@ -120,7 +179,7 @@ const SecondaryNavbar: React.FC = () => {
                     </Typography>
 
                     {/* Desktop Navigation */}
-                    <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1 }}>
+                    <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1, alignItems: 'center' }}>
                         {navItems.map((item) => (
                             <Button
                                 key={item.path}
@@ -146,6 +205,31 @@ const SecondaryNavbar: React.FC = () => {
                                 {item.label}
                             </Button>
                         ))}
+                        
+                        {/* Logout Button */}
+                        <Button
+                            onClick={handleLogout}
+                            startIcon={<Logout />}
+                            sx={{
+                                color: '#ffffff',
+                                backgroundColor: 'transparent',
+                                borderRadius: '8px',
+                                padding: '8px 16px',
+                                fontSize: '0.95rem',
+                                fontWeight: '400',
+                                textTransform: 'none',
+                                transition: 'all 0.3s ease',
+                                border: '1px solid rgba(255,255,255,0.2)',
+                                '&:hover': {
+                                    backgroundColor: 'rgba(244, 67, 54, 0.15)',
+                                    color: '#f44336',
+                                    borderColor: '#f44336',
+                                    transform: 'translateY(-1px)',
+                                },
+                            }}
+                        >
+                            Logout
+                        </Button>
                     </Box>
 
                     {/* Mobile menu button */}

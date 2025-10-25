@@ -22,6 +22,7 @@ class AuthService {
     logout(): void {
         localStorage.removeItem("token");
         localStorage.removeItem("username");
+        localStorage.removeItem("role");
     }
 }
 
