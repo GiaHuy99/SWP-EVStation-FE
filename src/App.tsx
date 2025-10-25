@@ -18,6 +18,7 @@ import LinkVehiclePage from "./features/link-subcription/pages/LinkVehiclePage";
 import ChangePlanPage from "./features/link-subcription/pages/ChangePlanPage";
 import UserSubscriptionsPage from './features/subcription/pages/UserSubscriptionsPage';
 import Layout from "./shared/utils/navbar/Layout";
+import UserPageLayout from "./shared/utils/layout/UserPageLayout"; // User layout component
 import SwapBatteryPage from "./features/swapBattery/pages/SwapBatteryPage";
 import HomePage from "./features/home/HomePage";
 function App() {
@@ -29,7 +30,18 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
 
-              {/* Sử dụng Layout cho các trang sau login */}
+              {/* Homepage without Layout (no sidebar) */}
+              <Route path="/homepage" element={<HomePage />} />
+
+              {/* User-facing pages with standalone layout */}
+              <Route element={<UserPageLayout />}>
+                  <Route path="/linkVehicle/regist" element={<LinkVehiclePage />} />
+                  <Route path="/subcriptionPlan/changePlanPage" element={<ChangePlanPage />} />
+                  <Route path="/subscriptions" element={<UserSubscriptionsPage />} />
+                  <Route path="/swapBattery" element={<SwapBatteryPage />} />
+              </Route>
+
+              {/* Admin pages with sidebar layout */}
               <Route element={<Layout />}>
                   <Route path="/stations/create" element={<CreateStationPage />} />
                   <Route path="/stations/list" element={<ListStationPage />} />
@@ -40,11 +52,6 @@ function App() {
                   <Route path="/vehicle/create" element={<VehicleCreatePage />} />
                   <Route path="/vehicle/list" element={<VehicleListPage />} />
                   <Route path="/vehicles/:id" element={<VehicleDetailPage />} />
-                  <Route path="/linkVehicle/regist" element={<LinkVehiclePage />} />
-                  <Route path="/subcriptionPlan/changePlanPage" element={<ChangePlanPage />} />
-                  <Route path="/subscriptions" element={<UserSubscriptionsPage />} />
-                  <Route path="/swapBattery" element={<SwapBatteryPage />} />
-                  <Route path="/homepage" element={<HomePage />} />
               </Route>
           </Routes>
       </BrowserRouter>
