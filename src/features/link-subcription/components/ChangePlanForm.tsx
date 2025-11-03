@@ -41,7 +41,6 @@ const ChangePlanForm: React.FC<ChangePlanFormProps> = ({ subscriptionId }) => {
         }
         dispatch(
             changeSubscriptionPlan({
-                subscriptionId,
                 vehicleId: vehicleId as number,
                 newPlanId: newPlanId as number,
             })
@@ -82,7 +81,8 @@ const ChangePlanForm: React.FC<ChangePlanFormProps> = ({ subscriptionId }) => {
                     </MenuItem>
                     {vehicles.map((v: any) => (
                         <MenuItem key={v.id} value={v.id}>
-                            {v.model} — {v.vin}
+                            {/* ✅ Kết hợp v.name và v.brand */}
+                            **{v.brand} - {v.name}**
                         </MenuItem>
                     ))}
                 </StyledTextField>
