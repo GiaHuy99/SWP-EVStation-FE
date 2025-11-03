@@ -1,11 +1,10 @@
-// src/features/subscription/ChangeSubscriptionSlice.ts
 import { createSlice } from "@reduxjs/toolkit";
 import {
     fetchSubscriptionPlans,
-
+    fetchVehicles,
     changeSubscriptionPlan,
 } from "./ChangeSubscriptionThunks";
-import { fetchVehicles } from "../link-subcription/Link_SubcriptionThunk";
+
 interface Vehicle {
     id: number;
     model: string;
@@ -39,7 +38,7 @@ const changeSubscriptionSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            // Plans
+            // 🟢 Plans
             .addCase(fetchSubscriptionPlans.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -53,7 +52,7 @@ const changeSubscriptionSlice = createSlice({
                 state.error = action.error.message || "Failed to fetch plans";
             })
 
-            // Vehicles
+            // 🟢 Vehicles
             .addCase(fetchVehicles.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -67,7 +66,7 @@ const changeSubscriptionSlice = createSlice({
                 state.error = action.error.message || "Failed to fetch vehicles";
             })
 
-            // Change Plan
+            // 🟢 Change Plan
             .addCase(changeSubscriptionPlan.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -78,11 +77,10 @@ const changeSubscriptionSlice = createSlice({
             })
             .addCase(changeSubscriptionPlan.rejected, (state, action) => {
                 state.loading = false;
-                state.changeMessage = "Failed to change plan";
+                state.error = action.error.message || "Failed to change plan";
             });
     },
 });
 
 export const { clearMessage } = changeSubscriptionSlice.actions;
-
 export default changeSubscriptionSlice.reducer;
