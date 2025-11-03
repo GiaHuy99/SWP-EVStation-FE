@@ -1,36 +1,59 @@
-// src/services/swapBatteryService.ts
+import axiosInstance from "../../../shared/utils/AxiosInstance"; // Giả định đường dẫn này đúng
+import {
+    SwapBatteryPayload,
+    SwapBatteryResponse,
+    VehicleDetail,
+    Battery,
+    StationDetail,
+    // ⚡️ Import type API mới
+    VehicleApiResponse
+} from "../types/SwapBatteryType"; // Import từ file types
 
-import axiosInstance from "../../../shared/utils/AxiosInstance";
-import {SwapBatteryPayload, SwapBatteryResponse, VehicleSubscriptionDetail,SubscriptionDetailApiResponse} from "../types/SwapBatteryType";
-
-const parseVehicleName = (rawVehicleString: string): string => {
-    if (!rawVehicleString || !rawVehicleString.includes(' ')) {
-        return "Chưa có tên";
-    }
-    const parts = rawVehicleString.split(' ');
-    return parts[parts.length - 1];
-};
+// ⛔️ Bỏ hàm parseVehicleName (sẽ dùng 'vin' hoặc 'modelName' trực tiếp)
 
 class SwapBatteryService {
-    // ... (nội dung class không đổi)
+    /**
+     * ⚡️ THAY ĐỔI: Dùng API /user/vehicles mới
+     * API này trả về cả thông tin pin.
+     */
+    async getAllVehicles(): Promise<VehicleDetail[]> {
+        // Gọi API mới, đã bỏ /api
+        const res = await axiosInstance.get<VehicleApiResponse[]>('/user/vehicles');
+
+        // Map dữ liệu mới
+        return res.data.map(vehicle => ({
+            id: vehicle.vehicleId,          // ⬅️ ID xe
+            vehicleName: vehicle.vin,       // ⬅️ Tên xe (dùng 'vin')
+            currentPlan: vehicle.planName,  // ⬅️ Gói cước
+            batteries: vehicle.batteries,   // ⬅️ Pin đi kèm
+        }));
+    }
+
+    /**
+     * ⛔️ ĐÃ XÓA: getBatteriesByVehicleId
+     * Hàm này không cần nữa vì API /user/vehicles đã bao gồm pin.
+     */
+
+    /**
+     * Lấy TẤT CẢ các trạm (Không đổi)
+     * (Đã bỏ /api ở đầu)
+     */
+    async getAllStations(): Promise<StationDetail[]> {
+        const res = await axiosInstance.get<StationDetail[]>('/stations');
+        return res.data;
+    }
+
+    /**
+     * Thực hiện Swap (Không đổi)
+     * (Đã bỏ /api ở đầu)
+     */
     async swapBattery(payload: SwapBatteryPayload): Promise<SwapBatteryResponse> {
         const res = await axiosInstance.post<SwapBatteryResponse>("/user/swap", payload);
         return res.data;
-    }
-    async getVehicleDetail(vehicleId: string): Promise<VehicleSubscriptionDetail> {
-        const res = await axiosInstance.get<SubscriptionDetailApiResponse>(`/user/subscriptions/${vehicleId}`);
-        const rawData = res.data;
-        const vehicleName = parseVehicleName(rawData.vehicle);
-        return {
-            vehicleName: vehicleName,
-            currentPlan: rawData.currentPlan,
-            startDate: rawData.startDate,
-            endDate: rawData.endDate,
-            nextPlan: rawData.nextPlan,
-        };
     }
 }
 
 // THAY ĐỔI Ở ĐÂY: Tạo một instance và export nó
 const swapBatteryService = new SwapBatteryService();
 export default swapBatteryService;
+

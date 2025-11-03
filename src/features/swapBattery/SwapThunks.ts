@@ -1,37 +1,63 @@
-
 import { createAsyncThunk } from "@reduxjs/toolkit";
+// ⚡️ Import service
 import  swapBatteryService  from "./services/swapBatteryService";
 import {
     SwapBatteryPayload,
     SwapBatteryResponse,
-    VehicleSubscriptionDetail // Import kiểu dữ liệu cho chi tiết xe
-} from "./types/SwapBatteryType"; // Sửa lại đường dẫn nếu cần
+    VehicleDetail,
+    // Battery (Không cần import ở đây, vì nó nằm trong VehicleDetail)
+    StationDetail
+} from "./types/SwapBatteryType"; // Import từ file types
 
 /**
- * ⚡️ THUNK MỚI: Lấy thông tin chi tiết của xe
- * - `VehicleSubscriptionDetail`: Kiểu dữ liệu trả về khi thành công.
- * - `string`: Kiểu dữ liệu của payload gửi đi (chính là vehicleId).
+ * ⚡️ CẬP NHẬT: Thunk lấy TẤT CẢ xe (dùng API /user/vehicles)
+ * Giờ đây trả về VehicleDetail[] (đã bao gồm pin)
  */
-export const getVehicleDetail = createAsyncThunk<
-    VehicleSubscriptionDetail,
-    string, // Payload là vehicleId
+export const getAllVehicles = createAsyncThunk<
+    VehicleDetail[],
+    void, // Không cần payload
     { rejectValue: string }
 >(
-    "swapBattery/getVehicleDetail", // Tên action
-    async (vehicleId, { rejectWithValue }) => {
+    "swapBattery/getAllVehicles", // ⚡️ Đổi tên action
+    async (_, { rejectWithValue }) => {
         try {
-            const response = await swapBatteryService.getVehicleDetail(vehicleId);
+            // Service đã được cập nhật để gọi /user/vehicles
+            const response = await swapBatteryService.getAllVehicles();
             return response;
         } catch (err: any) {
-            const errorMessage = err.response?.data?.message || "Lấy thông tin xe thất bại.";
+            const errorMessage = err.response?.data?.message || "Lấy danh sách xe thất bại.";
             return rejectWithValue(errorMessage);
         }
     }
 );
 
+/**
+ * ⛔️ ĐÃ XÓA: getBatteriesForVehicle
+ * Logic này không cần nữa vì pin đã đi kèm với xe (từ API /user/vehicles).
+ */
 
 /**
- * Async thunk để thực hiện hành động swap pin.
+ * Thunk lấy TẤT CẢ trạm (Không đổi)
+ */
+export const getAllStations = createAsyncThunk<
+    StationDetail[],
+    void,
+    { rejectValue: string }
+>(
+    "swapBattery/getAllStations",
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await swapBatteryService.getAllStations();
+            return response;
+        } catch (err: any) {
+            const errorMessage = err.response?.data?.message || "Lấy danh sách trạm thất bại.";
+            return rejectWithValue(errorMessage);
+        }
+    }
+);
+
+/**
+ * Thunk thực hiện SWAP (Không đổi)
  */
 export const swapBattery = createAsyncThunk<
     SwapBatteryResponse,
@@ -49,3 +75,4 @@ export const swapBattery = createAsyncThunk<
         }
     }
 );
+

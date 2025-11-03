@@ -281,60 +281,60 @@ const Sidebar: FC = () => {
                         </Collapse>
 
                         {/* Liên Kết Xe */}
-                        <ListItem disablePadding>
-                            <ListItemButton
-                                component={Link as any}
-                                to="/linkVehicle/regist"
-                                sx={sidebarItemStyle}
-                            >
-                                <ListItemIcon sx={{ color: 'white', minWidth: 40 }}>
-                                    <DirectionsCar />
-                                </ListItemIcon>
-                                <ListItemText primary="Liên Kết Xe" />
-                            </ListItemButton>
-                        </ListItem>
+                        {/*<ListItem disablePadding>*/}
+                        {/*    <ListItemButton*/}
+                        {/*        component={Link as any}*/}
+                        {/*        to="/linkVehicle/regist"*/}
+                        {/*        sx={sidebarItemStyle}*/}
+                        {/*    >*/}
+                        {/*        <ListItemIcon sx={{ color: 'white', minWidth: 40 }}>*/}
+                        {/*            <DirectionsCar />*/}
+                        {/*        </ListItemIcon>*/}
+                        {/*        <ListItemText primary="Liên Kết Xe" />*/}
+                        {/*    </ListItemButton>*/}
+                        {/*</ListItem>*/}
 
-                        {/* Đổi Gói */}
-                        <ListItem disablePadding>
-                            <ListItemButton
-                                component={Link as any}
-                                to="/subcriptionPlan/changePlanPage"
-                                sx={sidebarItemStyle}
-                            >
-                                <ListItemIcon sx={{ color: 'white', minWidth: 40 }}>
-                                    <Subscriptions />
-                                </ListItemIcon>
-                                <ListItemText primary="Đổi Gói" />
-                            </ListItemButton>
-                        </ListItem>
+                        {/*/!* Đổi Gói *!/*/}
+                        {/*<ListItem disablePadding>*/}
+                        {/*    <ListItemButton*/}
+                        {/*        component={Link as any}*/}
+                        {/*        to="/subcriptionPlan/changePlanPage"*/}
+                        {/*        sx={sidebarItemStyle}*/}
+                        {/*    >*/}
+                        {/*        <ListItemIcon sx={{ color: 'white', minWidth: 40 }}>*/}
+                        {/*            <Subscriptions />*/}
+                        {/*        </ListItemIcon>*/}
+                        {/*        <ListItemText primary="Đổi Gói" />*/}
+                        {/*    </ListItemButton>*/}
+                        {/*</ListItem>*/}
 
                         {/* Gói Của Tôi */}
-                        <ListItem disablePadding>
-                            <ListItemButton
-                                component={Link as any}
-                                to="/subscriptions"
-                                sx={sidebarItemStyle}
-                            >
-                                <ListItemIcon sx={{ color: 'white', minWidth: 40 }}>
-                                    <Subscriptions />
-                                </ListItemIcon>
-                                <ListItemText primary="Gói Của Tôi" />
-                            </ListItemButton>
-                        </ListItem>
+                        {/*<ListItem disablePadding>*/}
+                        {/*    <ListItemButton*/}
+                        {/*        component={Link as any}*/}
+                        {/*        to="/subscriptions"*/}
+                        {/*        sx={sidebarItemStyle}*/}
+                        {/*    >*/}
+                        {/*        <ListItemIcon sx={{ color: 'white', minWidth: 40 }}>*/}
+                        {/*            <Subscriptions />*/}
+                        {/*        </ListItemIcon>*/}
+                        {/*        <ListItemText primary="Gói Của Tôi" />*/}
+                        {/*    </ListItemButton>*/}
+                        {/*</ListItem>*/}
 
                         {/* Swap Pin */}
-                        <ListItem disablePadding>
-                            <ListItemButton
-                                component={Link as any}
-                                to="/swapBattery"
-                                sx={sidebarItemStyle}
-                            >
-                                <ListItemIcon sx={{ color: 'white', minWidth: 40 }}>
-                                    <SwapHoriz />
-                                </ListItemIcon>
-                                <ListItemText primary="Swap Pin" />
-                            </ListItemButton>
-                        </ListItem>
+                        {/*<ListItem disablePadding>*/}
+                        {/*    <ListItemButton*/}
+                        {/*        component={Link as any}*/}
+                        {/*        to="/swapBattery"*/}
+                        {/*        sx={sidebarItemStyle}*/}
+                        {/*    >*/}
+                        {/*        <ListItemIcon sx={{ color: 'white', minWidth: 40 }}>*/}
+                        {/*            <SwapHoriz />*/}
+                        {/*        </ListItemIcon>*/}
+                        {/*        <ListItemText primary="Swap Pin" />*/}
+                        {/*    </ListItemButton>*/}
+                        {/*</ListItem>*/}
                     </List>
                 </Box>
 
