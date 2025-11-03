@@ -4,19 +4,18 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-    message: string;
-    token: string;
-    username: string;
+    accessToken: string;
 }
 
 export interface AuthState {
     token: string | null;
     username: string | null;
-    role: string | null; // <-- THÊM DÒNG NÀY
+    role: string | null;
     loading: boolean;
     error: string | null;
     registerSuccess?: boolean;
 }
+
 export interface RegisterRequest {
     username: string;
     email: string;

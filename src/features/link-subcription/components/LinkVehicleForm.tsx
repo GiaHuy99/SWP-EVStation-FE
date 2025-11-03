@@ -61,11 +61,11 @@ const LinkVehicleForm: React.FC = () => {
                         fullWidth
                     >
                         <MenuItem value="">
-                            <em>Chọn</em>
                         </MenuItem>
                         {vehicles.map((v: any) => (
                             <MenuItem key={v.id} value={v.id}>
-                                {v.model} — {v.vin}
+                                {/* ✅ Kết hợp v.name và v.brand */}
+                                **{v.brand} - {v.name}**
                             </MenuItem>
                         ))}
                     </StyledTextField>

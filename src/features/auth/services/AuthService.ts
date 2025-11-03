@@ -4,13 +4,13 @@ import { RegisterRequest, RegisterResponse } from "../types/AuthTypes";
 
 class AuthService {
     async login(credentials: LoginRequest): Promise<LoginResponse> {
-        // chỉ gọi API, không try/catch
         const response = await axiosInstance.post<LoginResponse>(
             "/auth/login",
             credentials
         );
-        return response.data;
+        return response.data; // ✅ backend trả { accessToken: "..." }
     }
+
     async register(data: RegisterRequest): Promise<RegisterResponse> {
         const response = await axiosInstance.post<RegisterResponse>(
             "/auth/register",
