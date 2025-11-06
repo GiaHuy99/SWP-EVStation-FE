@@ -624,7 +624,7 @@ const HomePage: React.FC = () => {
                                 variant="outlined"
                                 size="large"
                                 component={Link}
-                                to="/swapBattery"
+                                to="/map"
                                 sx={{
                                     borderColor: '#F2F2F2',
                                     color: '#F2F2F2',
