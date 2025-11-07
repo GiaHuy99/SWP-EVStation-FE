@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../../app/Hooks';
 import { logout } from '../auth/AuthSlice';
+import evstation from '../../asset/images/Hyundai-iF-Design-Award.jpg'
 import {
     Box,
     AppBar,
@@ -311,7 +312,7 @@ const AdvertisementSection: React.FC = () => {
             icon: '🌍',
             title: 'Wide Network',
             description: 'Access our extensive network of charging stations across the city.',
-            features: ['500+ Stations', 'City Coverage', 'Real-time Updates']
+            features: ['10+ Stations in VIET NAM', 'City Coverage', 'Real-time Updates']
         },
         {
             icon: '💡',
@@ -500,7 +501,7 @@ const AdvertisementSection: React.FC = () => {
                         >
                             {[
                                 { number: '50K+', label: 'Active Users' },
-                                { number: '500+', label: 'Swap Stations' },
+                                { number: '10+', label: 'Swap Stations In Viet Nam' },
                                 { number: '1M+', label: 'Battery Swaps' },
                                 { number: '99%', label: 'Satisfaction Rate' }
                             ].map((stat, index) => (
@@ -564,13 +565,29 @@ const HomePage: React.FC = () => {
                 {/* Hero Section */}
                 <Box
                     sx={{
-                        background: 'linear-gradient(135deg, #6C733D 0%, #9DA65D 100%)',
+                        // (Phần ảnh nền giữ nguyên)
+                        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${evstation})`,
+                        backgroundSize: 'cover',
+
+                        // --- THAY ĐỔI 1: KÉO ẢNH LÊN ---
+                        // 'center 70%' sẽ căn 70% (từ trên xuống) của ảnh
+                        // vào giữa Box. Điều này "kéo" ảnh lên,
+                        // cho thấy các trạm sạc ở bên dưới.
+                        // Bạn có thể thử 'center 60%' hoặc 'center 80%'
+                        backgroundPosition: 'center 70%',
+
                         color: 'white',
-                        py: 8,
+
+                        // --- THAY ĐỔI 2: TĂNG CHIỀU CAO ---
+                        // Tăng padding từ 8 lên 16 (hoặc 20)
+                        // để 'Box' cao hơn, cho ảnh nhiều không gian hơn.
+                        py: 16,
+
                         textAlign: 'center'
                     }}
                 >
                     <Container maxWidth="lg">
+                        {/* (Phần còn lại: Typography, Button... giữ nguyên) */}
                         <Typography
                             variant="h2"
                             component="h1"
@@ -600,10 +617,10 @@ const HomePage: React.FC = () => {
                                 variant="contained"
                                 size="large"
                                 component={Link}
-                                to="/subscriptions"
+                                to="/linkVehicle/regist"
                                 sx={{
                                     backgroundColor: '#F2F2F2',
-                                    color: '#6C733D',
+                                    color: '#6B7A42', // Màu olive mới
                                     px: 4,
                                     py: 1.5,
                                     fontSize: '1.1rem',
@@ -618,7 +635,7 @@ const HomePage: React.FC = () => {
                                     transition: 'all 0.3s ease'
                                 }}
                             >
-                                View My Plan
+                                Link Vehicle
                             </Button>
                             <Button
                                 variant="outlined"

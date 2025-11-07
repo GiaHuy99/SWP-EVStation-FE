@@ -9,7 +9,6 @@ import {
     Alert // 2. Thêm 'Alert' để thông báo
 } from '@mui/material';
 import L from 'leaflet';
-
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../app/Store';
 import customStationIconUrl from '../../../asset/images/charging-station.png';
@@ -109,25 +108,63 @@ export function BaseMap() {
     return (
         <Box>
             {/* Ô TÌM KIẾM */}
-            <Paper elevation={3} sx={{ p: 2, mb: 2 }}>
+            {/* Ô TÌM KIẾM */}
+            <Paper
+                elevation={3}
+                sx={{
+                    p: 2,
+                    mb: 2,
+                    backgroundColor: '#6B7A42', // <-- MÀU OLIVE CỦA BẠN
+                }}
+            >
                 <TextField
                     fullWidth
                     label="Tìm kiếm theo địa điểm (ví dụ: bình thạnh)"
                     variant="outlined"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
+
+                    // Style cho label (chữ "Tìm kiếm...")
+                    InputLabelProps={{
+                        sx: {
+                            color: '#e0e0e0', // Màu label xám nhạt
+                            '&.Mui-focused': {
+                                color: 'white', // Màu label khi focus
+                            },
+                        }
+                    }}
+                    // Style cho input (chữ gõ vào và viền)
+                    InputProps={{
+                        sx: {
+                            color: 'white', // Màu chữ người dùng gõ
+                            '& .MuiOutlinedInput-notchedOutline': {
+                                borderColor: 'rgba(255, 255, 255, 0.5)', // Viền mờ
+                            },
+                            '&:hover .MuiOutlinedInput-notchedOutline': {
+                                borderColor: 'white', // Viền khi hover
+                            },
+                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                borderColor: 'white', // Viền khi focus
+                            },
+                        }
+                    }}
                 />
 
                 {/* 4. HIỂN THỊ THÔNG BÁO KẾT QUẢ */}
-                {/* Chỉ hiện khi đang search và không có kết quả */}
+                {/* (Phần Alert giữ nguyên) */}
                 {searchTerm && filteredStations.length === 0 && (
-                    <Alert severity="warning" sx={{ mt: 2 }}>
+                    <Alert
+                        severity="warning"
+                        sx={{ mt: 2, backgroundColor: '#fffbe6', color: '#664d03' }} // Tùy chỉnh màu Alert
+                    >
                         Không tìm thấy trạm nào khớp với từ khóa của bạn.
                     </Alert>
                 )}
-                {/* Chỉ hiện khi đang search và CÓ kết quả */}
                 {searchTerm && filteredStations.length > 0 && (
-                    <Alert severity="success" sx={{ mt: 2 }}>
+                    <Alert
+                        severity="success"
+                        sx={{ mt: 2, backgroundColor: '#e6f7ff', color: '#0056b3' }} // Tùy chỉnh màu Alert
+                    >
                         Tìm thấy {filteredStations.length} trạm.
                     </Alert>
                 )}
