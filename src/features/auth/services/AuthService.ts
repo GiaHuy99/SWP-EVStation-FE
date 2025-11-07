@@ -19,10 +19,23 @@ class AuthService {
         return response.data;
     }
 
-    logout(): void {
-        localStorage.removeItem("token");
-        localStorage.removeItem("username");
-        localStorage.removeItem("role");
+    /**
+     * 🔹 Cập-nhật-hàm-logout
+     * Phải-gọi-API-để-backend-xóa-HttpOnly-cookie
+     */
+    async logout(): Promise<void> {
+        try {
+            // 🔹 Gửi-yêu-cầu-lên-server-để-xóa-cookie-refreshToken
+            await axiosInstance.post("/auth/logout");
+        } catch (error) {
+            console.error("Lỗi khi gọi API logout:", error);
+            // Kể-cả-khi-lỗi, vẫn-tiếp-tục-xóa-dữ-liệu-phía-client
+        } finally {
+            // 🔹 Luôn-xóa-dữ-liệu-ở-localStorage
+            localStorage.removeItem("token");
+            localStorage.removeItem("username");
+            localStorage.removeItem("role");
+        }
     }
 }
 

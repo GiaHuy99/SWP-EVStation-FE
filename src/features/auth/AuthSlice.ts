@@ -59,7 +59,10 @@ const authSlice = createSlice({
         logout: (state) => {
             state.token = null;
             state.username = null;
-            state.role = null; // <-- Xóa role khi logout
+            state.role = null;
+
+            // 🔹 Gọi-AuthService.logout() đã-cập-nhật-
+            // (Nó-sẽ-xóa-cả-cookie-ở-backend-và-localStorage)
             AuthService.logout();
         },
         // 'loadFromStorage' không còn cần thiết vì initialState đã xử lý
@@ -77,9 +80,9 @@ const authSlice = createSlice({
                 state.username = action.payload.username;
                 state.role = action.payload.role; // <-- LƯU ROLE VÀO STATE
 
-                // Chỉ lưu token và username vào localStorage
-                localStorage.setItem("token", action.payload.token);
-                localStorage.setItem("username", action.payload.username);
+                // // Chỉ lưu token và username vào localStorage
+                // localStorage.setItem("token", action.payload.token);
+                // localStorage.setItem("username", action.payload.username);
             })
             .addCase(login.rejected, (state, action) => {
                 state.loading = false;
@@ -94,7 +97,6 @@ const authSlice = createSlice({
 });
 
 export const selectIsLoggedIn = (state: { auth: AuthState }) => !!state.auth.token;
-// Thêm selector để lấy role
 export const selectUserRole = (state: { auth: AuthState }) => state.auth.role;
 
 export const { logout } = authSlice.actions;
