@@ -2,6 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import AuthService from "./services/AuthService";
 import { LoginRequest, RegisterRequest, RegisterResponse } from "./types/AuthTypes";
 import { jwtDecode } from "jwt-decode";
+import { scheduleTokenRefresh } from "../../shared/utils/AxiosInstance"; // 👈 import thêm
 
 interface JwtPayload {
     sub: string;
@@ -27,15 +28,18 @@ export const login = createAsyncThunk<LoginSuccessPayload, LoginRequest>(
             const username = decoded.sub;
             const role = decoded.role;
 
+            // ✅ Lưu accessToken + thông tin người dùng
             localStorage.setItem("token", token);
             localStorage.setItem("username", username);
             localStorage.setItem("role", role);
 
+            // ✅ Bắt đầu auto-refresh accessToken
+            scheduleTokenRefresh(token);
+
             return { token, username, role };
         } catch (error: any) {
             const errorMessage =
-                error.response?.data?.message ||
-                "Sai tên đăng nhập hoặc mật khẩu";
+                error.response?.data?.message || "Sai tên đăng nhập hoặc mật khẩu";
             return rejectWithValue(errorMessage);
         }
     }
