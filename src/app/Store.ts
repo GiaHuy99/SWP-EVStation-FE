@@ -11,6 +11,7 @@ import subcriptionReducer from "../features/link-subcription/ChangeSubscriptionS
 import subcription from "../features/subcription/subscriptionSlice"
 import swapBattery from "../features/swapBattery/SwapSlice";
 import batteryType from "../features/batteryType/BatterySliceType";
+import stationMap from "../features/map/stationSlice"
 export const store = configureStore({
     reducer: {
         auth: authReducer,
@@ -24,6 +25,7 @@ export const store = configureStore({
         subcsription1:subcription,
         swapBattery:swapBattery,
         batteryType:batteryType,
+        stationMap:stationMap,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(notificationMiddleware),

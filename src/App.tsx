@@ -21,6 +21,7 @@ import Layout from "./shared/utils/navbar/Layout";
 import UserPageLayout from "./shared/utils/layout/UserPageLayout"; // User layout component
 import SwapBatteryPage from "./features/swapBattery/pages/SwapBatteryPage";
 import HomePage from "./features/home/HomePage";
+import {BaseMap} from "./features/map/components/BaseMap";
 function App() {
   return (
       <BrowserRouter>
@@ -39,6 +40,7 @@ function App() {
                   <Route path="/subcriptionPlan/changePlanPage" element={<ChangePlanPage />} />
                   <Route path="/subscriptions" element={<UserSubscriptionsPage />} />
                   <Route path="/swapBattery" element={<SwapBatteryPage />} />
+                  <Route path="/Map" element={<BaseMap />} />
               </Route>
 
               {/* Admin pages with sidebar layout */}

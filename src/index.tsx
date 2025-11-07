@@ -5,7 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {store} from "./app/Store";
 import {Provider} from "react-redux";
-
+import 'leaflet/dist/leaflet.css';
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
         <Provider store={store}>
