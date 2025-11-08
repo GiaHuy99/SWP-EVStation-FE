@@ -25,7 +25,9 @@ import {
     Fade,
     Slide,
     Stack,
-    Chip
+    Chip,
+    Grid,
+
 } from '@mui/material';
 import {
     Menu as MenuIcon,
@@ -36,12 +38,15 @@ import {
     Battery6Bar,
     LocalGasStation,
     Dashboard,
-    Logout
+    Logout,
+
 } from '@mui/icons-material';
 import battery from "../../asset/icons/battery.png"
 import charge from "../../asset/icons/charging-station.png"
 import ContactSection from "../contactSection/ContactSection";
-
+import bangGiaQuangDuong from '../../asset/images/quangduong.jpg';
+import bangGiaNangLuong from '../../asset/images/nangluong.jpg';
+import Paper from "@mui/material/Paper";
 // Secondary Navigation Bar Component
 const SecondaryNavbar: React.FC = () => {
     const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -835,6 +840,74 @@ const HomePage: React.FC = () => {
                         </Card>
                     </Box>
                 </Container>
+
+                {/* === BẮT ĐẦU SECTION BẢNG GIÁ DỊCH VỤ === */}
+                <Box sx={{ py: 8, backgroundColor: '#F9FAFB' }}> {/* Nền xám nhạt để tách biệt */}
+                    <Container maxWidth="lg">
+                        <Typography
+                            variant="h3"
+                            component="h2"
+                            sx={{
+                                textAlign: 'center',
+                                mb: 6,
+                                fontWeight: 'bold',
+                                color: '#202426', // Giống màu title "Key Features"
+                                fontSize: { xs: '2rem', md: '2.5rem' }
+                            }}
+                        >
+                            Bảng giá dịch vụ
+                        </Typography>
+
+                        <Grid container spacing={4} justifyContent="center">
+                            {/* Ảnh 1 */}
+                            <Grid >
+                                <Paper
+                                    elevation={3}
+                                    sx={{
+                                        borderRadius: '12px',
+                                        overflow: 'hidden', // Để bo góc ảnh
+                                        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                                        '&:hover': {
+                                            transform: 'translateY(-8px)',
+                                            boxShadow: '0 8px 30px rgba(0,0,0,0.15)',
+                                        }
+                                    }}
+                                >
+                                    <Box
+                                        component="img"
+                                        src={bangGiaNangLuong} // <-- Biến import ở Bước 1
+                                        alt="Bảng giá dịch vụ 1"
+                                        sx={{ width: '100%', height: 'auto', display: 'block' }}
+                                    />
+                                </Paper>
+                            </Grid>
+
+                            {/* Ảnh 2 */}
+                            <Grid>
+                                <Paper
+                                    elevation={3}
+                                    sx={{
+                                        borderRadius: '12px',
+                                        overflow: 'hidden',
+                                        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                                        '&:hover': {
+                                            transform: 'translateY(-8px)',
+                                            boxShadow: '0 8px 30px rgba(0,0,0,0.15)',
+                                        }
+                                    }}
+                                >
+                                    <Box
+                                        component="img"
+                                        src={bangGiaQuangDuong} // <-- Biến import ở Bước 1
+                                        alt="Bảng giá dịch vụ 2"
+                                        sx={{ width: '100%', height: 'auto', display: 'block' }}
+                                    />
+                                </Paper>
+                            </Grid>
+                        </Grid>
+                    </Container>
+                </Box>
+                {/* === KẾT THÚC SECTION BẢNG GIÁ === */}
 
                 {/* CTA Section */}
                 <Box sx={{ backgroundColor: '#F2F2F2', py: 8, textAlign: 'center' }}>
