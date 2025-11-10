@@ -1,64 +1,76 @@
+// src/features/subscription/SubcriptionPlanThunks.ts
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 import { CreateSubscriptionPlanPayload, SubscriptionPlan } from "./types/SubscriptionPlanType";
-import { SubscriptionPlanMockService } from "./services/SubscriptionPlanMockService";
 
-export const createSubscriptionPlan = createAsyncThunk<
-    SubscriptionPlan,
-    CreateSubscriptionPlanPayload,
-    { rejectValue: string }
->(
-    "subscriptionPlan/create",
-    async (payload, { rejectWithValue }) => {
-        try {
-            return await SubscriptionPlanMockService.create(payload);
-        } catch (err: any) {
-            return rejectWithValue(err.message || "Failed to create subscription plan");
-        }
-    }
-);
-
+// 🟢 1️⃣ Lấy tất cả gói
 export const fetchSubscriptionPlans = createAsyncThunk<
     SubscriptionPlan[],
     void,
     { rejectValue: string }
 >("subscriptionPlan/fetch", async (_, { rejectWithValue }) => {
     try {
-        return await SubscriptionPlanMockService.fetchAll();
+        const res = await axios.get("http://localhost:8080/api/admin/subscription-plans");
+        return res.data;
     } catch (err: any) {
-        return rejectWithValue(err.message || "Failed to fetch plans");
+        return rejectWithValue(err.message || "Không thể tải danh sách gói");
     }
 });
+
+// 🟢 2️⃣ Tạo gói mới
+export const createSubscriptionPlan = createAsyncThunk<
+    SubscriptionPlan,
+    CreateSubscriptionPlanPayload,
+    { rejectValue: string }
+>("subscriptionPlan/create", async (payload, { rejectWithValue }) => {
+    try {
+        const res = await axios.post("http://localhost:8080/api/admin/subscription-plans", payload);
+        return res.data;
+    } catch (err: any) {
+        return rejectWithValue(err.message || "Không thể tạo gói mới");
+    }
+});
+
+// 🟢 3️⃣ Lấy chi tiết theo id
 export const getSubscriptionPlanById = createAsyncThunk<
     SubscriptionPlan,
     number,
     { rejectValue: string }
 >("subscriptionPlan/getById", async (id, { rejectWithValue }) => {
     try {
-        return await SubscriptionPlanMockService.getById(id);
+        const res = await axios.get(`http://localhost:8080/api/admin/subscription-plans/${id}`);
+        return res.data;
     } catch (err: any) {
-        return rejectWithValue(err.message || "Failed to fetch subscription plan by id");
+        return rejectWithValue(err.message || "Không thể lấy chi tiết gói");
     }
 });
-export const updatePlan = createAsyncThunk(
-    "subscriptionPlan/updatePlan",
-    async ({ id, payload }: { id: number; payload: CreateSubscriptionPlanPayload }, thunkAPI) => {
-        try {
-            const data: SubscriptionPlan = await SubscriptionPlanMockService.update(id, payload);
-            return data;
-        } catch (error: any) {
-            return thunkAPI.rejectWithValue(error.message || "Update failed");
-        }
-    }
-);
-export const deletePlan = createAsyncThunk(
-    "subscriptionPlan/delete",
-    async (id: number, thunkAPI) => {
-        try {
-            await SubscriptionPlanMockService.delete(id); // gọi API DELETE
-            return id;
-        } catch (error: any) {
-            return thunkAPI.rejectWithValue(error.message || "Delete failed");
-        }
-    }
-);
 
+// 🟢 4️⃣ Cập nhật gói
+export const updatePlan = createAsyncThunk<
+    SubscriptionPlan,
+    { id: number; payload: CreateSubscriptionPlanPayload },
+    { rejectValue: string }
+>("subscriptionPlan/updatePlan", async ({ id, payload }, { rejectWithValue }) => {
+    try {
+        const res = await axios.put(
+            `http://localhost:8080/api/admin/subscription-plans/${id}`,
+            payload
+        );
+        return res.data;
+    } catch (err: any) {
+        return rejectWithValue(err.message || "Cập nhật thất bại");
+    }
+});
+
+
+export const deletePlan = createAsyncThunk<number, number, { rejectValue: string }>(
+    "subscriptionPlan/delete",
+    async (id, { rejectWithValue }) => {
+        try {
+            await axios.delete(`http://localhost:8080/api/admin/subscription-plans/${id}`);
+            return id;
+        } catch (err: any) {
+            return rejectWithValue(err.message || "Xoá thất bại");
+        }
+    }
+);
