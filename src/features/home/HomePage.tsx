@@ -119,8 +119,14 @@ const SecondaryNavbar: React.FC = () => {
     ];
 
     const drawer = (
-        <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center', backgroundColor: '#202426' }}>
-            <Typography variant="h6" sx={{ my: 2, color: '#9DA65D' }}>
+        <Box 
+            onClick={handleDrawerToggle} 
+            sx={{ 
+                textAlign: 'center', 
+                backgroundColor: '#022601' // Dark green background
+            }}
+        >
+            <Typography variant="h6" sx={{ my: 2, color: theme.palette.primary.main }}>
                 EV Battery Swap
             </Typography>
             <List>
@@ -130,13 +136,13 @@ const SecondaryNavbar: React.FC = () => {
                             component={Link}
                             to={item.path}
                             sx={{
-                                color: '#F2F2F2',
+                                color: theme.palette.common.white,
                                 '&:hover': {
-                                    backgroundColor: 'rgba(157, 166, 93, 0.15)',
+                                    backgroundColor: 'rgba(4, 191, 51, 0.15)', // Primary green with opacity
                                 },
                             }}
                         >
-                            <ListItemIcon sx={{ color: '#6C733D' }}>
+                            <ListItemIcon sx={{ color: theme.palette.primary.main }}>
                                 {item.icon}
                             </ListItemIcon>
                             <ListItemText primary={item.label} />
@@ -149,13 +155,13 @@ const SecondaryNavbar: React.FC = () => {
                     <ListItemButton
                         onClick={handleLogout}
                         sx={{
-                            color: '#9DA65D',
+                            color: theme.palette.primary.main,
                             '&:hover': {
-                                backgroundColor: 'rgba(157, 166, 93, 0.1)',
+                                backgroundColor: 'rgba(4, 191, 51, 0.15)', // Primary green with opacity
                             },
                         }}
                     >
-                        <ListItemIcon sx={{ color: '#9DA65D' }}>
+                        <ListItemIcon sx={{ color: theme.palette.primary.main }}>
                             <Logout />
                         </ListItemIcon>
                         <ListItemText primary="Logout" />
@@ -170,9 +176,10 @@ const SecondaryNavbar: React.FC = () => {
             <AppBar
                 position="fixed"
                 sx={{
-                    backgroundColor: '#202426',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                    zIndex: theme.zIndex.drawer + 1
+                    backgroundColor: '#022601', // Dark green background
+                    boxShadow: theme.shadows[2],
+                    zIndex: theme.zIndex.drawer + 1,
+                    borderRadius: 0
                 }}
             >
                 <Toolbar sx={{ justifyContent: 'space-between' }}>
@@ -182,9 +189,9 @@ const SecondaryNavbar: React.FC = () => {
                         component="div"
                         sx={{
                             flexGrow: 0,
-                            fontWeight: 'bold',
+                            fontWeight: 700,
                             fontSize: '1.5rem',
-                            color: '#9DA65D',
+                            color: theme.palette.primary.main, // Bright green
                             letterSpacing: '0.5px'
                         }}
                     >
@@ -200,17 +207,12 @@ const SecondaryNavbar: React.FC = () => {
                                 to={item.path}
                                 startIcon={item.icon}
                                 sx={{
-                                    color: '#F2F2F2',
+                                    color: theme.palette.common.white,
                                     backgroundColor: 'transparent',
-                                    borderRadius: '8px',
-                                    padding: '8px 16px',
-                                    fontSize: '0.95rem',
-                                    fontWeight: '400',
-                                    textTransform: 'none',
-                                    transition: 'all 0.3s ease',
+                                    borderRadius: theme.shape.borderRadius,
                                     '&:hover': {
-                                        backgroundColor: 'rgba(157, 166, 93, 0.15)',
-                                        color: '#9DA65D',
+                                        backgroundColor: 'rgba(4, 191, 51, 0.15)', // Primary green with opacity
+                                        color: theme.palette.primary.main, // Bright green
                                         transform: 'translateY(-1px)',
                                     },
                                 }}
@@ -223,20 +225,13 @@ const SecondaryNavbar: React.FC = () => {
                         <Button
                             onClick={handleLogout}
                             startIcon={<Logout />}
+                            variant="outlined"
                             sx={{
-                                color: '#F2F2F2',
-                                backgroundColor: 'transparent',
-                                borderRadius: '8px',
-                                padding: '8px 16px',
-                                fontSize: '0.95rem',
-                                fontWeight: '400',
-                                textTransform: 'none',
-                                transition: 'all 0.3s ease',
-                                border: '1px solid rgba(157, 166, 93, 0.3)',
+                                color: theme.palette.primary.main, // Bright green
+                                borderColor: theme.palette.primary.main,
                                 '&:hover': {
-                                    backgroundColor: 'rgba(157, 166, 93, 0.15)',
-                                    color: '#9DA65D',
-                                    borderColor: '#9DA65D',
+                                    backgroundColor: 'rgba(4, 191, 51, 0.15)',
+                                    borderColor: theme.palette.primary.main,
                                     transform: 'translateY(-1px)',
                                 },
                             }}
@@ -284,6 +279,7 @@ const SecondaryNavbar: React.FC = () => {
 
 // Advertisement Service Section Component
 const AdvertisementSection: React.FC = () => {
+    const theme = useTheme();
     const [isVisible, setIsVisible] = React.useState(false);
 
     React.useEffect(() => {
@@ -334,7 +330,7 @@ const AdvertisementSection: React.FC = () => {
     ];
 
     return (
-        <Box id="advertisement-section" sx={{ py: 10, backgroundColor: '#202426' }}>
+        <Box id="advertisement-section" sx={{ py: 10, backgroundColor: '#022601' }}>
             <Container maxWidth="lg">
                 <Fade in={isVisible} timeout={1000}>
                     <Box sx={{ textAlign: 'center', mb: 8 }}>
@@ -342,9 +338,9 @@ const AdvertisementSection: React.FC = () => {
                             variant="h3"
                             component="h2"
                             sx={{
-                                fontWeight: 'bold',
+                                fontWeight: 700,
                                 mb: 2,
-                                color: '#F2F2F2',
+                                color: theme.palette.common.white,
                                 fontSize: { xs: '2rem', md: '3rem' }
                             }}
                         >
@@ -353,7 +349,7 @@ const AdvertisementSection: React.FC = () => {
                         <Typography
                             variant="h6"
                             sx={{
-                                color: '#8C8C88',
+                                color: theme.palette.secondary.main, // Light green
                                 maxWidth: '700px',
                                 mx: 'auto',
                                 lineHeight: 1.8
@@ -386,17 +382,17 @@ const AdvertisementSection: React.FC = () => {
                         >
                             <Card
                                 sx={{
-                                    backgroundColor: '#282B2F',
-                                    border: '2px solid transparent',
-                                    borderRadius: '16px',
+                                    backgroundColor: '#067302', // Very dark green
+                                    border: `2px solid transparent`,
+                                    borderRadius: Number(theme.shape.borderRadius) * 1.5,
                                     transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                                     position: 'relative',
                                     overflow: 'visible',
                                     '&:hover': {
                                         transform: 'translateY(-12px) scale(1.02)',
-                                        borderColor: '#6C733D',
-                                        boxShadow: '0 20px 40px rgba(108,115,61,0.25)',
-                                        backgroundColor: '#2E3236'
+                                        borderColor: theme.palette.primary.main, // Bright green
+                                        boxShadow: `0 20px 40px ${theme.palette.primary.main}40`,
+                                        backgroundColor: '#078C03' // Dark green
                                     },
                                     '&::before': {
                                         content: '""',
@@ -405,7 +401,7 @@ const AdvertisementSection: React.FC = () => {
                                         left: 0,
                                         right: 0,
                                         height: '4px',
-                                        background: 'linear-gradient(90deg, #6C733D, #9DA65D)',
+                                        background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
                                         opacity: 0,
                                         transition: 'opacity 0.3s ease'
                                     },
@@ -438,9 +434,9 @@ const AdvertisementSection: React.FC = () => {
                                         variant="h5"
                                         component="h3"
                                         sx={{
-                                            fontWeight: 'bold',
+                                            fontWeight: 700,
                                             mb: 2,
-                                            color: '#F2F2F2',
+                                            color: theme.palette.common.white,
                                             fontSize: { xs: '1.3rem', md: '1.5rem' }
                                         }}
                                     >
@@ -450,7 +446,7 @@ const AdvertisementSection: React.FC = () => {
                                     <Typography
                                         variant="body2"
                                         sx={{
-                                            color: '#8C8C88',
+                                            color: theme.palette.secondary.main, // Light green
                                             mb: 3,
                                             lineHeight: 1.7,
                                             minHeight: '60px'
@@ -466,11 +462,11 @@ const AdvertisementSection: React.FC = () => {
                                                 label={feature}
                                                 size="small"
                                                 sx={{
-                                                    backgroundColor: '#6C733D',
-                                                    color: '#F2F2F2',
                                                     fontSize: '0.75rem',
+                                                    backgroundColor: theme.palette.primary.main, // Bright green
+                                                    color: theme.palette.common.white,
                                                     '&:hover': {
-                                                        backgroundColor: '#9DA65D'
+                                                        backgroundColor: theme.palette.primary.dark, // Dark green
                                                     }
                                                 }}
                                             />
@@ -488,9 +484,9 @@ const AdvertisementSection: React.FC = () => {
                         sx={{
                             mt: 10,
                             py: 6,
-                            borderRadius: '20px',
-                            background: 'linear-gradient(135deg, #6C733D 0%, #9DA65D 100%)',
-                            boxShadow: '0 10px 40px rgba(108,115,61,0.3)'
+                            borderRadius: Number(theme.shape.borderRadius) * 2,
+                            background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, #078C03 100%)`,
+                            boxShadow: theme.shadows[8]
                         }}
                     >
                         <Box
@@ -530,8 +526,8 @@ const AdvertisementSection: React.FC = () => {
                                     <Typography
                                         variant="h2"
                                         sx={{
-                                            fontWeight: 'bold',
-                                            color: '#F2F2F2',
+                                            fontWeight: theme.typography.fontWeightBold,
+                                            color: theme.palette.common.white,
                                             mb: 1,
                                             fontSize: { xs: '2.5rem', md: '3.5rem' }
                                         }}
@@ -541,7 +537,7 @@ const AdvertisementSection: React.FC = () => {
                                     <Typography
                                         variant="body1"
                                         sx={{
-                                            color: '#F2F2F2',
+                                            color: theme.palette.common.white,
                                             opacity: 0.9,
                                             fontSize: '1.1rem'
                                         }}
@@ -560,6 +556,8 @@ const AdvertisementSection: React.FC = () => {
 
 // Thành phần Trang chủ (Homepage Component)
 const HomePage: React.FC = () => {
+    const theme = useTheme();
+    
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             {/* Secondary Navigation Bar */}
@@ -570,37 +568,24 @@ const HomePage: React.FC = () => {
                 {/* Hero Section */}
                 <Box
                     sx={{
-                        // (Phần ảnh nền giữ nguyên)
                         backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${evstation})`,
                         backgroundSize: 'cover',
-
-                        // --- THAY ĐỔI 1: KÉO ẢNH LÊN ---
-                        // 'center 70%' sẽ căn 70% (từ trên xuống) của ảnh
-                        // vào giữa Box. Điều này "kéo" ảnh lên,
-                        // cho thấy các trạm sạc ở bên dưới.
-                        // Bạn có thể thử 'center 60%' hoặc 'center 80%'
                         backgroundPosition: 'center 70%',
-
-                        color: 'white',
-
-                        // --- THAY ĐỔI 2: TĂNG CHIỀU CAO ---
-                        // Tăng padding từ 8 lên 16 (hoặc 20)
-                        // để 'Box' cao hơn, cho ảnh nhiều không gian hơn.
+                        color: theme.palette.common.white,
                         py: 16,
-
                         textAlign: 'center'
                     }}
                 >
                     <Container maxWidth="lg">
-                        {/* (Phần còn lại: Typography, Button... giữ nguyên) */}
                         <Typography
                             variant="h2"
                             component="h1"
                             sx={{
-                                fontWeight: 'bold',
+                                fontWeight: theme.typography.fontWeightBold,
                                 mb: 3,
                                 fontSize: { xs: '2.5rem', md: '3.5rem' },
-                                lineHeight: 1.2
+                                lineHeight: 1.2,
+                                color: theme.palette.common.white
                             }}
                         >
                             Welcome to EV Battery Swap
@@ -612,7 +597,8 @@ const HomePage: React.FC = () => {
                                 opacity: 0.9,
                                 fontSize: { xs: '1.2rem', md: '1.5rem' },
                                 maxWidth: '600px',
-                                mx: 'auto'
+                                mx: 'auto',
+                                color: theme.palette.common.white
                             }}
                         >
                             Manage your electric vehicle battery subscriptions and swap services efficiently
@@ -624,20 +610,12 @@ const HomePage: React.FC = () => {
                                 component={Link}
                                 to="/linkVehicle/regist"
                                 sx={{
-                                    backgroundColor: '#F2F2F2',
-                                    color: '#6B7A42', // Màu olive mới
+                                    backgroundColor: theme.palette.background.default,
+                                    color: theme.palette.primary.dark,
                                     px: 4,
-                                    py: 1.5,
-                                    fontSize: '1.1rem',
-                                    fontWeight: '600',
-                                    borderRadius: '8px',
-                                    textTransform: 'none',
                                     '&:hover': {
-                                        backgroundColor: '#ffffff',
-                                        transform: 'translateY(-2px)',
-                                        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                                        backgroundColor: theme.palette.common.white,
                                     },
-                                    transition: 'all 0.3s ease'
                                 }}
                             >
                                 Link Vehicle
@@ -648,20 +626,13 @@ const HomePage: React.FC = () => {
                                 component={Link}
                                 to="/map"
                                 sx={{
-                                    borderColor: '#F2F2F2',
-                                    color: '#F2F2F2',
+                                    borderColor: theme.palette.common.white,
+                                    color: theme.palette.common.white,
                                     px: 4,
-                                    py: 1.5,
-                                    fontSize: '1.1rem',
-                                    fontWeight: '600',
-                                    borderRadius: '8px',
-                                    textTransform: 'none',
                                     '&:hover': {
-                                        backgroundColor: 'rgba(242,242,242,0.1)',
-                                        borderColor: '#F2F2F2',
-                                        transform: 'translateY(-2px)',
+                                        backgroundColor: 'rgba(255,255,255,0.1)',
+                                        borderColor: theme.palette.common.white,
                                     },
-                                    transition: 'all 0.3s ease'
                                 }}
                             >
                                 Find Swap Station
@@ -678,9 +649,6 @@ const HomePage: React.FC = () => {
                         sx={{
                             textAlign: 'center',
                             mb: 6,
-                            fontWeight: 'bold',
-                            color: '#202426',
-                            fontSize: { xs: '2rem', md: '2.5rem' }
                         }}
                     >
                         Key Features
@@ -696,34 +664,22 @@ const HomePage: React.FC = () => {
                             mt: 4
                         }}
                     >
-                        <Card
-                            sx={{
-                                height: '100%',
-                                borderRadius: '12px',
-                                boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-                                border: '1px solid #F2F2F2',
-                                transition: 'all 0.3s ease',
-                                '&:hover': {
-                                    transform: 'translateY(-8px)',
-                                    boxShadow: '0 8px 30px rgba(108,115,61,0.2)',
-                                }
-                            }}
-                        >
+                        <Card sx={{ height: '100%' }}>
                             <CardContent sx={{ p: 4, textAlign: 'center' }}>
                                 <Box
-                                    component="img" // Dùng Box của MUI để render thẻ <img>
+                                    component="img"
                                     src={battery}
                                     alt="Battery Swap Icon"
                                     sx={{
-                                        height: '48px', // Đặt kích thước cho icon
+                                        height: '48px',
                                         width: '48px',
-                                        mb: 2, // Margin bottom
+                                        mb: 2,
                                     }}
                                 />
-                                <Typography variant="h5" component="h3" sx={{ fontWeight: 'bold', mb: 2, color: '#202426' }}>
+                                <Typography variant="h5" component="h3" sx={{ mb: 2 }}>
                                     Battery Swap
                                 </Typography>
-                                <Typography variant="body1" sx={{ color: '#8C8C88', lineHeight: 1.6 }}>
+                                <Typography variant="body1" sx={{ lineHeight: 1.6 }}>
                                     Quick and efficient battery swapping at our network of stations across the city.
                                 </Typography>
                             </CardContent>
@@ -732,41 +688,21 @@ const HomePage: React.FC = () => {
                                     component={Link}
                                     to="/swapBattery"
                                     variant="contained"
-                                    sx={{
-                                        backgroundColor: '#6C733D',
-                                        borderRadius: '6px',
-                                        textTransform: 'none',
-                                        px: 3,
-                                        color: '#F2F2F2',
-                                        '&:hover': { backgroundColor: '#9DA65D' }
-                                    }}
                                 >
                                     Start Swap
                                 </Button>
                             </CardActions>
                         </Card>
 
-                        <Card
-                            sx={{
-                                height: '100%',
-                                borderRadius: '12px',
-                                boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-                                border: '1px solid #F2F2F2',
-                                transition: 'all 0.3s ease',
-                                '&:hover': {
-                                    transform: 'translateY(-8px)',
-                                    boxShadow: '0 8px 30px rgba(108,115,61,0.2)',
-                                }
-                            }}
-                        >
+                        <Card sx={{ height: '100%' }}>
                             <CardContent sx={{ p: 4, textAlign: 'center' }}>
                                 <Box sx={{ fontSize: '3rem', mb: 2 }}>
                                     📋
                                 </Box>
-                                <Typography variant="h5" component="h3" sx={{ fontWeight: 'bold', mb: 2, color: '#202426' }}>
+                                <Typography variant="h5" component="h3" sx={{ mb: 2 }}>
                                     Plan Management
                                 </Typography>
-                                <Typography variant="body1" sx={{ color: '#8C8C88', lineHeight: 1.6 }}>
+                                <Typography variant="body1" sx={{ lineHeight: 1.6 }}>
                                     Manage your subscription plans, upgrade or downgrade as needed for your usage.
                                 </Typography>
                             </CardContent>
@@ -775,48 +711,28 @@ const HomePage: React.FC = () => {
                                     component={Link}
                                     to="/subscriptions"
                                     variant="contained"
-                                    sx={{
-                                        backgroundColor: '#6C733D',
-                                        borderRadius: '6px',
-                                        textTransform: 'none',
-                                        px: 3,
-                                        color: '#F2F2F2',
-                                        '&:hover': { backgroundColor: '#9DA65D' }
-                                    }}
                                 >
                                     Manage Plan
                                 </Button>
                             </CardActions>
                         </Card>
 
-                        <Card
-                            sx={{
-                                height: '100%',
-                                borderRadius: '12px',
-                                boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-                                border: '1px solid #F2F2F2',
-                                transition: 'all 0.3s ease',
-                                '&:hover': {
-                                    transform: 'translateY(-8px)',
-                                    boxShadow: '0 8px 30px rgba(108,115,61,0.2)',
-                                }
-                            }}
-                        >
+                        <Card sx={{ height: '100%' }}>
                             <CardContent sx={{ p: 4, textAlign: 'center' }}>
                                 <Box
-                                    component="img" // Dùng Box của MUI để render thẻ <img>
+                                    component="img"
                                     src={charge}
                                     alt="Battery Swap Icon"
                                     sx={{
-                                        height: '48px', // Đặt kích thước cho icon
+                                        height: '48px',
                                         width: '48px',
-                                        mb: 2, // Margin bottom
+                                        mb: 2,
                                     }}
                                 />
-                                <Typography variant="h5" component="h3" sx={{ fontWeight: 'bold', mb: 2, color: '#202426' }}>
+                                <Typography variant="h5" component="h3" sx={{ mb: 2 }}>
                                     Vehicle Management
                                 </Typography>
-                                <Typography variant="body1" sx={{ color: '#8C8C88', lineHeight: 1.6 }}>
+                                <Typography variant="body1" sx={{ lineHeight: 1.6 }}>
                                     Link and manage your electric vehicles for seamless battery swap services.
                                 </Typography>
                             </CardContent>
@@ -825,14 +741,6 @@ const HomePage: React.FC = () => {
                                     component={Link}
                                     to="/linkVehicle/regist"
                                     variant="contained"
-                                    sx={{
-                                        backgroundColor: '#6C733D',
-                                        borderRadius: '6px',
-                                        textTransform: 'none',
-                                        px: 3,
-                                        color: '#F2F2F2',
-                                        '&:hover': { backgroundColor: '#9DA65D' }
-                                    }}
                                 >
                                     Link Vehicle
                                 </Button>
@@ -842,7 +750,7 @@ const HomePage: React.FC = () => {
                 </Container>
 
                 {/* === BẮT ĐẦU SECTION BẢNG GIÁ DỊCH VỤ === */}
-                <Box sx={{ py: 8, backgroundColor: '#F9FAFB' }}> {/* Nền xám nhạt để tách biệt */}
+                <Box sx={{ py: 8, backgroundColor: theme.palette.background.paper }}>
                     <Container maxWidth="lg">
                         <Typography
                             variant="h3"
@@ -850,9 +758,6 @@ const HomePage: React.FC = () => {
                             sx={{
                                 textAlign: 'center',
                                 mb: 6,
-                                fontWeight: 'bold',
-                                color: '#202426', // Giống màu title "Key Features"
-                                fontSize: { xs: '2rem', md: '2.5rem' }
                             }}
                         >
                             Bảng giá dịch vụ
@@ -864,18 +769,18 @@ const HomePage: React.FC = () => {
                                 <Paper
                                     elevation={3}
                                     sx={{
-                                        borderRadius: '12px',
-                                        overflow: 'hidden', // Để bo góc ảnh
-                                        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                                        borderRadius: theme.shape.borderRadius,
+                                        overflow: 'hidden',
+                                        transition: 'all 0.3s ease',
                                         '&:hover': {
                                             transform: 'translateY(-8px)',
-                                            boxShadow: '0 8px 30px rgba(0,0,0,0.15)',
+                                            boxShadow: theme.shadows[8],
                                         }
                                     }}
                                 >
                                     <Box
                                         component="img"
-                                        src={bangGiaNangLuong} // <-- Biến import ở Bước 1
+                                        src={bangGiaNangLuong}
                                         alt="Bảng giá dịch vụ 1"
                                         sx={{ width: '100%', height: 'auto', display: 'block' }}
                                     />
@@ -887,18 +792,18 @@ const HomePage: React.FC = () => {
                                 <Paper
                                     elevation={3}
                                     sx={{
-                                        borderRadius: '12px',
+                                        borderRadius: theme.shape.borderRadius,
                                         overflow: 'hidden',
-                                        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                                        transition: 'all 0.3s ease',
                                         '&:hover': {
                                             transform: 'translateY(-8px)',
-                                            boxShadow: '0 8px 30px rgba(0,0,0,0.15)',
+                                            boxShadow: theme.shadows[8],
                                         }
                                     }}
                                 >
                                     <Box
                                         component="img"
-                                        src={bangGiaQuangDuong} // <-- Biến import ở Bước 1
+                                        src={bangGiaQuangDuong}
                                         alt="Bảng giá dịch vụ 2"
                                         sx={{ width: '100%', height: 'auto', display: 'block' }}
                                     />
@@ -910,21 +815,18 @@ const HomePage: React.FC = () => {
                 {/* === KẾT THÚC SECTION BẢNG GIÁ === */}
 
                 {/* CTA Section */}
-                <Box sx={{ backgroundColor: '#F2F2F2', py: 8, textAlign: 'center' }}>
+                <Box sx={{ backgroundColor: theme.palette.background.default, py: 8, textAlign: 'center' }}>
                     <Container maxWidth="md">
                         <Typography
                             variant="h3"
                             component="h2"
                             sx={{
-                                fontWeight: 'bold',
                                 mb: 3,
-                                color: '#202426',
-                                fontSize: { xs: '2rem', md: '2.5rem' }
                             }}
                         >
                             Ready to Get Started?
                         </Typography>
-                        <Typography variant="h6" sx={{ mb: 4, color: '#8C8C88', lineHeight: 1.6 }}>
+                        <Typography variant="h6" sx={{ mb: 4, lineHeight: 1.6 }}>
                             Join thousands of satisfied EV users and experience seamless battery swapping.
                         </Typography>
                         <Button
@@ -933,20 +835,9 @@ const HomePage: React.FC = () => {
                             component={Link}
                             to="/linkVehicle/regist"
                             sx={{
-                                backgroundColor: '#6C733D',
                                 px: 6,
                                 py: 2,
                                 fontSize: '1.2rem',
-                                fontWeight: '600',
-                                borderRadius: '8px',
-                                textTransform: 'none',
-                                color: '#F2F2F2',
-                                '&:hover': {
-                                    backgroundColor: '#9DA65D',
-                                    transform: 'translateY(-2px)',
-                                    boxShadow: '0 4px 12px rgba(108,115,61,0.3)',
-                                },
-                                transition: 'all 0.3s ease'
                             }}
                         >
                             Get Started Today
@@ -966,14 +857,14 @@ const HomePage: React.FC = () => {
             <Box
                 component="footer"
                 sx={{
-                    backgroundColor: '#202426',
-                    color: '#F2F2F2',
+                    backgroundColor: '#022601',
+                    color: theme.palette.secondary.main,
                     py: 4,
                     textAlign: 'center'
                 }}
             >
                 <Container maxWidth="lg">
-                    <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                    <Typography variant="body2" sx={{ opacity: 0.9 }}>
                         © 2025 EV Battery Swap Management. All rights reserved.
                     </Typography>
                 </Container>

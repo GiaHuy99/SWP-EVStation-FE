@@ -18,7 +18,7 @@
     text-align: center;
     font-size: 28px;
     font-weight: 700;
-    color: #6C733D;
+    color: #067302;
     margin-bottom: 10px;
 }
 
@@ -48,7 +48,7 @@
 
 .contact-form input:focus,
 .contact-form textarea:focus {
-    border-color: #6C733D;
+    border-color: #04BF33;
 }
 
 .contact-form textarea {
@@ -59,7 +59,7 @@
 .contact-form button {
     width: 100%;
     padding: 12px;
-    background-color: #6C733D;
+    background-color: #067302;
     color: white;
     border: none;
     border-radius: 6px;

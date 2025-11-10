@@ -11,8 +11,8 @@ export const PageContainer = styled(MuiContainer)(({ theme }) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    // Đồng bộ background nhẹ hơn từ battery
-    background: "#F9FAFB",
+    // Modern gradient background
+    background: "linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%)",
     padding: theme.spacing(4),
 }));
 
@@ -20,26 +20,42 @@ export const FormCard = styled(Paper)(({ theme }) => ({
     width: "100%",
     maxWidth: 600,
     padding: theme.spacing(5),
-    borderRadius: theme.shape.borderRadius,
-    // Đồng bộ shadow mượt từ battery
-    boxShadow: "0px 12px 30px rgba(0, 0, 0, 0.06)",
+    borderRadius: "16px", // More rounded for modern feel
+    // Enhanced shadow for depth
+    boxShadow: "0px 20px 60px rgba(76, 66, 140, 0.12)",
     backgroundColor: "#ffffff",
-    border: "1px solid #e5e7eb", // Đồng bộ border xám nhạt
-    // Sử dụng sx={{ border: "1px solid #E8F5E8" }} khi wrap để thêm viền ngoài pastel
+    border: "2px solid #04C4D9", // Cyan accent border
+    position: "relative",
+    overflow: "hidden",
+    // Subtle top gradient bar
+    "&::before": {
+        content: '""',
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        height: "4px",
+        background: "linear-gradient(90deg, #4C428C 0%, #04C4D9 100%)",
+    },
 }));
 
 export const Title = styled(MuiTypography)(({ theme }) => ({
     fontWeight: 700,
     marginBottom: theme.spacing(3),
     textAlign: "center",
-    // Đồng bộ màu chữ tối hơn từ battery
-    color: "#374151",
+    // Gradient text effect
+    background: "linear-gradient(135deg, #4C428C 0%, #04C4D9 100%)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    backgroundClip: "text",
+    fontSize: "2rem",
+    letterSpacing: "-0.5px",
 }));
 
 export const FormBox = styled(Box)(({ theme }) => ({
     display: "grid",
     gridTemplateColumns: "1fr",
-    gap: theme.spacing(2.5),
+    gap: theme.spacing(3),
     [theme.breakpoints.up("sm")]: {
         gridTemplateColumns: "1fr 1fr",
         gap: theme.spacing(3),
@@ -50,109 +66,205 @@ export const FullWidthBox = styled(Box)(() => ({
     gridColumn: "1 / -1",
 }));
 
-// Đồng bộ StyledTextField từ battery: background xanh pastel, hover gradient, focus glow xanh lá
+// Modern TextField with purple/cyan theme
 export const StyledTextField = styled(TextField)(({ theme }) => ({
     "& .MuiOutlinedInput-root": {
-        backgroundColor: "#E8F5E8", // Background xanh lá pastel mặc định
-        borderRadius: "12px", // Bo tròn hiện đại
-        padding: "12px 16px", // Padding thoải mái
-        fontWeight: 400, // Font nhẹ dễ đọc
-        transition: "all 0.3s ease-in-out", // Mượt mà
+        backgroundColor: "#f8f9fa", // Light neutral background
+        borderRadius: "12px",
+        padding: "12px 16px",
+        fontWeight: 400,
+        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
 
-        // Hover: Gradient pastel sáng hơn
+        // Hover: Subtle cyan glow
         "&:hover": {
-            background: "linear-gradient(135deg, #E8F5E8 0%, #D4EDDA 100%)",
-            borderColor: theme.palette.success.light,
-            transform: "translateY(-1px)", // Nâng nhẹ
+            backgroundColor: "#f0fdff", // Very light cyan tint
+            borderColor: "#04C4D9",
+            transform: "translateY(-2px)",
+            boxShadow: "0 4px 12px rgba(4, 196, 217, 0.15)",
         },
 
-        // Focus: Viền + glow xanh lá
+        // Focus: Strong purple/cyan accent
         "&.Mui-focused": {
-            borderColor: theme.palette.success.main,
-            boxShadow: "0 0 0 3px rgba(34, 197, 94, 0.15)", // Glow pastel
-            backgroundColor: "#E8F5E8", // Giữ background
+            backgroundColor: "#ffffff",
+            borderColor: "#4C428C",
+            boxShadow: "0 0 0 4px rgba(76, 66, 140, 0.1), 0 0 20px rgba(4, 196, 217, 0.2)",
+            transform: "translateY(-2px)",
             "& fieldset": {
-                borderColor: theme.palette.success.main,
+                borderColor: "#4C428C",
+                borderWidth: "2px",
             },
         },
 
-        // Error: Đỏ pastel
+        // Error state
         "&.Mui-error": {
-            backgroundColor: "#FDE8E8",
+            backgroundColor: "#fff5f5",
+            "&:hover": {
+                backgroundColor: "#fee",
+            },
             "&.Mui-focused": {
-                boxShadow: "0 0 0 3px rgba(220, 53, 69, 0.15)",
+                boxShadow: "0 0 0 4px rgba(220, 53, 69, 0.1)",
+                borderColor: "#dc3545",
             },
         },
 
-        // Viền mặc định
+        // Default border
         "& fieldset": {
-            borderColor: "#D1D5DB", // Xám nhạt đồng bộ
-            borderWidth: "1px",
-            transition: "all 0.3s ease-in-out",
+            borderColor: "#e5e7eb",
+            borderWidth: "2px",
+            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
         },
 
-        // Text bên trong
+        // Input text
         "& .MuiInputBase-input": {
-            color: "#374151", // Chữ tối
+            color: "#222326", // Dark text
+            fontSize: "1rem",
             "&::placeholder": {
-                color: "#9CA3AF", // Placeholder xám
+                color: "#9ca3af",
                 opacity: 1,
             },
         },
+    },
+
+    // Label styles
+    "& .MuiInputLabel-root": {
+        color: "#6b7280",
+        fontWeight: 500,
+        "&.Mui-focused": {
+            color: "#4C428C",
+            fontWeight: 600,
+        },
+        "&.Mui-error": {
+            color: "#dc3545",
+        },
+    },
+
+    // Helper text
+    "& .MuiFormHelperText-root": {
+        marginLeft: "4px",
+        fontSize: "0.875rem",
     },
 }));
 
 export const ListCard = styled(Paper)(({ theme }) => ({
     width: "100%",
-    maxWidth: 1000,
-    padding: theme.spacing(3),
-    borderRadius: theme.shape.borderRadius,
-    // Đồng bộ shadow từ FormCard
-    boxShadow: "0px 12px 30px rgba(0, 0, 0, 0.06)",
+    maxWidth: 1200,
+    padding: theme.spacing(4),
+    borderRadius: "16px",
+    boxShadow: "0px 20px 60px rgba(76, 66, 140, 0.12)",
     backgroundColor: "#ffffff",
-    border: "1px solid #e5e7eb", // Đồng bộ border
-    // Sử dụng sx={{ border: "1px solid #E8F5E8" }} để thêm viền ngoài pastel nếu cần
+    border: "2px solid #04C4D9",
+    position: "relative",
+    overflow: "hidden",
+    // Top gradient bar
+    "&::before": {
+        content: '""',
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        height: "4px",
+        background: "linear-gradient(90deg, #4C428C 0%, #04C4D9 100%)",
+    },
 }));
 
 export const TableWrapper = styled(Box)(() => ({
     width: "100%",
     overflowX: "auto",
+    // Custom scrollbar
+    "&::-webkit-scrollbar": {
+        height: "8px",
+    },
+    "&::-webkit-scrollbar-track": {
+        backgroundColor: "#f1f5f9",
+        borderRadius: "4px",
+    },
+    "&::-webkit-scrollbar-thumb": {
+        backgroundColor: "#04C4D9",
+        borderRadius: "4px",
+        "&:hover": {
+            backgroundColor: "#03a8b8",
+        },
+    },
 }));
 
 export const DetailCard = styled(Paper)(({ theme }) => ({
     width: "100%",
     maxWidth: 500,
     padding: theme.spacing(4),
-    borderRadius: theme.shape.borderRadius,
-    // Đồng bộ shadow từ battery
-    boxShadow: "0px 12px 30px rgba(0, 0, 0, 0.06)",
+    borderRadius: "16px",
+    boxShadow: "0px 20px 60px rgba(76, 66, 140, 0.12)",
     backgroundColor: "#ffffff",
-    border: "1px solid #e5e7eb", // Đồng bộ
-    // Sử dụng sx={{ border: "1px solid #E8F5E8" }} để thêm viền ngoài pastel
+    border: "2px solid #04C4D9",
+    position: "relative",
+    overflow: "hidden",
+    // Top gradient bar
+    "&::before": {
+        content: '""',
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        height: "4px",
+        background: "linear-gradient(90deg, #4C428C 0%, #04C4D9 100%)",
+    },
 }));
 
 export const DetailItem = styled(Box)(({ theme }) => ({
-    // Giữ flex, thêm border-bottom đồng bộ
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: theme.spacing(1.5),
-    paddingBottom: theme.spacing(1.5),
+    marginBottom: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
+    transition: "all 0.2s ease",
     "&:not(:last-child)": {
-        borderBottom: `1px solid ${theme.palette.grey[300]}`,
+        borderBottom: "2px solid #f3f4f6",
+    },
+    // Subtle hover effect
+    "&:hover": {
+        paddingLeft: theme.spacing(1),
+        borderBottomColor: "#04C4D9",
     },
 }));
 
 export const DetailLabel = styled(MuiTypography)(({ theme }) => ({
     fontWeight: 600,
-    // Đồng bộ màu từ battery
-    color: "#374151",
+    color: "#4C428C", // Purple for labels
     flexGrow: 1,
+    fontSize: "1rem",
 }));
 
 export const DetailValue = styled(MuiTypography)(({ theme }) => ({
     fontSize: "1rem",
-    // Đồng bộ màu nhạt hơn
-    color: "#555",
+    fontWeight: 500,
+    color: "#222326", // Dark for values
     textAlign: "right",
+}));
+
+// Bonus: Styled button to match theme
+export const StyledButton = styled("button")(({ theme }) => ({
+    padding: "12px 32px",
+    fontSize: "1rem",
+    fontWeight: 600,
+    borderRadius: "12px",
+    border: "none",
+    cursor: "pointer",
+    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+    background: "linear-gradient(135deg, #4C428C 0%, #04C4D9 100%)",
+    color: "#ffffff",
+    boxShadow: "0 4px 12px rgba(76, 66, 140, 0.3)",
+
+    "&:hover": {
+        transform: "translateY(-2px)",
+        boxShadow: "0 8px 24px rgba(76, 66, 140, 0.4)",
+    },
+
+    "&:active": {
+        transform: "translateY(0)",
+    },
+
+    "&:disabled": {
+        opacity: 0.6,
+        cursor: "not-allowed",
+        transform: "none",
+    },
 }));
