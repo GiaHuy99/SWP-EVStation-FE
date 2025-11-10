@@ -31,7 +31,7 @@ export const createSubscriptionPlan = createAsyncThunk<
     }
 });
 
-// 🟢 3️⃣ Lấy chi tiết theo id
+
 export const getSubscriptionPlanById = createAsyncThunk<
     SubscriptionPlan,
     number,
@@ -45,7 +45,7 @@ export const getSubscriptionPlanById = createAsyncThunk<
     }
 });
 
-// 🟢 4️⃣ Cập nhật gói
+
 export const updatePlan = createAsyncThunk<
     SubscriptionPlan,
     { id: number; payload: CreateSubscriptionPlanPayload },
