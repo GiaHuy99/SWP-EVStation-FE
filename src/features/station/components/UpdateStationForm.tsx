@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { Station } from "../types/StationType";
 import { useAppDispatch } from "../../../app/Hooks";
-import { updateStationThunk } from "../StationThunks";
+import { updateStation } from "../StationThunks";
 
 // Import styled
 import {
@@ -42,7 +42,7 @@ const UpdateStationForm: React.FC<Props> = ({ open, station, onClose }) => {
     const handleSubmit = () => {
         if (!formData) return;
         const { id, ...payload } = formData;
-        dispatch(updateStationThunk({ id, payload }));
+        dispatch(updateStation({ id, payload }));
         onClose();
     };
 
