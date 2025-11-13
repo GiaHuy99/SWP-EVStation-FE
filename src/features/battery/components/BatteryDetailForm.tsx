@@ -1,15 +1,7 @@
 import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
 import { getBatteryById } from "../BatteryThunk";
-import {
-    PageContainer,
-    FormCard, // Thêm để wrap với border pastel
-    Title,
-    DetailItem,
-    DetailValue,
-    DetailLabel,
-    DetailCard,
-} from "../styles/CreateBatteryForm"; // Import đúng từ file styled chung
+ // Import đúng từ file styled chung
 import { CircularProgress, Alert } from "@mui/material";
 
 interface BatteryDetailProps {
@@ -57,35 +49,13 @@ const BatteryDetail: React.FC<BatteryDetailProps> = ({ id }) => {
                 <div style={{ fontWeight: 600, color: '#666' }}>ID:</div>
                 <div style={{ color: '#333' }}>{selectedBattery.id}</div>
 
-                <div style={{ fontWeight: 600, color: '#666' }}>Số Seri:</div>
-                <div style={{ color: '#333' }}>{selectedBattery.serialNumber}</div>
+                <div style={{ fontWeight: 600, color: '#666' }}>Name:</div>
+                <div style={{ color: '#333' }}>{selectedBattery.name}</div>
 
-                <div style={{ fontWeight: 600, color: '#666' }}>Trạng thái:</div>
-                <div style={{ color: '#333' }}>
-                    <span style={{
-                        padding: '4px 12px',
-                        borderRadius: '16px',
-                        fontSize: '0.875rem',
-                        backgroundColor: 
-                            selectedBattery.status === 'AVAILABLE' ? '#e6f4ea' :
-                            selectedBattery.status === 'IN_USE' ? '#e8f0fe' :
-                            selectedBattery.status === 'DAMAGED' ? '#fce8e8' :
-                            '#fff3e0',
-                        color:
-                            selectedBattery.status === 'AVAILABLE' ? '#1e8e3e' :
-                            selectedBattery.status === 'IN_USE' ? '#1967d2' :
-                            selectedBattery.status === 'DAMAGED' ? '#d93025' :
-                            '#e65100',
-                    }}>
-                        {selectedBattery.status}
-                    </span>
-                </div>
 
-                <div style={{ fontWeight: 600, color: '#666' }}>Số lần đổi:</div>
-                <div style={{ color: '#333' }}>{selectedBattery.swapCount}</div>
+                <div style={{ fontWeight: 600, color: '#666' }}>Ngày Tạo:</div>
+                <div style={{ color: '#333' }}>{selectedBattery.createdAt}</div>
 
-                <div style={{ fontWeight: 600, color: '#666' }}>Trạm:</div>
-                <div style={{ color: '#333' }}>{selectedBattery.stationName || 'No station'}</div>
             </div>
         </div>
     );

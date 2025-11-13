@@ -1,28 +1,44 @@
 // src/features/battery/BatterySlice.ts
-import {createSlice} from "@reduxjs/toolkit";
-import {Battery} from "./types/BatteryType";
-import {createBattery, deleteBattery, fetchBatteries, getBatteryById, updateBattery} from "./BatteryThunk";
+import { createSlice } from "@reduxjs/toolkit";
+import { BatteryType } from "./types/BatteryType";
+import {
+    createBattery,
+    deleteBattery,
+    fetchBatteries,
+    getBatteryById,
+    updateBattery,
+     // THÊM
+} from "./BatteryThunk";
 
 interface BatteryState {
-    batteries: Battery[];
-    selectedBattery: Battery | null;
+    batteries: BatteryType[];
+    selectedBattery: BatteryType | null;
     loading: boolean;
     error: string | null;
+
+
+    errorSerials: string | null;
 }
+
 const initialState: BatteryState = {
     batteries: [],
     selectedBattery: null,
     loading: false,
     error: null,
+
+    errorSerials: null,
 };
+
 const batterySlice = createSlice({
     name: "battery",
     initialState,
-    reducers: {clearSelectedBattery: (state) => {
+    reducers: {
+        clearSelectedBattery: (state) => {
             state.selectedBattery = null;
         },
     },
     extraReducers: (builder) => {
+        // === CÁC THUNK CŨ ===
         builder
             .addCase(createBattery.pending, (state) => {
                 state.loading = true;
@@ -36,6 +52,7 @@ const batterySlice = createSlice({
                 state.loading = false;
                 state.error = action.payload as string;
             })
+
             .addCase(fetchBatteries.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -48,6 +65,7 @@ const batterySlice = createSlice({
                 state.loading = false;
                 state.error = action.payload as string;
             })
+
             .addCase(getBatteryById.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -60,6 +78,7 @@ const batterySlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message || "Failed to fetch battery";
             })
+
             .addCase(updateBattery.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -71,9 +90,10 @@ const batterySlice = createSlice({
                 );
             })
             .addCase(updateBattery.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.payload as string;
-        })
+                state.loading = false;
+                state.error = action.payload as string;
+            })
+
             .addCase(deleteBattery.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -87,10 +107,11 @@ const batterySlice = createSlice({
             .addCase(deleteBattery.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
-            });
+            })
 
     },
 });
+
 export const { clearSelectedBattery } = batterySlice.actions;
 
 export default batterySlice.reducer;

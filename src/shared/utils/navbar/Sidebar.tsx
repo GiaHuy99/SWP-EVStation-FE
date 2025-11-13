@@ -195,6 +195,24 @@ const Sidebar: FC = () => {
                                     <ListItemText primary="Danh Sách Pin" />
                                 </ListItemButton>
                             </ListItem>
+                            <ListItem disablePadding>
+                                <ListItemButton
+                                    component={Link as any}
+                                    to="/battery-serials/list"
+                                    sx={subItemStyle}
+                                >
+                                    <ListItemText primary="Danh Sách Serial Pin" />
+                                </ListItemButton>
+                            </ListItem>
+                            <ListItem disablePadding>
+                                <ListItemButton
+                                    component={Link as any}
+                                    to="/battery-serials/create"
+                                    sx={subItemStyle}
+                                >
+                                    <ListItemText primary="Tạo Pin trong trạm" />
+                                </ListItemButton>
+                            </ListItem>
                         </List>
                     </Collapse>
 

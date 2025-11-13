@@ -1,5 +1,5 @@
 import React from "react";
-import BatteryList from "../../components/Banner/BatteryListForm";
+import BatteryList from "../components/BatteryListForm";
 
 const BatteryListPage: React.FC = () => {
     return <BatteryList />;

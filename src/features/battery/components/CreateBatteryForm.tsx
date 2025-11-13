@@ -1,14 +1,8 @@
-// src/components/CreateBatteryForm.tsx
-import React, { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
-import { createBattery } from "../BatteryThunk";
-import { fetchStations } from "../../station/StationThunks";
-import { CreateBatteryPayload } from "../types/BatteryType";
-import { Button, MenuItem } from "@mui/material";
-import { showNotification } from "../../../shared/utils/notification/notificationSlice";
+// src/features/batteryType/components/CreateBatteryTypeForm.tsx
+import React, { useState } from "react";
+import { useAppDispatch } from "../../../app/Hooks";
 import { useNavigate } from "react-router-dom";
-
-// Import styled components từ file trước (thay path thực tế)
+import { Button } from "@mui/material";
 import {
     PageContainer,
     FormCard,
@@ -16,94 +10,131 @@ import {
     FullWidthBox,
     StyledTextField,
     Title,
-} from "../styles/CreateBatteryForm"; // Ví dụ: '../../../styles/BatteryStyles'
+} from "../../../styles/AdminDashboardStyles";
+import { CreateBatteryTypePayload } from "../types/BatteryType"; // ĐÚNG
+import { createBattery } from "../BatteryThunk"; // ĐÚNG
+import { showNotification } from "../../../shared/utils/notification/notificationSlice";
 
-const CreateBatteryForm: React.FC = () => {
+const CreateBatteryTypeForm: React.FC = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const { stations } = useAppSelector((state) => state.station);
-    const [form, setForm] = useState<CreateBatteryPayload>({
-        serialNumber: "",
-        status: "AVAILABLE",
-        swapCount: 0,
-        stationId: 0,
+
+    const [form, setForm] = useState<CreateBatteryTypePayload>({
+        name: "",
+        type: "",
+        designCapacity: 0,
+        description: "",
     });
 
-    useEffect(() => {
-        dispatch(fetchStations());
-    }, [dispatch]);
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
+        const { name, value, type } = e.target;
+        const processedValue = type === "number" ? parseFloat(value) || 0 : value;
+        setForm((prev) => ({ ...prev, [name]: processedValue }));
+        if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
+    };
+
+    const validate = (): boolean => {
+        const newErrors: Record<string, string> = {};
+        if (!form.name.trim()) newErrors.name = "Tên model không được để trống";
+        if (!form.type.trim()) newErrors.type = "Loại xe không được để trống";
+        if (form.designCapacity <= 0) newErrors.designCapacity = "Dung lượng phải > 0";
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        dispatch(createBattery(form))
+        if (!validate()) return;
+
+        dispatch(createBattery(form)) // ĐÚNG
             .unwrap()
             .then(() => {
-                dispatch(showNotification({ message: "Battery created successfully!", type: "success" }));
-                navigate("/battery/list"); // chuyển về list
+                dispatch(showNotification({ message: "Tạo loại pin thành công!", type: "success" }));
+                navigate("/battery-types");
             })
-            .catch(() => {
-                dispatch(showNotification({ message: "Failed to create battery.", type: "error" }));
+            .catch((error) => {
+                dispatch(showNotification({ message: error || "Tạo thất bại.", type: "error" }));
             });
     };
 
     return (
-        <PageContainer> {/* Wrap toàn bộ với background nhẹ */}
-            <FormCard sx={{ border: "1px solid #E8F5E8" }}> {/* Thêm viền ngoài xanh lá pastel */}
-                <Title>Tạo Pin mới</Title> {/* Title styled bold, center */}
+        <PageContainer>
+            <FormCard>
+                <Title>Tạo Loại Pin Mới</Title>
                 <form onSubmit={handleSubmit}>
-                    <FormBox> {/* Grid responsive: 1fr mobile, 1fr 1fr desktop */}
-                        <StyledTextField // Serial Number với pastel background
-                            label="Số Seri"
-                            name="serialNumber"
-                            value={form.serialNumber}
+                    <FormBox>
+                        {/* Row 1 */}
+                        <StyledTextField
+                            label="Tên Model"
+                            name="name"
+                            value={form.name}
                             onChange={handleChange}
                             required
+                            error={!!errors.name}
+                            helperText={errors.name}
                         />
-                        <StyledTextField // Status select
-                            select
-                            label="Trạng thái"
-                            name="status"
-                            value={form.status}
-                            onChange={handleChange}
-                        >
-                            <MenuItem value="AVAILABLE">AVAILABLE</MenuItem>
-                            <MenuItem value="IN_USE">IN_USE</MenuItem>
-                            <MenuItem value="DAMAGED">DAMAGED</MenuItem>
-                        </StyledTextField>
-                        <StyledTextField // Swap Count number
-                            type="number"
-                            label="Số lần đổi"
-                            name="swapCount"
-                            value={form.swapCount}
-                            onChange={handleChange}
-                        />
-                        <StyledTextField // Station select
-                            select
-                            label="Trạm"
-                            name="stationId"
-                            value={form.stationId}
+
+                        <StyledTextField
+                            label="Loại Xe"
+                            name="type"
+                            value={form.type}
                             onChange={handleChange}
                             required
-                        >
-                            {stations.map((s) => (
-                                <MenuItem key={s.id} value={s.id}>
-                                    {s.name}
-                                </MenuItem>
-                            ))}
-                        </StyledTextField>
-                        <FullWidthBox> {/* Button full width */}
+                            error={!!errors.type}
+                            helperText={errors.type || "Ví dụ: Scooter, Bike"}
+                        />
+
+                        {/* Row 2 */}
+                        <FullWidthBox>
+                            <StyledTextField
+                                label="Dung Lượng Thiết Kế (Ah)"
+                                name="designCapacity"
+                                type="number"
+                                value={form.designCapacity}
+                                onChange={handleChange}
+                                required
+                                error={!!errors.designCapacity}
+                                helperText={errors.designCapacity || "Phải > 0"}
+                                inputProps={{ step: "0.1", min: "0.1" }}
+                            />
+                        </FullWidthBox>
+
+                        <FullWidthBox>
+                            <StyledTextField
+                                label="Mô Tả"
+                                name="description"
+                                value={form.description}
+                                onChange={handleChange}
+                                multiline
+                                rows={4}
+                                placeholder="Thông tin bổ sung về loại pin..."
+                            />
+                        </FullWidthBox>
+
+                        {/* Submit Button */}
+                        <FullWidthBox>
                             <Button
                                 type="submit"
                                 variant="contained"
-                                color="success" // Màu xanh để khớp theme
+                                size="large"
                                 fullWidth
-                                sx={{ mt: 2, py: 1.5 }} // Padding thoải mái hơn
+                                sx={{
+                                    mt: 3,
+                                    py: 2,
+                                    fontWeight: "bold",
+                                    fontSize: "1.1rem",
+                                    borderRadius: "12px",
+                                    background: "linear-gradient(135deg, #4C428C 0%, #04C4D9 100%)",
+                                    boxShadow: "0 4px 14px rgba(76, 66, 140, 0.3)",
+                                    "&:hover": {
+                                        boxShadow: "0 8px 25px rgba(76, 66, 140, 0.4)",
+                                        transform: "translateY(-2px)",
+                                    },
+                                }}
                             >
-                                Lưu
+                                Tạo Loại Pin
                             </Button>
                         </FullWidthBox>
                     </FormBox>
@@ -113,4 +144,4 @@ const CreateBatteryForm: React.FC = () => {
     );
 };
 
-export default CreateBatteryForm;
+export default CreateBatteryTypeForm;
