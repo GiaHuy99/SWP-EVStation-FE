@@ -1,20 +1,11 @@
-import React from 'react';
-import {
-    Dialog,
-    DialogContent,
-    DialogTitle,
-    TextField,
-    Button,
-    Box,
-    IconButton,
-    Typography,
-    CircularProgress
-} from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import { Vehicle } from '../types/VehicleMockType';
-import { useAppDispatch, useAppSelector } from '../../../app/Hooks';
-import { updateVehicle } from '../VehicleThunks';
-import { styled } from '@mui/material/styles';
+// src/features/vehicle/components/VehicleUpdateForm.tsx
+import React, { useState } from "react";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Box, IconButton, CircularProgress } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
+import { updateVehicle } from "../VehicleThunks";
+import { Vehicle, UpdateVehiclePayload } from "../types/VehicleType";
+import { FormBox, FullWidthBox, StyledTextField } from "../styles/VehicleFormStyles";
 
 interface Props {
     open: boolean;
@@ -22,76 +13,66 @@ interface Props {
     vehicle: Vehicle;
 }
 
-const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
-    padding: theme.spacing(3),
-    '& .MuiTextField-root': {
-        marginBottom: theme.spacing(2)
-    }
-}));
-
 const VehicleUpdateForm: React.FC<Props> = ({ open, onClose, vehicle }) => {
-    const [formData, setFormData] = React.useState<Vehicle>(vehicle);
     const dispatch = useAppDispatch();
     const { loading } = useAppSelector(state => state.vehicle);
+    const [form, setForm] = useState<UpdateVehiclePayload>(vehicle);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
+        setForm(prev => ({
             ...prev,
-            [name]: ['year', 'wheelbase', 'seatHeight', 'weightWithBattery', 'batteryPercentage', 'mileage'].includes(name)
-                ? Number(value)
-                : value
+            [name]: ["weightWithoutBattery", "weightWithBattery"].includes(name) ? Number(value) : value,
         }));
     };
 
-    const handleSubmit = async () => {
-        await dispatch(updateVehicle({ id: vehicle.id, payload: formData }));
-        onClose();
+    const handleSubmit = () => {
+        dispatch(updateVehicle({ id: vehicle.id, payload: form })).then(() => {
+            onClose();
+        });
     };
 
     return (
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+        <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
             <DialogTitle>
-                <Box display="flex" justifyContent="space-between" alignItems="center">
-                    <Typography variant="h6">Update Vehicle</Typography>
-                    <IconButton onClick={onClose}>
-                        <CloseIcon />
-                    </IconButton>
-                </Box>
+                Cập Nhật Mẫu Xe
+                <IconButton onClick={onClose} sx={{ position: "absolute", right: 8, top: 8 }}>
+                    <CloseIcon />
+                </IconButton>
             </DialogTitle>
-            <StyledDialogContent>
-                <TextField label="VIN" name="vin" value={formData.vin} onChange={handleChange} fullWidth />
-                <TextField label="Giấy Đăng Ký" name="licensePlate" value={formData.licensePlate} onChange={handleChange} fullWidth />
-                <TextField label="Model" name="model" value={formData.model} onChange={handleChange} fullWidth />
-                <TextField label="Nhà Sản Xuất" name="manufacturer" value={formData.manufacturer} onChange={handleChange} fullWidth />
-                <TextField label="Màu" name="color" value={formData.color} onChange={handleChange} fullWidth />
-                <TextField label="Năm" name="year" type="number" value={formData.year} onChange={handleChange} fullWidth />
-                <TextField label="Chiều Dài (mm)" name="wheelbase" type="number" value={formData.wheelbase} onChange={handleChange} fullWidth />
-                <TextField label="Chiều Cao Ghế (mm)" name="seatHeight" type="number" value={formData.seatHeight} onChange={handleChange} fullWidth />
-                <TextField label="Trọng Lượng Cả Pin (kg)" name="weightWithBattery" type="number" value={formData.weightWithBattery} onChange={handleChange} fullWidth />
-                <TextField
-                    label="Tỷ Lệ Pin"
-                    name="batteryPercentage"
-                    type="number"
-                    value={formData.batteryPercentage} 
-                    onChange={handleChange} 
-                    fullWidth
-                    inputProps={{ min: 0, max: 100 }}
-                />
-                <TextField label="Quá Trình (km)" name="mileage" type="number" value={formData.mileage} onChange={handleChange} fullWidth />
-
-                <Box display="flex" justifyContent="flex-end" mt={3}>
-                    <Button onClick={onClose} sx={{ mr: 1 }}>Hủy</Button>
+            <DialogContent dividers>
+                <FormBox>
+                    <StyledTextField label="Tên xe" name="name" value={form.name} onChange={handleChange} />
+                    <StyledTextField label="Hãng" name="brand" value={form.brand} onChange={handleChange} />
+                    <StyledTextField label="Chiều dài cơ sở" name="wheelbase" value={form.wheelbase} onChange={handleChange} />
+                    <StyledTextField label="Khoảng sáng gầm" name="groundClearance" value={form.groundClearance} onChange={handleChange} />
+                    <StyledTextField label="Chiều cao yên" name="seatHeight" value={form.seatHeight} onChange={handleChange} />
+                    <StyledTextField label="Lốp trước" name="frontTire" value={form.frontTire} onChange={handleChange} />
+                    <StyledTextField label="Lốp sau" name="rearTire" value={form.rearTire} onChange={handleChange} />
+                    <StyledTextField label="Phuộc trước" name="frontSuspension" value={form.frontSuspension} onChange={handleChange} />
+                    <StyledTextField label="Phuộc sau" name="rearSuspension" value={form.rearSuspension} onChange={handleChange} />
+                    <StyledTextField label="Hệ thống phanh" name="brakeSystem" value={form.brakeSystem} onChange={handleChange} />
+                    <StyledTextField label="Dung tích cốp" name="trunkCapacity" value={form.trunkCapacity} onChange={handleChange} />
+                    <StyledTextField label="Trọng lượng (không pin)" name="weightWithoutBattery" type="number" value={form.weightWithoutBattery} onChange={handleChange} />
+                    <StyledTextField label="Trọng lượng (có pin)" name="weightWithBattery" type="number" value={form.weightWithBattery} onChange={handleChange} />
+                </FormBox>
+            </DialogContent>
+            <DialogActions>
+                <FullWidthBox sx={{ display: "flex", justifyContent: "flex-end", gap: 1, p: 2 }}>
+                    <Button onClick={onClose}>Hủy</Button>
                     <Button
                         variant="contained"
-                        color="primary" 
                         onClick={handleSubmit}
                         disabled={loading}
+                        sx={{
+                            background: "linear-gradient(135deg, #4C428C 0%, #04C4D9 100%)",
+                            "&:hover": { transform: "translateY(-2px)" },
+                        }}
                     >
-                        {loading ? <CircularProgress size={24} /> : "Cập Nhật"}
+                        {loading ? <CircularProgress size={20} /> : "Cập nhật"}
                     </Button>
-                </Box>
-            </StyledDialogContent>
+                </FullWidthBox>
+            </DialogActions>
         </Dialog>
     );
 };

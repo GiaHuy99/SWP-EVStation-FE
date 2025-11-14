@@ -1,88 +1,98 @@
+// src/features/vehicle/components/VehicleCreateForm.tsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
 import { createVehicle } from "../VehicleThunks";
-import { CreateVehiclePayload } from "../types/VehicleMockType";
-import { Box, TextField, Button, CircularProgress } from "@mui/material";
-import { FormCard, Title, FormRow } from "../styles/VehicleFormStyles";
+import { CreateVehiclePayload } from "../types/VehicleType";
+import { Button, CircularProgress } from "@mui/material";
+import {
+    PageContainer,
+    FormCard,
+    Title,
+    FormBox,
+    FullWidthBox,
+    StyledTextField,
+} from "../styles/VehicleFormStyles";
 
 const VehicleCreateForm: React.FC = () => {
     const dispatch = useAppDispatch();
-    const { loading } = useAppSelector(state => state.vehicle);
+    const navigate = useNavigate();
+    const { loading } = useAppSelector((state) => state.vehicle);
 
-    const [formData, setFormData] = useState<CreateVehiclePayload>({
-        vin: "",
-        licensePlate: "",
-        model: "",
-        manufacturer: "",
-        color: "",
-        year: new Date().getFullYear(),
-        wheelbase: 0,
-        seatHeight: 0,
+    const [form, setForm] = useState<CreateVehiclePayload>({
+        name: "",
+        brand: "",
+        wheelbase: "",
+        groundClearance: "",
+        seatHeight: "",
+        frontTire: "",
+        rearTire: "",
+        frontSuspension: "",
+        rearSuspension: "",
+        brakeSystem: "",
+        trunkCapacity: "",
+        weightWithoutBattery: 0,
         weightWithBattery: 0,
-        batteryPercentage: 100,
-        mileage: 0,
-        status: "ACTIVE",
-        userId: 1  // Temporary hardcoded userId
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
+        setForm(prev => ({
             ...prev,
-            [name]: ['year', 'wheelbase', 'seatHeight', 'weightWithBattery', 'batteryPercentage', 'mileage'].includes(name) 
-                ? Number(value) 
-                : value
+            [name]: ["weightWithoutBattery", "weightWithBattery"].includes(name) ? Number(value) : value,
         }));
     };
 
-    const navigate = useNavigate();
-
-    const handleSubmit = async () => {
-        try {
-            const result = await dispatch(createVehicle(formData));
-            if (createVehicle.fulfilled.match(result)) {
-                // Nếu tạo thành công, chuyển về trang danh sách
-                navigate("/vehicle/list");
-            }
-        } catch (error) {
-            console.error("Failed to create vehicle:", error);
-        }
+    const handleSubmit = () => {
+        dispatch(createVehicle(form)).then(() => {
+            navigate("/vehicle/list");
+        });
     };
 
     return (
-        <FormCard>
-            <Title variant="h5">Create Vehicle</Title>
-            <FormRow>
-                <TextField label="VIN" name="vin" value={formData.vin} onChange={handleChange} fullWidth />
-                <Box mt={2} />
-                <TextField label="Giấy Đăng Ký" name="licensePlate" value={formData.licensePlate} onChange={handleChange} fullWidth />
-                <Box mt={2} />
-                <TextField label="Model" name="model" value={formData.model} onChange={handleChange} fullWidth />
-                <Box mt={2} />
-                <TextField label="Nhà Sản Xuất" name="manufacturer" value={formData.manufacturer} onChange={handleChange} fullWidth />
-                <Box mt={2} />
-                <TextField label="Màu" name="color" value={formData.color} onChange={handleChange} fullWidth />
-                <Box mt={2} />
-                <TextField label="Năm" name="year" type="number" value={formData.year} onChange={handleChange} fullWidth />
-                <Box mt={2} />
-                <TextField label="Chiều Dài (mm)" name="wheelbase" type="number" value={formData.wheelbase} onChange={handleChange} fullWidth />
-                <Box mt={2} />
-                <TextField label="Chiều Cao Ghế (mm)" name="seatHeight" type="number" value={formData.seatHeight} onChange={handleChange} fullWidth />
-                <Box mt={2} />
-                <TextField label="Trọng Lượng Cả Pin (kg)" name="weightWithBattery" type="number" value={formData.weightWithBattery} onChange={handleChange} fullWidth />
-                <Box mt={2} />
-                <TextField label="Tỷ Lệ Pin" name="batteryPercentage" type="number" value={formData.batteryPercentage} onChange={handleChange} fullWidth
-                    inputProps={{ min: 0, max: 100 }} />
-                <Box mt={2} />
-                <TextField label="Quá Trình (km)" name="mileage" type="number" value={formData.mileage} onChange={handleChange} fullWidth />
-            </FormRow>
-            <Box display="flex" justifyContent="flex-end" mt={2}>
-                <Button variant="contained" color="primary" onClick={handleSubmit} disabled={loading}>
-                    {loading ? <CircularProgress size={24} /> : "Tạo Vehicle"}
-                </Button>
-            </Box>
-        </FormCard>
+        <PageContainer>
+            <FormCard>
+                <Title>Tạo Mẫu Xe Mới</Title>
+                <FormBox>
+                    <StyledTextField label="Tên xe" name="name" value={form.name} onChange={handleChange} required />
+                    <StyledTextField label="Hãng" name="brand" value={form.brand} onChange={handleChange} required />
+                    <StyledTextField label="Chiều dài cơ sở" name="wheelbase" value={form.wheelbase} onChange={handleChange} />
+                    <StyledTextField label="Khoảng sáng gầm" name="groundClearance" value={form.groundClearance} onChange={handleChange} />
+                    <StyledTextField label="Chiều cao yên" name="seatHeight" value={form.seatHeight} onChange={handleChange} />
+                    <StyledTextField label="Lốp trước" name="frontTire" value={form.frontTire} onChange={handleChange} />
+                    <StyledTextField label="Lốp sau" name="rearTire" value={form.rearTire} onChange={handleChange} />
+                    <StyledTextField label="Phuộc trước" name="frontSuspension" value={form.frontSuspension} onChange={handleChange} />
+                    <StyledTextField label="Phuộc sau" name="rearSuspension" value={form.rearSuspension} onChange={handleChange} />
+                    <StyledTextField label="Hệ thống phanh" name="brakeSystem" value={form.brakeSystem} onChange={handleChange} />
+                    <StyledTextField label="Dung tích cốp" name="trunkCapacity" value={form.trunkCapacity} onChange={handleChange} />
+                    <StyledTextField label="Trọng lượng (không pin)" name="weightWithoutBattery" type="number" value={form.weightWithoutBattery} onChange={handleChange} />
+                    <StyledTextField label="Trọng lượng (có pin)" name="weightWithBattery" type="number" value={form.weightWithBattery} onChange={handleChange} />
+                    <FullWidthBox>
+                        <Button
+                            variant="contained"
+                            size="large"
+                            fullWidth
+                            onClick={handleSubmit}
+                            disabled={loading}
+                            sx={{
+                                py: 2,
+                                borderRadius: "12px",
+                                background: "linear-gradient(135deg, #4C428C 0%, #04C4D9 100%)",
+                                boxShadow: "0 4px 14px rgba(76, 66, 140, 0.3)",
+                                "&:hover": {
+                                    boxShadow: "0 8px 25px rgba(76, 66, 140, 0.4)",
+                                    transform: "translateY(-2px)",
+                                },
+                                fontWeight: 600,
+                                fontSize: "1.1rem",
+                            }}
+                        >
+                            {loading ? <CircularProgress size={24} color="inherit" /> : "Tạo Mẫu Xe"}
+                        </Button>
+                    </FullWidthBox>
+                </FormBox>
+            </FormCard>
+        </PageContainer>
     );
 };
 

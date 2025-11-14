@@ -1,18 +1,20 @@
 import React from 'react';
 import { Link, Outlet } from 'react-router-dom';
-import { Box, Button, Container } from '@mui/material';
+import { Box, Button, Container, useTheme } from '@mui/material';
 import { Home as HomeIcon } from '@mui/icons-material';
 
 const UserPageLayout: React.FC = () => {
+    const theme = useTheme();
+    
     return (
-        <Box sx={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
+        <Box sx={{ minHeight: '100vh', backgroundColor: theme.palette.background.default }}>
             {/* Top Navigation Bar with Home Button */}
             <Box
                 sx={{
-                    backgroundColor: '#1a1a1a',
+                    backgroundColor: '#202426',
                     py: 2,
                     px: 3,
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+                    boxShadow: theme.shadows[2]
                 }}
             >
                 <Container maxWidth="lg">
@@ -21,17 +23,12 @@ const UserPageLayout: React.FC = () => {
                         to="/homepage"
                         startIcon={<HomeIcon />}
                         sx={{
-                            color: '#ffffff',
+                            color: theme.palette.common.white,
                             backgroundColor: 'transparent',
-                            borderRadius: '8px',
-                            padding: '8px 16px',
-                            fontSize: '0.95rem',
-                            fontWeight: '500',
-                            textTransform: 'none',
-                            transition: 'all 0.3s ease',
+                            borderRadius: theme.shape.borderRadius,
                             '&:hover': {
-                                backgroundColor: 'rgba(100, 181, 246, 0.15)',
-                                color: '#64b5f6',
+                                backgroundColor: theme.palette.action.hover,
+                                color: theme.palette.secondary.main,
                                 transform: 'translateY(-1px)',
                             },
                         }}

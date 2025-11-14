@@ -1,14 +1,10 @@
+// src/features/subscriptionPlan/components/CreateSubscriptionPlanForm.tsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-    MenuItem,
-    Button,
-} from "@mui/material";
+import { MenuItem, Button } from "@mui/material";
 import { useAppDispatch } from "../../../app/Hooks";
 import { createSubscriptionPlan } from "../SubcriptionPlanThunks";
-import { SubscriptionPlan, CreateSubscriptionPlanPayload } from "../types/SubscriptionPlanType";
-
-// Import styled đồng bộ
+import { CreateSubscriptionPlanPayload } from "../types/SubscriptionPlanType";
 import {
     PageContainer,
     FormCard,
@@ -16,111 +12,111 @@ import {
     FullWidthBox,
     StyledTextField,
     Title,
-} from "../styles/SubscriptionPlanStyles";
+} from "../../../styles/SubscriptionPlanStyles";
 
-const statusOptions: SubscriptionPlan["status"][] = ["ACTIVE", "INACTIVE"];
-
-const planTypeOptions: SubscriptionPlan["planType"][] = ["DISTANCE", "ENERGY", "UNLIMITED"];
+const planTypeOptions = ["DISTANCE", "ENERGY", "UNLIMITED"] as const;
+const statusOptions = ["ACTIVE", "INACTIVE"] as const;
 
 const CreateSubscriptionPlanForm: React.FC = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const [name, setName] = useState("");
-    const [price, setPrice] = useState(0);
-    const [durationDays, setDurationDays] = useState(0);
-    const [maxBatteries, setMaxBatteries] = useState(1);
-    const [baseMileage, setBaseMileage] = useState(0);
-    const [baseEnergy, setBaseEnergy] = useState(0);
-    const [planType, setPlanType] = useState<SubscriptionPlan["planType"]>("DISTANCE");
-    const [status, setStatus] = useState<SubscriptionPlan["status"]>("ACTIVE");
+
+    const [form, setForm] = useState<CreateSubscriptionPlanPayload>({
+        name: "",
+        price: 0,
+        durationDays: 0,
+        maxBatteries: 1,
+        baseMileage: 0,
+        baseEnergy: 0,
+        planType: "DISTANCE",
+        status: "ACTIVE",
+    });
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setForm(prev => ({
+            ...prev,
+            [name]: name === "planType" || name === "status" ? value : Number(value),
+        }));
+    };
 
     const handleCreate = () => {
-        const payload: CreateSubscriptionPlanPayload = {
-            name,
-            price,
-            durationDays,
-            maxBatteries,
-            baseMileage,
-            baseEnergy,
-            planType,
-            status,
-        };
-        dispatch(createSubscriptionPlan(payload)).then(() => {
-            navigate("/subcriptionPlan/list");
+        dispatch(createSubscriptionPlan(form)).then(() => {
+            navigate("/subscription-plans");
         });
-        // Reset form
-        setName("");
-        setPrice(0);
-        setDurationDays(0);
-        setMaxBatteries(1);
-        setBaseMileage(0);
-        setBaseEnergy(0);
-        setPlanType("DISTANCE");
-        setStatus("ACTIVE");
     };
 
     return (
         <PageContainer>
-            <FormCard sx={{ border: "1px solid #E8F5E8" }}>
+            <FormCard>
                 <Title>Tạo Gói Đăng Ký Mới</Title>
                 <FormBox>
                     <StyledTextField
                         label="Tên Gói"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
+                        name="name"
+                        value={form.name}
+                        onChange={handleChange}
                         required
+                        fullWidth
                     />
-                    <StyledTextField // Price cạnh name
-                        label="Giá"
+                    <StyledTextField
+                        label="Giá (VND)"
+                        name="price"
                         type="number"
-                        value={price}
-                        onChange={(e) => setPrice(Number(e.target.value))}
+                        value={form.price}
+                        onChange={handleChange}
                         required
+                        fullWidth
                     />
-                    <StyledTextField // Duration
+                    <StyledTextField
                         label="Thời gian (ngày)"
+                        name="durationDays"
                         type="number"
-                        value={durationDays}
-                        onChange={(e) => setDurationDays(Number(e.target.value))}
+                        value={form.durationDays}
+                        onChange={handleChange}
                         required
+                        fullWidth
                     />
-                    <StyledTextField // Max Batteries cạnh duration
+                    <StyledTextField
                         label="Số Pin Tối Đa"
+                        name="maxBatteries"
                         type="number"
-                        value={maxBatteries}
-                        onChange={(e) => setMaxBatteries(Number(e.target.value))}
+                        value={form.maxBatteries}
+                        onChange={handleChange}
                         required
+                        fullWidth
                     />
-                    <FullWidthBox> {/* Base Mileage full */}
+                    <FullWidthBox>
                         <StyledTextField
-                            label="Quá trình (km)"
+                            label="Quãng đường cơ bản (km)"
+                            name="baseMileage"
                             type="number"
-                            value={baseMileage}
-                            onChange={(e) => setBaseMileage(Number(e.target.value))}
-                            required
+                            value={form.baseMileage}
+                            onChange={handleChange}
+                            fullWidth
                         />
                     </FullWidthBox>
                     <FullWidthBox>
                         <StyledTextField
-                            label="Năng lượng cơ bản"
+                            label="Năng lượng cơ bản (kWh)"
+                            name="baseEnergy"
                             type="number"
-                            value={baseEnergy}
-                            onChange={(e) => setBaseEnergy(Number(e.target.value))}
-                            required
+                            value={form.baseEnergy}
+                            onChange={handleChange}
+                            fullWidth
                         />
                     </FullWidthBox>
                     <FullWidthBox>
                         <StyledTextField
                             select
                             label="Loại Gói"
-                            value={planType}
-                            onChange={(e) => setPlanType(e.target.value as SubscriptionPlan["planType"])}
-                            required
+                            name="planType"
+                            value={form.planType}
+                            onChange={handleChange}
+                            fullWidth
                         >
-                            {planTypeOptions.map((option) => (
-                                <MenuItem key={option} value={option}>
-                                    {option}
-                                </MenuItem>
+                            {planTypeOptions.map(option => (
+                                <MenuItem key={option} value={option}>{option}</MenuItem>
                             ))}
                         </StyledTextField>
                     </FullWidthBox>
@@ -128,23 +124,36 @@ const CreateSubscriptionPlanForm: React.FC = () => {
                         <StyledTextField
                             select
                             label="Trạng thái"
-                            value={status}
-                            onChange={(e) => setStatus(e.target.value as SubscriptionPlan["status"])}
+                            name="status"
+                            value={form.status}
+                            onChange={handleChange}
+                            fullWidth
                         >
-                            {statusOptions.map((s) => (
+                            {statusOptions.map(s => (
                                 <MenuItem key={s} value={s}>{s}</MenuItem>
                             ))}
                         </StyledTextField>
                     </FullWidthBox>
-                    <FullWidthBox> {/* Button full */}
+                    <FullWidthBox>
                         <Button
                             variant="contained"
-                            color="success" // Xanh lá
-                            onClick={handleCreate}
+                            size="large"
                             fullWidth
-                            sx={{ py: 1.5 }}
+                            onClick={handleCreate}
+                            sx={{
+                                py: 2,
+                                border: "12px",
+                                background: "linear-gradient(135deg, #4C428C 0%, #04C4D9 100%)",
+                                boxShadow: "0 4px 14px rgba(76, 66, 140, 0.3)",
+                                "&:hover": {
+                                boxShadow: "0 8px 25px rgba(76, 66, 140, 0.4)",
+                                transform: "translateY(-2px)",
+                            },
+                                fontWeight: 600,
+                                fontSize: "1.1rem",
+                            }}
                         >
-                            Create
+                            Tạo Gói Mới
                         </Button>
                     </FullWidthBox>
                 </FormBox>

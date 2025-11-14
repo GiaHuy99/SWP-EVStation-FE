@@ -1,23 +1,28 @@
-import {Battery, CreateBatteryPayload, UpdateBatteryPayload} from "../types/BatteryType";
+// src/features/battery/services/BatteryServices.ts
+import { BatteryType, CreateBatteryTypePayload} from "../types/BatteryType";
 import axiosInstance from "../../../shared/utils/AxiosInstance";
 
-class BatteryServices {
-    async createBatteryService(payload: CreateBatteryPayload): Promise<Battery> {
-        const res = await axiosInstance.post<Battery>("/batteries", payload);
+export class BatteryServices {
+    async createBatteryService(payload: CreateBatteryTypePayload): Promise<BatteryType> {
+        const res = await axiosInstance.post<BatteryType>("/batteries", payload);
         return res.data;
     }
-    async getAll(): Promise<Battery[]> {
-        const res = await axiosInstance.get<Battery[]>("/batteries");
+
+    async getAll(): Promise<BatteryType[]> {
+        const res = await axiosInstance.get<BatteryType[]>("/batteries");
         return res.data;
     }
-    async getBatteryById(id: number): Promise<Battery> {
-        const res = await axiosInstance.get<Battery>(`/batteries/${id}`);
+
+    async getBatteryById(id: number): Promise<BatteryType> {
+        const res = await axiosInstance.get<BatteryType>(`/batteries/${id}`);
         return res.data;
     }
-    async update(id: number, payload: Partial<CreateBatteryPayload>): Promise<Battery> {
-        const res = await axiosInstance.put<Battery>(`/batteries/${id}`, payload);
+
+    async update(id: number, payload: Partial<CreateBatteryTypePayload>): Promise<BatteryType> {
+        const res = await axiosInstance.put<BatteryType>(`/batteries/${id}`, payload);
         return res.data;
     }
+
     async delete(id: number): Promise<void> {
         await axiosInstance.delete(`/batteries/${id}`);
     }
@@ -25,4 +30,4 @@ class BatteryServices {
 
 }
 
-export default new BatteryServices(); // 👈 export instance luôn
+export default new BatteryServices();

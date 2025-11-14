@@ -5,107 +5,241 @@ import { useNavigate } from "react-router-dom";
 import {
     MenuItem,
     Button,
+    Select,
+    InputLabel,
+    FormControl,
+    CircularProgress,
+    Box,
+    SelectChangeEvent,
+    Typography,
 } from "@mui/material";
 import {
-    PageContainer, // Thêm wrap background
-    FormCard, // Thêm card với viền pastel
+    PageContainer,
+    FormCard,
     FormBox,
     FullWidthBox,
     StyledTextField,
-    Title, // Thêm title
-} from "../styles/CreateStationForm";
+    Title,
+} from "../styles/CreateStationForm"; // ← Updated import
 import { CreateStationPayload } from "../types/StationType";
 import { showNotification } from "../../../shared/utils/notification/notificationSlice";
 
 const CreateStationForm: React.FC = () => {
     const dispatch = useAppDispatch();
-    const { loading, error } = useAppSelector((state) => state.station);
+    const { loading } = useAppSelector((state) => state.station);
     const navigate = useNavigate();
-    const [form, setForm] = useState({
+
+    const [form, setForm] = useState<CreateStationPayload>({
         name: "",
         location: "",
         status: "ACTIVE",
-        capacity: 0,
+        capacity: 1,
         phone: "",
+        latitude: 0,
+        longitude: 0,
     });
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
+    const [errors, setErrors] = useState<Record<string, string>>({});
+
+    const handleChange = (
+        e:
+            | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+            | SelectChangeEvent<unknown>
+    ) => {
+        const { name, value } = e.target;
+
+        setForm((prev) => ({
+            ...prev,
+            [name!]:
+                ["capacity", "latitude", "longitude"].includes(name!)
+                    ? Number(value)
+                    : value,
+        }));
+
+        if (errors[name!]) {
+            setErrors((prev) => ({ ...prev, [name!]: "" }));
+        }
+    };
+
+    const validate = (): boolean => {
+        const newErrors: Record<string, string> = {};
+
+        if (!form.name.trim()) newErrors.name = "Tên trạm không được để trống";
+        if (!form.location.trim()) newErrors.location = "Địa điểm không được để trống";
+        if (form.capacity < 1) newErrors.capacity = "Sức chứa phải ≥ 1";
+        if (!/^\+?[0-9]{10,15}$/.test(form.phone.replace(/\s/g, "")))
+            newErrors.phone = "Số điện thoại không hợp lệ (10-15 số)";
+        if (form.latitude < -90 || form.latitude > 90)
+            newErrors.latitude = "Vĩ độ phải từ -90 đến 90";
+        if (form.longitude < -180 || form.longitude > 180)
+            newErrors.longitude = "Kinh độ phải từ -180 đến 180";
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        dispatch(createStation({ ...form, capacity: Number(form.capacity) } as CreateStationPayload))
+        if (!validate()) return;
+
+        dispatch(createStation(form))
             .unwrap()
             .then(() => {
-                dispatch(showNotification({ message: "Station created successfully!", type: "success" })); // Fix message
-                navigate("/stations/list"); // chuyển về list
+                dispatch(
+                    showNotification({
+                        message: "Tạo trạm thành công!",
+                        type: "success",
+                    })
+                );
+                navigate("/stations/list");
             })
             .catch(() => {
-                dispatch(showNotification({ message: "Failed to create station.", type: "error" })); // Fix message
+                dispatch(
+                    showNotification({
+                        message: "Tạo trạm thất bại. Vui lòng thử lại.",
+                        type: "error",
+                    })
+                );
             });
     };
 
-    if (loading) return <div>Đang tạo station...</div>; // Thêm handle loading
-    if (error) return <div>Lỗi: {error}</div>; // Thêm handle error
+    // Loading State
+    if (loading) {
+        return (
+            <PageContainer>
+                <FormCard>
+                    <Box
+                        display="flex"
+                        flexDirection="column"
+                        alignItems="center"
+                        justifyContent="center"
+                        minHeight="50vh"
+                        gap={2}
+                    >
+                        <CircularProgress size={48} thickness={4} />
+                        <Typography variant="body2" color="text.secondary">
+                            Đang tạo trạm...
+                        </Typography>
+                    </Box>
+                </FormCard>
+            </PageContainer>
+        );
+    }
 
     return (
-        <PageContainer> {/* Wrap với background nhẹ #F9FAFB */}
-            <FormCard sx={{ border: "1px solid #E8F5E8" }}> {/* Card với viền ngoài xanh lá pastel */}
-                <Title>Thêm Trạm Mới</Title> {/* Title bold, center */}
+        <PageContainer>
+            <FormCard>
+
                 <form onSubmit={handleSubmit}>
-                    <FormBox> {/* Grid responsive: 1fr mobile, 1fr 1fr desktop */}
-                        <StyledTextField // Name
+                    <FormBox>
+                        {/* Row 1: Name + Location */}
+                        <StyledTextField
                             label="Tên Trạm"
                             name="name"
                             value={form.name}
                             onChange={handleChange}
                             required
+                            error={!!errors.name}
+                            helperText={errors.name}
                         />
-                        <StyledTextField // Location cạnh name trên desktop
+                        <StyledTextField
                             label="Địa điểm"
                             name="location"
                             value={form.location}
                             onChange={handleChange}
                             required
+                            error={!!errors.location}
+                            helperText={errors.location}
                         />
-                        <StyledTextField // Status select
-                            select
-                            label="Trạng thái"
-                            name="status"
-                            value={form.status}
-                            onChange={handleChange}
-                        >
-                            <MenuItem value="ACTIVE">Hoạt động</MenuItem>
-                            <MenuItem value="INACTIVE">Ngừng hoạt động</MenuItem>
-                        </StyledTextField>
-                        <StyledTextField // Capacity cạnh status
+
+                        {/* Row 2: Status + Capacity */}
+                        <FormControl fullWidth>
+                            <InputLabel>Trạng thái</InputLabel>
+                            <Select
+                                name="status"
+                                value={form.status}
+                                label="Trạng thái"
+                                onChange={handleChange}
+                            >
+                                <MenuItem value="ACTIVE">Hoạt động</MenuItem>
+                                <MenuItem value="INACTIVE">Ngừng hoạt động</MenuItem>
+                            </Select>
+                        </FormControl>
+
+                        <StyledTextField
                             label="Sức chứa (số pin)"
                             name="capacity"
                             type="number"
                             value={form.capacity}
                             onChange={handleChange}
                             required
+                            error={!!errors.capacity}
+                            helperText={errors.capacity || "Phải ≥ 1"}
+                            inputProps={{ min: 1 }}
                         />
-                        <FullWidthBox> {/* Phone full width */}
+
+                        {/* Row 3: Phone (full width) */}
+                        <FullWidthBox>
                             <StyledTextField
                                 label="Điện thoại"
                                 name="phone"
                                 value={form.phone}
                                 onChange={handleChange}
                                 required
+                                error={!!errors.phone}
+                                helperText={errors.phone || "Ví dụ: +846464373666"}
+                                placeholder="+846464373666"
                             />
                         </FullWidthBox>
-                        <FullWidthBox> {/* Button full width */}
+
+                        {/* Row 4: Latitude + Longitude */}
+                        <StyledTextField
+                            label="Vĩ độ (Latitude)"
+                            name="latitude"
+                            type="number"
+                            value={form.latitude}
+                            onChange={handleChange}
+                            required
+                            error={!!errors.latitude}
+                            helperText={errors.latitude || "Từ -90 đến 90"}
+                            inputProps={{ step: "0.000001" }}
+                        />
+                        <StyledTextField
+                            label="Kinh độ (Longitude)"
+                            name="longitude"
+                            type="number"
+                            value={form.longitude}
+                            onChange={handleChange}
+                            required
+                            error={!!errors.longitude}
+                            helperText={errors.longitude || "Từ -180 đến 180"}
+                            inputProps={{ step: "0.000001" }}
+                        />
+
+                        {/* Submit Button */}
+                        <FullWidthBox>
                             <Button
                                 type="submit"
                                 variant="contained"
-                                color="success" // Đổi thành xanh lá khớp theme
+                                color="success"
                                 size="large"
                                 fullWidth
-                                sx={{ mt: 2, py: 1.5 }} // Padding mượt hơn
+                                disabled={loading}
+                                sx={{
+                                    mt: 3,
+                                    py: 1.8,
+                                    fontWeight: "bold",
+                                    textTransform: "none",
+                                    fontSize: "1.1rem",
+                                    borderRadius: "12px",
+                                    boxShadow: "0 4px 14px rgba(34, 197, 94, 0.3)",
+                                    "&:hover": {
+                                        boxShadow: "0 8px 25px rgba(34, 197, 94, 0.4)",
+                                        transform: "translateY(-1px)",
+                                    },
+                                }}
                             >
-                                Tạo Mới
+                                {loading ? "Đang tạo..." : "Tạo Trạm Mới"}
                             </Button>
                         </FullWidthBox>
                     </FormBox>

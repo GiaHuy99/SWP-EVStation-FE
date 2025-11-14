@@ -1,4 +1,4 @@
-// src/styles/VehicleModelStyles.ts
+// src/styles/SubscriptionPlanStyles.ts
 import { Box, Card, TextField, Typography, styled } from "@mui/material";
 
 export const PageContainer = styled(Box)(({ theme }) => ({
@@ -8,7 +8,7 @@ export const PageContainer = styled(Box)(({ theme }) => ({
 }));
 
 export const FormCard = styled(Card)(({ theme }) => ({
-    maxWidth: 900,
+    maxWidth: 800,
     margin: "0 auto",
     padding: theme.spacing(4),
     borderRadius: 16,

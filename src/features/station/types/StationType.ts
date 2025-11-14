@@ -5,6 +5,8 @@ export interface Station {
     status: "ACTIVE" | "INACTIVE"; // can extend later
     capacity: number;
     phone: string;
+    latitude: number;
+    longitude: number;
 }
 
 export interface CreateStationPayload {
@@ -13,6 +15,8 @@ export interface CreateStationPayload {
     status: "ACTIVE" | "INACTIVE";
     capacity: number;
     phone: string;
+    latitude: number;
+    longitude: number;
 }
 export interface StationDetailState {
     station: Station | null;
@@ -20,10 +24,11 @@ export interface StationDetailState {
     error: string | null;
 }
 export interface UpdateStationPayload {
-    id: number;
-    name: string;
-    location: string;
-    status: "ACTIVE" | "INACTIVE";
-    capacity: number;
-    phone: string;
+    name?: string;
+    location?: string;
+    status?: "ACTIVE" | "INACTIVE";
+    capacity?: number;
+    phone?: string;
+    latitude?: number;
+    longitude?: number;
 }

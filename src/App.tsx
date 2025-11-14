@@ -7,7 +7,7 @@ import RegisterPage from "./features/auth/pages/RegisterPage";
 import CreateStationPage from "./features/station/pages/CreateStationPage";
 import ListStationPage from "./features/station/pages/ListStationPage";
 import CreateBatteryPage from "./features/battery/pages/CreateBatteryPage";
-import BatteryListPage from "./features/battery/pages/List/BatteryListPage";
+import BatteryListPage from "./features/battery/pages/BatteryListPage";
 import CreateSubscriptionPlanPage from "./features/subcriptionPlan/pages/CreateSubscriptionPlanPage";
 import SubscriptionPlanPage from "./features/subcriptionPlan/pages/SubscriptionPlanPage";
 import VehicleCreatePage from "./features/vehicle/pages/VehicleCreatePage";
@@ -21,6 +21,8 @@ import Layout from "./shared/utils/navbar/Layout";
 import UserPageLayout from "./shared/utils/layout/UserPageLayout"; // User layout component
 import SwapBatteryPage from "./features/swapBattery/pages/SwapBatteryPage";
 import HomePage from "./features/home/HomePage";
+import BatterySerialListPage from './features/BatterySerials/components/BatterySerialList';
+import CreateBatterySerialForm from './features/BatterySerials/components/CreateBatterySerialForm';
 import {BaseMap} from "./features/map/components/BaseMap";
 function App() {
   return (
@@ -49,6 +51,8 @@ function App() {
                   <Route path="/stations/list" element={<ListStationPage />} />
                   <Route path="/battery/create" element={<CreateBatteryPage />} />
                   <Route path="/battery/list" element={<BatteryListPage />} />
+                  <Route path="/battery-serials/list" element={< BatterySerialListPage/>} />
+                  <Route path="/battery-serials/create" element={<CreateBatterySerialForm/>} />
                   <Route path="/subcriptionPlan/create" element={<CreateSubscriptionPlanPage />} />
                   <Route path="/subcriptionPlan/list" element={<SubscriptionPlanPage />} />
                   <Route path="/vehicle/create" element={<VehicleCreatePage />} />
