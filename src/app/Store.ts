@@ -3,7 +3,7 @@ import authReducer from "../features/auth/AuthSlice";
 import stationReducer from "../features/station/StationSlice";
 import batteryReducer from "../features/battery/BatterySlice";
 import subscriptionPlanReducer from "../features/subcriptionPlan/SubcriptionPlantSlice";
-import vehicleReducer from "../features/vehicle/VehicleMockSlice";
+import vehicleReducer from "../features/vehicle/VehicleSlices";
 import notificationReducer from "../shared/utils/notification/notificationSlice";
 import { notificationMiddleware } from "../shared/utils/notification/notificationMiddleware";
 import link_SubcriptionReducer from "../features/link-subcription/Link_SubcriptionSlices";

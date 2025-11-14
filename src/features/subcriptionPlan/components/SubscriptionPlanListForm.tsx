@@ -19,7 +19,6 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
 import { fetchSubscriptionPlans, deletePlan } from "../SubcriptionPlanThunks";
 import SubscriptionPlanUpdateForm from "./SubscriptionPlanUpdateForm";
-import SubscriptionPlanDetail from "./SubscriptionPlanDetailForm";
 import { SubscriptionPlan } from "../types/SubscriptionPlanType";
 import { styled } from "@mui/material/styles";
 
@@ -27,8 +26,8 @@ import { styled } from "@mui/material/styles";
 import {
     PageContainer,
     ListCard, // Wrap table
-    TableWrapper, // Overflow
-} from "../styles/SubscriptionPlanStyles";
+    TableWrapper, Title, // Overflow
+} from "../../../styles/SubscriptionPlanStyles";
 import Paper from "@mui/material/Paper";
 
 // StyledTableRow hover xanh
@@ -78,9 +77,8 @@ const SubscriptionPlanList: React.FC = () => {
     return (
         <PageContainer> {/* Wrap background */}
             <ListCard sx={{ border: "1px solid #E8F5E8" }}> {/* Viền pastel */}
-                <Typography variant="h4" align="center" gutterBottom>
-                    Các Gói Đăng Ký
-                </Typography>
+                <Title>Các Gói Dịch Vụ Pin </Title>
+
 
                 {loading && <CircularProgress sx={{ display: "block", mx: "auto" }} />}
                 {error && <Typography color="error" align="center">{error}</Typography>}
@@ -136,6 +134,17 @@ const SubscriptionPlanList: React.FC = () => {
                                                     color="error"
                                                     size="small"
                                                     onClick={() => handleDelete(plan.id)}
+                                                    sx={{
+                                                        minWidth: 64,
+                                                        fontWeight: 600,
+                                                        backgroundColor: "#ef4444", // Red
+                                                        color: "#ffffff",
+                                                        boxShadow: "0 2px 6px rgba(239, 68, 68, 0.2)",
+
+                                                        "&:active": {
+                                                            transform: "translateY(0)",
+                                                        },
+                                                    }}
                                                 >
                                                     Xóa
                                                 </Button>
@@ -192,9 +201,9 @@ const SubscriptionPlanList: React.FC = () => {
                             <CloseIcon />
                         </IconButton>
                     </DialogTitle>
-                    <StyledDialogContent>
-                        {detailId && <SubscriptionPlanDetail id={detailId} />}
-                    </StyledDialogContent>
+                    {/*<StyledDialogContent>*/}
+                    {/*    {detailId && <SubscriptionPlanDetail id={detailId} />}*/}
+                    {/*</StyledDialogContent>*/}
                 </Dialog>
             </ListCard>
         </PageContainer>

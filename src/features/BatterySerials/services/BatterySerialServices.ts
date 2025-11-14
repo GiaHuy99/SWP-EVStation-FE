@@ -1,5 +1,5 @@
 // src/features/batterySerial/services/BatterySerialServices.ts
-import { BatterySerial, CreateBatterySerialPayload } from "../types/BatterySerialTypes";
+import {BatterySerial, CreateBatterySerialPayload, UpdateBatterySerialPayload} from "../types/BatterySerialTypes";
 import axiosInstance from "../../../shared/utils/AxiosInstance";
 
 export class BatterySerialServices {
@@ -29,7 +29,7 @@ export class BatterySerialServices {
         };
     }
 
-    async update(id: number, payload: Partial<CreateBatterySerialPayload>): Promise<BatterySerial> {
+    async update(id: number, payload: Partial<UpdateBatterySerialPayload>): Promise<BatterySerial> {
         const res = await axiosInstance.put<BatterySerial>(`/battery-serials/${id}`, payload);
         if (payload.batteryId) {
             const batteryRes = await axiosInstance.get(`/batteries/${payload.batteryId}`);

@@ -1,8 +1,16 @@
-
+// src/features/auth/LoginForm.tsx
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
 import { login } from "../AuthThunks";
-import styles from "../styles/LoginForm.module.css";
+
+import {
+    PageContainer,
+    FormCard,
+    Title,
+    StyledTextField,
+    FullWidthBox,
+} from "../../../styles/AdminDashboardStyles";
+import { Box, Button, Typography, CircularProgress } from "@mui/material";
 
 const LoginForm = () => {
     const dispatch = useAppDispatch();
@@ -17,35 +25,78 @@ const LoginForm = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className={styles.formContainer}>
-            <h2 className={styles.title}>Login</h2>
+        <PageContainer maxWidth={false}>
+            <FormCard elevation={3}>
+                <Title >
+                    Login
+                </Title>
 
-            <input
-                type="text"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className={styles.input}
-            />
+                <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+                    <StyledTextField
+                        fullWidth
+                        label="Username"
+                        variant="outlined"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        margin="normal"
+                        required
+                        autoFocus
+                        error={!!error}
+                    />
 
-            <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className={styles.input}
-            />
+                    <StyledTextField
+                        fullWidth
+                        label="Password"
+                        type="password"
+                        variant="outlined"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        margin="normal"
+                        required
+                        error={!!error}
+                        helperText={error}
+                    />
 
-            {error && <p className={styles.error}>{error}</p>}
+                    <FullWidthBox sx={{ mt: 3 }}>
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            disabled={loading}
+                            sx={{
+                                py: 1.5,
+                                fontWeight: 600,
+                                borderRadius: "12px",
+                                background: "linear-gradient(135deg, #4C428C 0%, #04C4D9 100%)",
+                                "&:hover": {
+                                    background: "linear-gradient(135deg, #3b336e 0%, #03a9bf 100%)",
+                                },
+                                textTransform: "none",
+                                fontSize: "1rem",
+                            }}
+                        >
+                            {loading ? (
+                                <>
+                                    <CircularProgress size={20} color="inherit" sx={{ mr: 1 }} />
+                                    Logging in...
+                                </>
+                            ) : (
+                                "Login"
+                            )}
+                        </Button>
+                    </FullWidthBox>
 
-            <button type="submit" className={styles.button} disabled={loading}>
-                {loading ? "Logging in..." : "Login"}
-            </button>
-
-            <p className={styles.registerLink}>
-                Don't have an account? <a href="/register">Register</a>
-            </p>
-        </form>
+                    <FullWidthBox sx={{ mt: 2, textAlign: "center" }}>
+                        <Typography variant="body2" color="text.secondary">
+                            Don't have an account?{" "}
+                            <a href="/register" style={{ color: "#04C4D9", fontWeight: 500 }}>
+                                Register
+                            </a>
+                        </Typography>
+                    </FullWidthBox>
+                </Box>
+            </FormCard>
+        </PageContainer>
     );
 };
 

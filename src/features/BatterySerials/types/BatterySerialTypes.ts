@@ -19,3 +19,9 @@ export interface BatterySerialState {
     loading: boolean;
     error: string | null;
 }
+export interface UpdateBatterySerialPayload {
+    serialNumber: string;
+    status: "AVAILABLE" | "IN_USE" | "DAMAGED" | "MAINTENANCE";
+    stationId: number | null;
+    batteryId: number;
+}

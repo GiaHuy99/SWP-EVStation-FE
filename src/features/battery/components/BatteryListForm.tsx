@@ -150,15 +150,10 @@ const BatteryList: React.FC = () => {
                                                 sx={{
                                                     minWidth: 64,
                                                     fontWeight: 600,
-                                                    borderRadius: "8px",
                                                     backgroundColor: "#ef4444", // Red
                                                     color: "#ffffff",
                                                     boxShadow: "0 2px 6px rgba(239, 68, 68, 0.2)",
-                                                    "&:hover": {
-                                                        backgroundColor: "#dc2626",
-                                                        boxShadow: "0 4px 12px rgba(239, 68, 68, 0.3)",
-                                                        transform: "translateY(-1px)",
-                                                    },
+
                                                     "&:active": {
                                                         transform: "translateY(0)",
                                                     },

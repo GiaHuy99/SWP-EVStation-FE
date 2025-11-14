@@ -1,21 +1,22 @@
 import axios from "axios";
 import { Station } from "../types/StationType";
+import axiosInstance from "../../../shared/utils/AxiosInstance";
 
-const API_BASE = "http://localhost:8080/api/stations";
+const API_BASE = "/stations";
 
 const StationServices = {
   async getStations(): Promise<Station[]> {
-    const res = await axios.get(API_BASE);
+    const res = await axiosInstance.get(API_BASE);
     return res.data;
   },
 
   async getStationById(id: number): Promise<Station> {
-    const res = await axios.get(`${API_BASE}/${id}`);
+    const res = await axiosInstance.get(`${API_BASE}/${id}`);
     return res.data;
   },
 
   async createStation(payload: Omit<Station, "id">): Promise<Station> {
-    const res = await axios.post(API_BASE, payload);
+    const res = await axiosInstance.post(API_BASE, payload);
     return res.data;
   },
 

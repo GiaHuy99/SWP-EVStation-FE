@@ -1,6 +1,6 @@
 // src/features/batterySerial/thunks/BatterySerialThunks.ts
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { BatterySerial, CreateBatterySerialPayload } from "./types/BatterySerialTypes";
+import {BatterySerial, CreateBatterySerialPayload, UpdateBatterySerialPayload} from "./types/BatterySerialTypes";
 import BatterySerialServices from "./services/BatterySerialServices";
 
 export const fetchBatterySerials = createAsyncThunk<BatterySerial[]>(
@@ -27,7 +27,7 @@ export const createBatterySerial = createAsyncThunk<BatterySerial, CreateBattery
 
 export const updateBatterySerial = createAsyncThunk<
     BatterySerial,
-    { id: number; payload: Partial<CreateBatterySerialPayload> }
+    { id: number; payload: UpdateBatterySerialPayload }
 >(
     "batterySerial/update",
     async ({ id, payload }, { rejectWithValue }) => {
