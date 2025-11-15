@@ -12,6 +12,7 @@ import subcription from "../features/subcription/subscriptionSlice"
 import swapBattery from "../features/swapBattery/SwapSlice";
 import stationMap from "../features/map/stationSlice"
 import batterySerials from "../features/BatterySerials/BatterySerialSlice";
+
 export const store = configureStore({
     reducer: {
         auth: authReducer,
@@ -31,6 +32,7 @@ export const store = configureStore({
         getDefaultMiddleware().concat(notificationMiddleware),
 });
 
-
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+
+export default store;

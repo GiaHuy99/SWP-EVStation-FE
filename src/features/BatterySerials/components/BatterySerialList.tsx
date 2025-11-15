@@ -11,7 +11,10 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import EditIcon from "@mui/icons-material/Edit"; // THÊM ICON
 import {
-    PageContainer, ListCard, Title, TableWrapper, StyledTextField, FullWidthBox
+    PageContainer, ListCard, Title, TableWrapper, StyledTextField, FullWidthBox,
+    EditButton,
+    DeleteButton,
+    CreateButton,
 } from "../../../styles/AdminDashboardStyles";
 import { BatterySerial } from "../types/BatterySerialTypes";
 
@@ -92,19 +95,11 @@ const BatterySerialList: React.FC = () => {
                     {/* Header */}
                     <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
                         <Title>Danh Sách Serial Pin</Title>
-                        <Button
-                            variant="contained"
+                        <CreateButton
                             onClick={() => window.location.href = "/battery-serials/create"}
-                            sx={{
-                                borderRadius: "12px",
-                                fontWeight: 600,
-                                background: "linear-gradient(135deg, #4C428C 0%, #04C4D9 100%)",
-                                boxShadow: "0 4px 14px rgba(76, 66, 140, 0.3)",
-                                "&:hover": { boxShadow: "0 8px 25px rgba(76, 66, 140, 0.4)", transform: "translateY(-2px)" },
-                            }}
                         >
                             Tạo Serial Mới
-                        </Button>
+                        </CreateButton>
                     </Box>
 
                     {/* Search */}
@@ -155,38 +150,24 @@ const BatterySerialList: React.FC = () => {
                                         <TableCell>{s.stationName || "—"}</TableCell>
                                         <TableCell align="center">
                                             {/* NÚT UPDATE */}
-                                            <Button
+                                            <EditButton
                                                 size="small"
-                                                color="primary"
                                                 startIcon={<EditIcon />}
                                                 onClick={() => handleOpenUpdate(s)}
-                                                sx={{ mr: 1, borderRadius: "8px", textTransform: "none" }}
                                             >
                                                 Cập nhật
-                                            </Button>
+                                            </EditButton>
                                             {/* NÚT XÓA */}
-                                            <Button
+                                            <DeleteButton
                                                 size="small"
-                                                color="error"
                                                 onClick={() => {
                                                     if (window.confirm("Xóa serial này?")) {
                                                         dispatch(deleteBatterySerial(s.id));
                                                     }
                                                 }}
-                                                sx={{
-                                                    minWidth: 64,
-                                                    fontWeight: 600,
-                                                    backgroundColor: "#ef4444", // Red
-                                                    color: "#ffffff",
-                                                    boxShadow: "0 2px 6px rgba(239, 68, 68, 0.2)",
-
-                                                    "&:active": {
-                                                        transform: "translateY(0)",
-                                                    },
-                                                }}
                                             >
                                                 Xóa
-                                            </Button>
+                                            </DeleteButton>
                                         </TableCell>
                                     </TableRow>
                                 ))}

@@ -27,7 +27,9 @@ import {
     PageContainer,
     ListCard, // Wrap table
     TableWrapper, Title, // Overflow
-} from "../../../styles/SubscriptionPlanStyles";
+    EditButton,
+    DeleteButton,
+} from "../../../styles/AdminDashboardStyles";
 import Paper from "@mui/material/Paper";
 
 // StyledTableRow hover xanh
@@ -79,7 +81,6 @@ const SubscriptionPlanList: React.FC = () => {
             <ListCard sx={{ border: "1px solid #E8F5E8" }}> {/* Viền pastel */}
                 <Title>Các Gói Dịch Vụ Pin </Title>
 
-
                 {loading && <CircularProgress sx={{ display: "block", mx: "auto" }} />}
                 {error && <Typography color="error" align="center">{error}</Typography>}
 
@@ -120,34 +121,16 @@ const SubscriptionPlanList: React.FC = () => {
                                             <TableCell>{plan.durationDays}</TableCell>
                                             <TableCell>{plan.status === "ACTIVE" ? "Đang hoạt động" : "Ngừng hoạt động"}</TableCell>
                                             <TableCell align="center" onClick={(e) => e.stopPropagation()}>
-                                                <Button
-                                                    variant="outlined"
-                                                    color="success" // Xanh lá
-                                                    size="small"
-                                                    sx={{ mr: 1 }}
+                                                <EditButton
                                                     onClick={() => setEditingPlan(plan)}
                                                 >
                                                     Cập nhật
-                                                </Button>
-                                                <Button
-                                                    variant="outlined"
-                                                    color="error"
-                                                    size="small"
+                                                </EditButton>
+                                                <DeleteButton
                                                     onClick={() => handleDelete(plan.id)}
-                                                    sx={{
-                                                        minWidth: 64,
-                                                        fontWeight: 600,
-                                                        backgroundColor: "#ef4444", // Red
-                                                        color: "#ffffff",
-                                                        boxShadow: "0 2px 6px rgba(239, 68, 68, 0.2)",
-
-                                                        "&:active": {
-                                                            transform: "translateY(0)",
-                                                        },
-                                                    }}
                                                 >
                                                     Xóa
-                                                </Button>
+                                                </DeleteButton>
                                             </TableCell>
                                         </StyledTableRow>
                                     ))}

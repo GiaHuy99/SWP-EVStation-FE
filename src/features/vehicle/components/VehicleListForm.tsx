@@ -1,4 +1,4 @@
-// src/features/vehicle/components/VehicleList.tsx
+// src/features/vehicle/components/VehicleListForm.tsx
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
 import { fetchVehicles, deleteVehicle } from "../VehicleThunks";
@@ -17,8 +17,10 @@ import VehicleDetailForm from "./VehicleDetailForm";
 import VehicleUpdateForm from "./VehicleUpdateForm";
 import { Vehicle } from "../types/VehicleType";
 import {
-    PageContainer, ListCard, TableWrapper, Title
-} from "../styles/VehicleFormStyles";
+    PageContainer, ListCard, TableWrapper, Title,
+    EditButton,
+    DeleteButton,
+} from "../../../styles/AdminDashboardStyles";
 import Paper from "@mui/material/Paper";
 
 const VehicleList: React.FC = () => {
@@ -44,82 +46,72 @@ const VehicleList: React.FC = () => {
     return (
         <PageContainer>
             <ListCard>
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
-                    <Title>Danh Sách Mẫu Xe</Title>
+                <Title sx={{ px: 4, pt: 3 }}>Danh Sách Mẫu Xe</Title>
 
-                </Box>
+                <Box sx={{ p: 4 }}>
+                    {loading && <CircularProgress sx={{ display: "block", mx: "auto" }} />}
+                    {error && <Typography color="error" align="center">{error}</Typography>}
 
-                {loading && <CircularProgress sx={{ display: "block", mx: "auto", my: 4 }} />}
-                {error && <Typography color="error" align="center">{error}</Typography>}
-
-                {!loading && !error && vehicles.length > 0 && (
-                    <TableWrapper>
-                        <TableContainer component={Paper}>
-                            <Table>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell><strong>Tên xe</strong></TableCell>
-                                        <TableCell><strong>Hãng</strong></TableCell>
-                                        <TableCell><strong>Chiều dài cơ sở</strong></TableCell>
-                                        <TableCell><strong>Chiều cao yên</strong></TableCell>
-                                        <TableCell><strong>Trọng lượng (pin)</strong></TableCell>
-                                        <TableCell align="center"><strong>Thao tác</strong></TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {vehicles.map(v => (
-                                        <TableRow
-                                            key={v.id}
-                                            sx={{
-                                                "&:hover": {
-                                                    backgroundColor: "#f0fffd",
-                                                    transform: "translateY(-1px)",
-                                                    boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-                                                    transition: "all 0.2s ease",
-                                                },
-                                                cursor: "pointer",
-                                            }}
-                                            onClick={() => setViewId(v.id)}
-                                        >
-                                            <TableCell><strong>{v.name}</strong></TableCell>
-                                            <TableCell>{v.brand}</TableCell>
-                                            <TableCell>{v.wheelbase}</TableCell>
-                                            <TableCell>{v.seatHeight}</TableCell>
-                                            <TableCell>{v.weightWithBattery} kg</TableCell>
-                                            <TableCell align="center" onClick={e => e.stopPropagation()}>
-                                                <Button
-                                                    size="small"
-                                                    startIcon={<VisibilityIcon />}
-                                                    onClick={() => setViewId(v.id)}
-                                                    sx={{ mr: 1, fontWeight: 600 }}
-                                                >
-                                                    Xem
-                                                </Button>
-                                                <Button
-                                                    size="small"
-                                                    startIcon={<EditIcon />}
-                                                    onClick={() => setEditVehicle(v)}
-                                                    sx={{ mr: 1, fontWeight: 600 }}
-                                                >
-                                                    Sửa
-                                                </Button>
-                                                <Button
-                                                    size="small"
-                                                    color="error"
-                                                    startIcon={<DeleteIcon />}
-                                                    onClick={() => setDeleteId(v.id)}
-                                                    sx={{ fontWeight: 600 }}
-                                                >
-                                                    Xóa
-                                                </Button>
-                                            </TableCell>
+                    {!loading && !error && vehicles.length > 0 && (
+                        <TableWrapper>
+                            <TableContainer component={Paper}>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell><strong>Tên xe</strong></TableCell>
+                                            <TableCell><strong>Hãng</strong></TableCell>
+                                            <TableCell><strong>Chiều dài cơ sở</strong></TableCell>
+                                            <TableCell><strong>Chiều cao yên</strong></TableCell>
+                                            <TableCell><strong>Trọng lượng (pin)</strong></TableCell>
+                                            <TableCell align="center"><strong>Thao tác</strong></TableCell>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    </TableWrapper>
-                )}
+                                    </TableHead>
+                                    <TableBody>
+                                        {vehicles.map(v => (
+                                            <TableRow
+                                                key={v.id}
+                                                onClick={() => setViewId(v.id)}
+                                                sx={{
+                                                    cursor: "pointer",
+                                                    transition: "all 0.2s ease",
+                                                    "&:hover": {
+                                                        backgroundColor: "rgba(4, 196, 217, 0.04)",
+                                                        transform: "translateY(-1px)",
+                                                        boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+                                                    },
+                                                    "& td": {
+                                                        borderBottom: "1px solid #e2e8f0",
+                                                    },
+                                                }}
+                                            >
+                                                <TableCell>{v.name}</TableCell>
+                                                <TableCell>{v.brand}</TableCell>
+                                                <TableCell>{v.wheelbase}</TableCell>
+                                                <TableCell>{v.seatHeight}</TableCell>
+                                                <TableCell>{v.weightWithBattery} kg</TableCell>
+                                                <TableCell align="center" onClick={e => e.stopPropagation()}>
+                                                    <EditButton
+                                                        size="small"
+                                                        onClick={() => setEditVehicle(v)}
+                                                        sx={{ mr: 1 }}
+                                                    >
+                                                        Sửa
+                                                    </EditButton>
+                                                    <DeleteButton
+                                                        size="small"
+                                                        onClick={() => setDeleteId(v.id)}
+                                                    >
+                                                        Xóa
+                                                    </DeleteButton>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </TableWrapper>
+                    )}
+                </Box>
 
                 {/* === CHI TIẾT DIALOG === */}
                 <Dialog open={!!viewId} onClose={() => setViewId(null)} fullWidth maxWidth="md">
