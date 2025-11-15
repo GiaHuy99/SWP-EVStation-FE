@@ -21,6 +21,7 @@ import { fetchSubscriptionPlans, deletePlan } from "../SubcriptionPlanThunks";
 import SubscriptionPlanUpdateForm from "./SubscriptionPlanUpdateForm";
 import { SubscriptionPlan } from "../types/SubscriptionPlanType";
 import { styled } from "@mui/material/styles";
+import TablePagination from "../../../components/Pagination/TablePagination";
 
 // Import styled
 import {
@@ -58,10 +59,16 @@ const SubscriptionPlanList: React.FC = () => {
 
     const [editingPlan, setEditingPlan] = useState<SubscriptionPlan | null>(null);
     const [detailId, setDetailId] = useState<number | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5;
 
     useEffect(() => {
         dispatch(fetchSubscriptionPlans());
     }, [dispatch]);
+
+    const totalPages = Math.ceil(plans.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const paginatedPlans = plans.slice(startIndex, startIndex + itemsPerPage);
 
     const formatPrice = (price: number) => {
         return new Intl.NumberFormat('vi-VN', {
@@ -85,59 +92,69 @@ const SubscriptionPlanList: React.FC = () => {
                 {error && <Typography color="error" align="center">{error}</Typography>}
 
                 {!loading && !error && plans.length > 0 && (
-                    <TableWrapper> {/* Overflow auto */}
-                        <TableContainer component={Paper}>
-                            <Table>
-                                <TableHead>
-                                    <TableRow>
-                                        {/* <TableCell>ID</TableCell> */}
+                    <>
+                        <TableWrapper> {/* Overflow auto */}
+                            <TableContainer component={Paper}>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            {/* <TableCell>ID</TableCell> */}
 
-                                        {/* <TableCell>Name</TableCell> */}
-                                        <TableCell>Tên gói</TableCell>
+                                            {/* <TableCell>Name</TableCell> */}
+                                            <TableCell>Tên gói</TableCell>
 
-                                        {/* <TableCell>Price</TableCell> */}
-                                        <TableCell>Chi phí</TableCell>
+                                            {/* <TableCell>Price</TableCell> */}
+                                            <TableCell>Chi phí</TableCell>
 
-                                        {/* <TableCell>Duration (days)</TableCell> */}
-                                        <TableCell>Thời hạn (ngày)</TableCell>
+                                            {/* <TableCell>Duration (days)</TableCell> */}
+                                            <TableCell>Thời hạn (ngày)</TableCell>
 
-                                        {/* <TableCell>Status</TableCell> */}
-                                        <TableCell>Trạng thái</TableCell>
+                                            {/* <TableCell>Status</TableCell> */}
+                                            <TableCell>Trạng thái</TableCell>
 
-                                        {/* <TableCell align="center">Actions</TableCell> */}
-                                        <TableCell align="center">Thao tác</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {plans.map(plan => (
-                                        <StyledTableRow // Hover xanh
-                                            key={plan.id}
-                                            onClick={() => setDetailId(plan.id)}
-                                        >
-                                            {/* <TableCell>{plan.id}</TableCell> */}
-                                            <TableCell>{plan.name}</TableCell>
-                                            {/* <TableCell>{plan.price}</TableCell> */}
-                                            <TableCell>{formatPrice(plan.price)}</TableCell>
-                                            <TableCell>{plan.durationDays}</TableCell>
-                                            <TableCell>{plan.status === "ACTIVE" ? "Đang hoạt động" : "Ngừng hoạt động"}</TableCell>
-                                            <TableCell align="center" onClick={(e) => e.stopPropagation()}>
-                                                <EditButton
-                                                    onClick={() => setEditingPlan(plan)}
-                                                >
-                                                    Cập nhật
-                                                </EditButton>
-                                                <DeleteButton
-                                                    onClick={() => handleDelete(plan.id)}
-                                                >
-                                                    Xóa
-                                                </DeleteButton>
-                                            </TableCell>
-                                        </StyledTableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    </TableWrapper>
+                                            {/* <TableCell align="center">Actions</TableCell> */}
+                                            <TableCell align="center">Thao tác</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {paginatedPlans.map(plan => (
+                                            <StyledTableRow // Hover xanh
+                                                key={plan.id}
+                                                onClick={() => setDetailId(plan.id)}
+                                            >
+                                                {/* <TableCell>{plan.id}</TableCell> */}
+                                                <TableCell>{plan.name}</TableCell>
+                                                {/* <TableCell>{plan.price}</TableCell> */}
+                                                <TableCell>{formatPrice(plan.price)}</TableCell>
+                                                <TableCell>{plan.durationDays}</TableCell>
+                                                <TableCell>{plan.status === "ACTIVE" ? "Đang hoạt động" : "Ngừng hoạt động"}</TableCell>
+                                                <TableCell align="center" onClick={(e) => e.stopPropagation()}>
+                                                    <EditButton
+                                                        onClick={() => setEditingPlan(plan)}
+                                                    >
+                                                        Cập nhật
+                                                    </EditButton>
+                                                    <DeleteButton
+                                                        onClick={() => handleDelete(plan.id)}
+                                                    >
+                                                        Xóa
+                                                    </DeleteButton>
+                                                </TableCell>
+                                            </StyledTableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </TableWrapper>
+
+                        <TablePagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={setCurrentPage}
+                            totalItems={plans.length}
+                            itemsPerPage={itemsPerPage}
+                        />
+                    </>
                 )}
 
                 {/* Dialog Update */}

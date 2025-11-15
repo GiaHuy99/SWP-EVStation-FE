@@ -29,16 +29,23 @@ import {
     EditButton,
     DeleteButton,
 } from "../../../styles/AdminDashboardStyles";
+import TablePagination from "../../../components/Pagination/TablePagination";
 
 const BatteryList: React.FC = () => {
     const dispatch = useAppDispatch();
     const { batteries, loading, error } = useAppSelector((state) => state.battery);
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const [editingBatteryType, setEditingBatteryType] = useState<BatteryType | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5;
 
     useEffect(() => {
         dispatch(fetchBatteries());
     }, [dispatch]);
+
+    const totalPages = Math.ceil(batteries.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const paginatedBatteries = batteries.slice(startIndex, startIndex + itemsPerPage);
 
     if (loading && batteries.length === 0) {
         return (
@@ -86,7 +93,7 @@ const BatteryList: React.FC = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {batteries.map((bt) => (
+                                {paginatedBatteries.map((bt) => (
                                     <TableRow
                                         key={bt.id}
                                         onClick={() => setSelectedId(bt.id)}
@@ -144,6 +151,14 @@ const BatteryList: React.FC = () => {
                             </TableBody>
                         </Table>
                     </TableWrapper>
+
+                    <TablePagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                        totalItems={batteries.length}
+                        itemsPerPage={itemsPerPage}
+                    />
                 </Box>
 
                 {/* Update Dialog */}

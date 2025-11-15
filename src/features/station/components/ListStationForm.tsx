@@ -32,6 +32,7 @@ import {
     EditButton,
     DeleteButton,
 } from "../../../styles/AdminDashboardStyles";
+import TablePagination from "../../../components/Pagination/TablePagination";
 
 // Styled Row with hover
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
@@ -52,10 +53,16 @@ const StationList: React.FC = () => {
     const { stations, loading, error } = useAppSelector((state) => state.station);
     const [editingStation, setEditingStation] = useState<Station | null>(null);
     const [selectedId, setSelectedId] = useState<number | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5;
 
     useEffect(() => {
         dispatch(fetchStations());
     }, [dispatch]);
+
+    const totalPages = Math.ceil(stations.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const paginatedStations = stations.slice(startIndex, startIndex + itemsPerPage);
 
     const handleDelete = (id: number) => {
         if (window.confirm("Bạn có chắc muốn xóa trạm này?")) {
@@ -115,7 +122,7 @@ const StationList: React.FC = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {stations.map((station) => (
+                            {paginatedStations.map((station) => (
                                 <StyledTableRow
                                     key={station.id}
                                     onClick={() => setSelectedId(station.id)}
@@ -144,6 +151,14 @@ const StationList: React.FC = () => {
                         </TableBody>
                     </Table>
                 </TableWrapper>
+
+                <TablePagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                    totalItems={stations.length}
+                    itemsPerPage={itemsPerPage}
+                />
 
                 {/* Update Dialog */}
                 <UpdateStationForm

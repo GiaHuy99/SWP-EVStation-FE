@@ -2,14 +2,14 @@
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
 import { fetchBatterySerials, deleteBatterySerial } from "../BatterySerialThunk";
-import { updateBatterySerial } from "../BatterySerialThunk"; // THÊM
+import { updateBatterySerial } from "../BatterySerialThunk"; 
 import {
     Table, TableBody, TableCell, TableHead, TableRow,
     CircularProgress, Button, Box, Typography, Paper, InputBase, IconButton,
     Dialog, DialogTitle, DialogContent, DialogActions, MenuItem
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import EditIcon from "@mui/icons-material/Edit"; // THÊM ICON
+import EditIcon from "@mui/icons-material/Edit"; 
 import {
     PageContainer, ListCard, Title, TableWrapper, StyledTextField, FullWidthBox,
     EditButton,
@@ -17,24 +17,43 @@ import {
     CreateButton,
 } from "../../../styles/AdminDashboardStyles";
 import { BatterySerial } from "../types/BatterySerialTypes";
+// THÊM: Import component phân trang
+import TablePagination from "../../../components/Pagination/TablePagination";
 
 const BatterySerialList: React.FC = () => {
     const dispatch = useAppDispatch();
     const { serials, loading, error } = useAppSelector((state) => state.batterySerials);
     const { batteries } = useAppSelector((state) => state.battery);
     const { stations } = useAppSelector((state) => state.station);
+
     const [search, setSearch] = useState("");
     const [openUpdate, setOpenUpdate] = useState(false);
     const [editingSerial, setEditingSerial] = useState<BatterySerial | null>(null);
+    
+    // 1. THÊM STATE CHO PHÂN TRANG
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5; // Số lượng item mặc định trên mỗi trang
 
     useEffect(() => {
         dispatch(fetchBatterySerials());
     }, [dispatch]);
 
+    // Danh sách đã lọc
     const filtered = serials.filter((s) =>
         s.serialNumber.toLowerCase().includes(search.toLowerCase()) ||
         (s.batteryName?.toLowerCase().includes(search.toLowerCase()) ?? false)
     );
+
+    // 2. RESET TRANG KHI TÌM KIẾM THAY ĐỔI
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [search]);
+
+    // 3. TÍNH TOÁN PHÂN TRANG
+    const totalItems = filtered.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const paginatedSerials = filtered.slice(startIndex, startIndex + itemsPerPage);
 
     // MỞ FORM UPDATE
     const handleOpenUpdate = (serial: BatterySerial) => {
@@ -126,7 +145,8 @@ const BatterySerialList: React.FC = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {filtered.map((s) => (
+                                {/* 4. DÙNG DANH SÁCH ĐÃ PHÂN TRANG */}
+                                {paginatedSerials.map((s) => (
                                     <TableRow key={s.id} hover>
                                         <TableCell>
                                             <code style={{ fontWeight: 600, color: "#1a3681" }}>
@@ -174,6 +194,15 @@ const BatterySerialList: React.FC = () => {
                             </TableBody>
                         </Table>
                     </TableWrapper>
+
+                    {/* 5. THÊM COMPONENT TablePagination */}
+                    <TablePagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                        totalItems={totalItems}
+                        itemsPerPage={itemsPerPage}
+                    />
                 </Box>
             </ListCard>
 
