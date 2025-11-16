@@ -39,7 +39,10 @@ const authSlice = createSlice({
             state.token = null;
             state.username = null;
             state.role = null;
-            AuthService.logout(); // ✅ gọi FE logout + clear refresh timer
+            AuthService.logout();
+        },
+        resetRegisterSuccess: (state) => {
+            state.registerSuccess = false;
         },
     },
     extraReducers: (builder) => {
@@ -60,6 +63,21 @@ const authSlice = createSlice({
                 state.token = null;
                 state.username = null;
                 state.role = null;
+            })
+            .addCase(register.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.registerSuccess = false;
+            })
+            .addCase(register.fulfilled, (state) => {
+                state.loading = false;
+                state.error = null;
+                state.registerSuccess = true;
+            })
+            .addCase(register.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+                state.registerSuccess = false;
             });
     },
 });
@@ -67,5 +85,5 @@ const authSlice = createSlice({
 export const selectIsLoggedIn = (state: { auth: AuthState }) => !!state.auth.token;
 export const selectUserRole = (state: { auth: AuthState }) => state.auth.role;
 
-export const { logout } = authSlice.actions;
+export const { logout, resetRegisterSuccess } = authSlice.actions;
 export default authSlice.reducer;
