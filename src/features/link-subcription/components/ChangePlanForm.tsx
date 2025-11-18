@@ -1,50 +1,76 @@
 import React, { useEffect, useState } from "react";
 import {
+    Box,
     Typography,
+    Button,
     CircularProgress,
     Alert,
-    MenuItem, Button, Box,
+    MenuItem,
 } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
-import { changeSubscriptionPlan, fetchSubscriptionPlans, fetchVehicles } from "../ChangeSubscriptionThunks"; // Fix: Thunks từ Thunks file
-import { clearMessage } from "../ChangeSubscriptionSlice"; // Action từ slice đúng
+import {
+    fetchVehicles,
+    fetchSubscriptionPlans,
+    changeSubscriptionPlan,
+} from "../ChangeSubscriptionThunks";
+import { clearMessage } from "../ChangeSubscriptionSlice";
+import { FormRow, StyledTextField } from "../styles/LinkVehicleFormStyles";
 
-// Import styled đồng bộ (thêm FormRow, StyledTextField nếu chưa)
-import { FormRow, StyledTextField } from "../styles/LinkVehicleFormStyles"; // Hoặc file chung
-
-interface ChangePlanFormProps {
-    subscriptionId: number;
-}
-
-const ChangePlanForm: React.FC<ChangePlanFormProps> = ({ subscriptionId }) => {
+const ChangePlanForm: React.FC = () => {
     const dispatch = useAppDispatch();
     const { vehicles, plans, loading, changeMessage, error } = useAppSelector(
-        (state) => state.subcription // Slice name đúng
+        (state) => state.subcription
     );
 
-    const [vehicleId, setVehicleId] = useState<number | "">("");
+    const [selectedVehicleId, setSelectedVehicleId] = useState<number | "">("");
     const [newPlanId, setNewPlanId] = useState<number | "">("");
 
     useEffect(() => {
         dispatch(fetchVehicles());
         dispatch(fetchSubscriptionPlans());
-        return () => {
-            dispatch(clearMessage()); // Cleanup đúng
-        };
     }, [dispatch]);
+
+    useEffect(() => {
+        if (changeMessage || error) {
+            const timer = setTimeout(() => dispatch(clearMessage()), 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [changeMessage, error, dispatch]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!vehicleId || !newPlanId) {
+        if (!selectedVehicleId || !newPlanId) {
             alert("Vui lòng chọn xe và gói mới");
             return;
         }
+
         dispatch(
             changeSubscriptionPlan({
-                vehicleId: vehicleId as number,
+                vehicleId: selectedVehicleId as number,
                 newPlanId: newPlanId as number,
             })
         );
+
+        // Reset form
+        setNewPlanId("");
+    };
+
+    // Hàm format tên xe đẹp: tách model và VIN
+    const formatVehicleLabel = (vehicle: string) => {
+        const parts = vehicle.split(" VN-");
+        if (parts.length === 2) {
+            return (
+                <Box>
+                    <div style={{ fontWeight: 600, fontSize: "1rem" }}>
+                        {parts[0].trim()}
+                    </div>
+                    <div style={{ fontSize: "0.85rem", color: "#64748b", marginTop: 2 }}>
+                        {parts[1]}
+                    </div>
+                </Box>
+            );
+        }
+        return vehicle;
     };
 
     return (
@@ -52,56 +78,112 @@ const ChangePlanForm: React.FC<ChangePlanFormProps> = ({ subscriptionId }) => {
             component="form"
             onSubmit={handleSubmit}
             sx={{
-                maxWidth: 500,
+                maxWidth: 650,
                 mx: "auto",
-                mt: 5,
-                p: 3,
-                border: "1px solid #E8F5E8", // Viền ngoài pastel
-                borderRadius: "8px",
-                boxShadow: "0px 12px 30px rgba(0, 0, 0, 0.06)", // Đồng bộ mượt
+                mt: 6,
+                p: { xs: 3, sm: 5 },
+                borderRadius: "20px",
+                backgroundColor: "#fff",
+                boxShadow: "0 20px 40px rgba(0,0,0,0.08)",
+                border: "1px solid #f0f0f0",
             }}
         >
-            <Typography variant="h6" gutterBottom>
-                Đổi gói đăng ký cho xe
+            <Typography
+                variant="h5"
+                align="center"
+                fontWeight={700}
+                gutterBottom
+                sx={{
+                    background: "linear-gradient(135deg, #4C428C, #04C4D9)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                }}
+            >
+                Đổi Gói Đăng Ký Cho Xe
             </Typography>
 
-            {/* 2 cột vehicle và plan với FormRow */}
-            <FormRow> {/* Grid responsive 1fr to 1fr 1fr sm */}
-                <StyledTextField // Chọn xe pastel green
+            {/* Thông báo */}
+            {changeMessage && (
+                <Alert severity="success" sx={{ mb: 3, borderRadius: "12px" }}>
+                    {changeMessage}
+                </Alert>
+            )}
+            {error && (
+                <Alert severity="error" sx={{ mb: 3, borderRadius: "12px" }}>
+                    {error}
+                </Alert>
+            )}
+
+            <FormRow>
+                {/* CHỌN XE – KHÔNG HIỆN ID */}
+                <StyledTextField
                     select
-                    label="Chọn xe"
-                    fullWidth
-                    margin="normal"
-                    value={vehicleId}
-                    onChange={(e) => setVehicleId(Number(e.target.value))}
+                    label="Chọn xe của bạn"
+                    value={selectedVehicleId}
+                    onChange={(e) => setSelectedVehicleId(Number(e.target.value))}
                     required
+                    fullWidth
                 >
-                    <MenuItem value="">
-                        <em>Chọn</em>
+                    <MenuItem value="" disabled>
+                        <em style={{ color: "#94a3b8" }}>— Chọn xe —</em>
                     </MenuItem>
-                    {vehicles.map((v: any) => (
-                        <MenuItem key={v.id} value={v.id}>
-                            {/* ✅ Kết hợp v.name và v.brand */}
-                            **{v.brand} - {v.name}**
+
+                    {vehicles.map((v) => (
+                        <MenuItem key={v.vehicleId} value={v.vehicleId}>
+                            <Box sx={{ py: 0.5 }}>
+                                {formatVehicleLabel(v.vehicle)}
+
+                                <Box
+                                    sx={{
+                                        mt: 1,
+                                        fontSize: "0.8rem",
+                                        color: "#64748b",
+                                        display: "flex",
+                                        gap: 2,
+                                        flexWrap: "wrap",
+                                    }}
+                                >
+                  <span>
+                    Gói hiện tại: <strong style={{ color: "#1e40af" }}>{v.currentPlan}</strong>
+                  </span>
+                                    <span>
+                    Hết hạn: <strong style={{ color: "#dc2626" }}>
+                      {new Date(v.endDate).toLocaleDateString("vi-VN")}
+                    </strong>
+                  </span>
+                                    {v.nextPlan && v.nextPlan !== v.currentPlan && (
+                                        <span>
+                      → Tiếp theo: <strong style={{ color: "#16a34a" }}>{v.nextPlan}</strong>
+                    </span>
+                                    )}
+                                </Box>
+                            </Box>
                         </MenuItem>
                     ))}
                 </StyledTextField>
 
-                <StyledTextField // Chọn gói mới cạnh xe
+                {/* CHỌN GÓI MỚI */}
+                <StyledTextField
                     select
                     label="Chọn gói mới"
-                    fullWidth
-                    margin="normal"
                     value={newPlanId}
                     onChange={(e) => setNewPlanId(Number(e.target.value))}
                     required
+                    fullWidth
                 >
-                    <MenuItem value="">
-                        <em>Chọn</em>
+                    <MenuItem value="" disabled>
+                        <em style={{ color: "#94a3b8" }}>— Chọn gói —</em>
                     </MenuItem>
-                    {plans.map((p: any) => (
+                    {plans.map((p) => (
                         <MenuItem key={p.id} value={p.id}>
-                            {p.name} — {p.price?.toLocaleString?.() ?? p.price} VND
+                            <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+                                <strong>{p.name}</strong>
+                                {p.price && (
+                                    <span style={{ color: "#16a34a", fontWeight: 600 }}>
+                    {p.price.toLocaleString("vi-VN")} ₫
+                  </span>
+                                )}
+                            </Box>
                         </MenuItem>
                     ))}
                 </StyledTextField>
@@ -110,42 +192,30 @@ const ChangePlanForm: React.FC<ChangePlanFormProps> = ({ subscriptionId }) => {
             <Button
                 type="submit"
                 variant="contained"
-                color="success" // Xanh lá đồng bộ
+                size="large"
                 fullWidth
-                disabled={loading}
+                disabled={loading || !selectedVehicleId || !newPlanId}
                 sx={{
-                    mt: 2,
-                    py: 1.5,
-                    borderRadius: "8px",
-                    fontWeight: 600,
-                    backgroundColor: "#E8F5E8", // Nền pastel xanh
-                    color: "#22C55E", // Chữ xanh đậm
-                    textTransform: "uppercase", // "ĐỔI GÓI" in hoa
+                    mt: 4,
+                    py: 2,
+                    fontSize: "1.1rem",
+                    fontWeight: 700,
+                    borderRadius: "16px",
+                    background: "linear-gradient(135deg, #22c55e, #16a34a)",
+                    boxShadow: "0 10px 25px rgba(34, 197, 94, 0.3)",
                     "&:hover": {
-                        backgroundColor: "#D4EDDA", // Hover sáng pastel
-                        transform: "translateY(-1px)", // Nâng nhẹ
-                        transition: "all 0.3s ease-in-out",
+                        background: "linear-gradient(135deg, #16a34a, #15803d)",
+                        transform: "translateY(-3px)",
                     },
-                    "&.Mui-disabled": {
-                        backgroundColor: "#F3F4F6", // Disabled xám nhạt
-                        color: "#9CA3AF",
-                    },
+                    textTransform: "none",
                 }}
             >
-                {loading ? <CircularProgress size={20} color="inherit" /> : "ĐỔI GÓI"}
+                {loading ? (
+                    <CircularProgress size={28} color="inherit" />
+                ) : (
+                    "ĐỔI GÓI NGAY"
+                )}
             </Button>
-
-            {/*{changeMessage && (*/}
-            {/*    <Alert severity="success" sx={{ mt: 2 }}> /!* Alert xanh pastel *!/*/}
-            {/*        {changeMessage}*/}
-            {/*    </Alert>*/}
-            {/*)}*/}
-
-            {/*{error && (*/}
-            {/*    <Alert severity="error" sx={{ mt: 2 }}> /!* Alert đỏ pastel *!/*/}
-            {/*        {String(error)}*/}
-            {/*    </Alert>*/}
-            {/*)}*/}
         </Box>
     );
 };

@@ -213,6 +213,15 @@ const Sidebar: FC = () => {
                                     <ListItemText primary="Tạo Pin trong trạm" />
                                 </ListItemButton>
                             </ListItem>
+                            <ListItem disablePadding>
+                                <ListItemButton
+                                    component={Link as any}
+                                    to="/staff/swap/status"
+                                    sx={subItemStyle}
+                                >
+                                    <ListItemText primary="Quản lý trao đổi pin" />
+                                </ListItemButton>
+                            </ListItem>
                         </List>
                     </Collapse>
 
@@ -285,8 +294,10 @@ const Sidebar: FC = () => {
                                     <ListItemText primary="Danh Sách Xe" />
                                 </ListItemButton>
                             </ListItem>
+
                         </List>
                     </Collapse>
+
 
 
                 </List>

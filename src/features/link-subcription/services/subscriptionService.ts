@@ -16,7 +16,7 @@ export const changeSubscriptionPlanApi = async (vehicleId: number, newPlanId: nu
     return res.data;
 };
 export const fetchUserVehiclesApi = async (): Promise<any[]> => {
-    const res = await axiosInstance.get<any[]>("/admin/vehicle-models");
+    const res = await axiosInstance.get<any[]>("user/subscriptions");
     return res.data;
 }
 

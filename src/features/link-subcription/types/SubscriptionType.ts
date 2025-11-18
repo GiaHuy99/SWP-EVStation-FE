@@ -1,8 +1,12 @@
 // src/features/subscription/types/SubscriptionType.ts
 export interface Vehicle {
-    id: number;
-    model: string;
-    vin: string;
+    vehicleId: number;
+    vehicle: string;
+    currentPlan: string;
+    startDate: string;
+    endDate: string;
+    nextPlan: string;
+
 }
 
 export interface Plan {

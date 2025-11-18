@@ -12,6 +12,7 @@ import subcription from "../features/subcription/subscriptionSlice"
 import swapBattery from "../features/swapBattery/SwapSlice";
 import stationMap from "../features/map/stationSlice"
 import batterySerials from "../features/BatterySerials/BatterySerialSlice";
+import confimSwap from "../features/confirmSwap/ConfirmSlices";
 export const store = configureStore({
     reducer: {
         auth: authReducer,
@@ -26,6 +27,7 @@ export const store = configureStore({
         swapBattery:swapBattery,
         stationMap:stationMap,
         batterySerials:batterySerials,
+        confimSwap:confimSwap,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(notificationMiddleware),
