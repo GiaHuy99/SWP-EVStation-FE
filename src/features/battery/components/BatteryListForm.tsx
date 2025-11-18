@@ -1,7 +1,7 @@
-// src/features/batteryType/components/BatteryTypeList.tsx
+// src/features/battery/components/BatteryListForm.tsx
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
-import {deleteBattery, fetchBatteries, updateBattery} from "../BatteryThunk";
+import { deleteBattery, fetchBatteries, updateBattery } from "../BatteryThunk";
 import {
     Table,
     TableBody,
@@ -26,17 +26,26 @@ import {
     ListCard,
     Title,
     TableWrapper,
+    EditButton,
+    DeleteButton,
 } from "../../../styles/AdminDashboardStyles";
+import TablePagination from "../../../components/Pagination/TablePagination";
 
 const BatteryList: React.FC = () => {
     const dispatch = useAppDispatch();
     const { batteries, loading, error } = useAppSelector((state) => state.battery);
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const [editingBatteryType, setEditingBatteryType] = useState<BatteryType | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5;
 
     useEffect(() => {
         dispatch(fetchBatteries());
     }, [dispatch]);
+
+    const totalPages = Math.ceil(batteries.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const paginatedBatteries = batteries.slice(startIndex, startIndex + itemsPerPage);
 
     if (loading && batteries.length === 0) {
         return (
@@ -71,7 +80,6 @@ const BatteryList: React.FC = () => {
                     {/* Title + Add Button */}
                     <Title sx={{ px: 4, pt: 3 }}>Danh Sách Trạm Pin</Title>
 
-
                     {/* Table */}
                     <TableWrapper>
                         <Table>
@@ -85,7 +93,7 @@ const BatteryList: React.FC = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {batteries.map((bt) => (
+                                {paginatedBatteries.map((bt) => (
                                     <TableRow
                                         key={bt.id}
                                         onClick={() => setSelectedId(bt.id)}
@@ -124,49 +132,33 @@ const BatteryList: React.FC = () => {
                                             {bt.description || "—"}
                                         </TableCell>
                                         <TableCell align="center" onClick={(e) => e.stopPropagation()}>
-                                            <Button
+                                            <EditButton
                                                 size="small"
                                                 onClick={() => setEditingBatteryType(bt)}
-                                                sx={{
-                                                    mr: 1,
-                                                    borderRadius: "8px",
-                                                    textTransform: "none",
-                                                    fontWeight: 600,
-                                                    border: "1.5px solid #22C55E",
-                                                    color: "#22C55E",
-                                                    "&:hover": {
-                                                        backgroundColor: "rgba(34, 197, 94, 0.08)",
-                                                        borderColor: "#16A34A",
-                                                        transform: "translateY(-1px)",
-                                                    },
-                                                }}
+                                                sx={{ mr: 1 }}
                                             >
                                                 Cập nhật
-                                            </Button>
-                                            <Button
-                                                variant="contained"
+                                            </EditButton>
+                                            <DeleteButton
                                                 size="small"
                                                 onClick={() => dispatch(deleteBattery(bt.id))}
-                                                sx={{
-                                                    minWidth: 64,
-                                                    fontWeight: 600,
-                                                    backgroundColor: "#ef4444", // Red
-                                                    color: "#ffffff",
-                                                    boxShadow: "0 2px 6px rgba(239, 68, 68, 0.2)",
-
-                                                    "&:active": {
-                                                        transform: "translateY(0)",
-                                                    },
-                                                }}
                                             >
                                                 Xóa
-                                            </Button>
+                                            </DeleteButton>
                                         </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
                         </Table>
                     </TableWrapper>
+
+                    <TablePagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                        totalItems={batteries.length}
+                        itemsPerPage={itemsPerPage}
+                    />
                 </Box>
 
                 {/* Update Dialog */}

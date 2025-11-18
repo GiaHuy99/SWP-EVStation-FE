@@ -3,6 +3,7 @@ import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import TableContainer from "@mui/material/TableContainer";
@@ -202,4 +203,78 @@ export const DetailValue = styled(Typography)(({ theme }) => ({
     fontWeight: 500,
     color: "#0f172a",
     textAlign: "right",
+}));
+
+export const StyledButton = styled("button")(({ theme }) => ({
+    padding: "12px 24px",
+    fontSize: "0.875rem",
+    fontWeight: 600,
+    borderRadius: "12px",
+    border: "none",
+    cursor: "pointer",
+    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+    background: "linear-gradient(135deg, #4C428C 0%, #04C4D9 100%)",
+    color: "#ffffff",
+    boxShadow: "0 4px 14px rgba(76, 66, 140, 0.3)",
+    "&:hover": {
+        transform: "translateY(-2px)",
+        boxShadow: "0 8px 25px rgba(76, 66, 140, 0.4)",
+    },
+    "&:active": {
+        transform: "translateY(0)",
+    },
+    "&:disabled": {
+        opacity: 0.6,
+        cursor: "not-allowed",
+        transform: "none",
+    },
+}));
+
+export const ActionButton = styled(Button)(({ theme }) => ({
+    textTransform: "none",
+    fontWeight: 600,
+    borderRadius: "8px",
+    padding: "8px 16px",
+    transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+}));
+
+export const EditButton = styled(ActionButton)(({ theme }) => ({
+    border: "1.5px solid #22C55E",
+    color: "#22C55E",
+    backgroundColor: "transparent",
+    "&:hover": {
+        backgroundColor: "rgba(34, 197, 94, 0.08)",
+        borderColor: "#16A34A",
+        transform: "translateY(-1px)",
+    },
+}));
+
+export const DeleteButton = styled(ActionButton)(({ theme }) => ({
+    backgroundColor: "#ef4444",
+    color: "#ffffff",
+    minWidth: "64px",
+    boxShadow: "0 2px 6px rgba(239, 68, 68, 0.2)",
+    "&:hover": {
+        backgroundColor: "#dc2626",
+        boxShadow: "0 4px 12px rgba(239, 68, 68, 0.3)",
+        transform: "translateY(-1px)",
+    },
+    "&:active": {
+        transform: "translateY(0)",
+    },
+}));
+
+export const CreateButton = styled(Button)(({ theme }) => ({
+    borderRadius: "12px",
+    fontWeight: 600,
+    background: "linear-gradient(135deg, #4C428C 0%, #04C4D9 100%)",
+    boxShadow: "0 4px 14px rgba(76, 66, 140, 0.3)",
+    textTransform: "none",
+    padding: "10px 24px",
+    fontSize: "0.95rem",
+    transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+    "&:hover": {
+        boxShadow: "0 8px 25px rgba(76, 66, 140, 0.4)",
+        transform: "translateY(-2px)",
+    },
 }));

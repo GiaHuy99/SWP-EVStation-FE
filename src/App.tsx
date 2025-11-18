@@ -18,13 +18,15 @@ import LinkVehiclePage from "./features/link-subcription/pages/LinkVehiclePage";
 import ChangePlanPage from "./features/link-subcription/components/ChangePlanForm";
 import UserSubscriptionsPage from './features/subcription/pages/UserSubscriptionsPage';
 import Layout from "./shared/utils/navbar/Layout";
-import UserPageLayout from "./shared/utils/layout/UserPageLayout"; // User layout component
+import UserPageLayout from "./shared/utils/layout/UserPageLayout";
 import SwapBatteryPage from "./features/swapBattery/pages/SwapBatteryPage";
 import HomePage from "./features/home/HomePage";
 import BatterySerialListPage from './features/BatterySerials/components/BatterySerialList';
 import CreateBatterySerialForm from './features/BatterySerials/components/CreateBatterySerialForm';
 import {BaseMap} from "./features/map/components/BaseMap";
 import ConfirmPage from "./features/confirmSwap/form/ConfirmPage";
+import AnalyticsDashboardPage from "./features/analytics/pages/AnalyticsDashboardPage";
+
 function App() {
   return (
       <BrowserRouter>
@@ -60,6 +62,7 @@ function App() {
                   <Route path="/vehicle/list" element={<VehicleListPage />} />
                   <Route path="/vehicles/:id" element={<VehicleDetailPage />} />
                   <Route path="/staff/swap/status" element={<ConfirmPage/>}/>
+                  <Route path="/analytics/dashboard" element={<AnalyticsDashboardPage />} />
               </Route>
           </Routes>
       </BrowserRouter>

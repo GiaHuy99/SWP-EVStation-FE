@@ -25,6 +25,7 @@ import {
     PersonAdd,
     Logout,
     Subscriptions,
+    BarChart,
 } from '@mui/icons-material';
 
 const Sidebar: FC = () => {
@@ -298,6 +299,19 @@ const Sidebar: FC = () => {
                         </List>
                     </Collapse>
 
+                    {/* Thống Kê */}
+                    <ListItem disablePadding>
+                        <ListItemButton
+                            component={Link as any}
+                            to="/analytics/dashboard"
+                            sx={sidebarItemStyle}
+                        >
+                            <ListItemIcon sx={{ color: '#04C4D9', minWidth: 40 }}>
+                                <BarChart />
+                            </ListItemIcon>
+                            <ListItemText primary="Thống Kê" />
+                        </ListItemButton>
+                    </ListItem>
 
 
                 </List>

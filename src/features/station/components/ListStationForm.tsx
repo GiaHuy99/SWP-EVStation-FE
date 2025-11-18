@@ -14,7 +14,10 @@ import {
     Dialog,
     DialogTitle,
     IconButton,
-    Chip, Box, Typography, Alert,
+    Chip,
+    Box,
+    Typography,
+    Alert,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import UpdateStationForm from "./UpdateStationForm";
@@ -26,7 +29,10 @@ import {
     ListCard,
     TableWrapper,
     Title,
-} from "../styles/CreateStationForm";
+    EditButton,
+    DeleteButton,
+} from "../../../styles/AdminDashboardStyles";
+import TablePagination from "../../../components/Pagination/TablePagination";
 
 // Styled Row with hover
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
@@ -47,10 +53,16 @@ const StationList: React.FC = () => {
     const { stations, loading, error } = useAppSelector((state) => state.station);
     const [editingStation, setEditingStation] = useState<Station | null>(null);
     const [selectedId, setSelectedId] = useState<number | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5;
 
     useEffect(() => {
         dispatch(fetchStations());
     }, [dispatch]);
+
+    const totalPages = Math.ceil(stations.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const paginatedStations = stations.slice(startIndex, startIndex + itemsPerPage);
 
     const handleDelete = (id: number) => {
         if (window.confirm("Bạn có chắc muốn xóa trạm này?")) {
@@ -110,7 +122,7 @@ const StationList: React.FC = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {stations.map((station) => (
+                            {paginatedStations.map((station) => (
                                 <StyledTableRow
                                     key={station.id}
                                     onClick={() => setSelectedId(station.id)}
@@ -127,54 +139,26 @@ const StationList: React.FC = () => {
                                     <TableCell>{station.capacity}</TableCell>
                                     <TableCell>{station.phone}</TableCell>
                                     <TableCell align="center" onClick={(e) => e.stopPropagation()}>
-                                        <Button
-                                            variant="contained"
-                                            color="success"
-                                            size="small"
-                                            onClick={() => setEditingStation(station)}
-                                            sx={{
-                                                mr: 1,
-                                                minWidth: 64,
-                                                fontWeight: 600,
-                                                borderRadius: "8px",
-                                                boxShadow: "0 2px 6px rgba(34, 197, 94, 0.2)",
-                                                "&:hover": {
-                                                    boxShadow: "0 4px 12px rgba(34, 197, 94, 0.3)",
-                                                    transform: "translateY(-1px)",
-                                                },
-                                            }}
-                                        >
+                                        <EditButton onClick={() => setEditingStation(station)}>
                                             Sửa
-                                        </Button>
-                                        <Button
-                                            variant="contained"
-                                            size="small"
-                                            onClick={() => handleDelete(station.id)}
-                                            sx={{
-                                                minWidth: 64,
-                                                fontWeight: 600,
-                                                borderRadius: "8px",
-                                                backgroundColor: "#ef4444", // Red
-                                                color: "#ffffff",
-                                                boxShadow: "0 2px 6px rgba(239, 68, 68, 0.2)",
-                                                "&:hover": {
-                                                    backgroundColor: "#dc2626",
-                                                    boxShadow: "0 4px 12px rgba(239, 68, 68, 0.3)",
-                                                    transform: "translateY(-1px)",
-                                                },
-                                                "&:active": {
-                                                    transform: "translateY(0)",
-                                                },
-                                            }}
-                                        >
+                                        </EditButton>
+                                        <DeleteButton onClick={() => handleDelete(station.id)}>
                                             Xóa
-                                        </Button>
+                                        </DeleteButton>
                                     </TableCell>
                                 </StyledTableRow>
                             ))}
                         </TableBody>
                     </Table>
                 </TableWrapper>
+
+                <TablePagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                    totalItems={stations.length}
+                    itemsPerPage={itemsPerPage}
+                />
 
                 {/* Update Dialog */}
                 <UpdateStationForm

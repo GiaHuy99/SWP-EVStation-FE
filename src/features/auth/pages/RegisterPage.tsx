@@ -1,19 +1,21 @@
 import { useEffect } from "react";
-import { useAppSelector } from "../../../app/Hooks";
+import { useAppSelector, useAppDispatch } from "../../../app/Hooks";
 import { useNavigate } from "react-router-dom";
 import RegisterForm from "../components/RegisterForm";
+import { resetRegisterSuccess } from "../AuthSlice";
 import styles from "../styles/RegisterPage.module.css";
 
 const RegisterPage = () => {
-    const { token } = useAppSelector((state) => state.auth);
-    const navigate = useNavigate();
     const { registerSuccess } = useAppSelector((state) => state.auth);
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
         if (registerSuccess) {
             navigate("/login");
+            dispatch(resetRegisterSuccess());
         }
-    }, [registerSuccess, navigate]);
+    }, [registerSuccess, navigate, dispatch]);
 
     return (
         <div className={styles.registerPage}>
