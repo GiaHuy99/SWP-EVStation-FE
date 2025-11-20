@@ -52,7 +52,7 @@ const CreateBatteryTypeForm: React.FC = () => {
             .unwrap()
             .then(() => {
                 dispatch(showNotification({ message: "Tạo loại pin thành công!", type: "success" }));
-                navigate("/battery-types");
+                navigate("/battery/list");
             })
             .catch((error) => {
                 dispatch(showNotification({ message: error || "Tạo thất bại.", type: "error" }));

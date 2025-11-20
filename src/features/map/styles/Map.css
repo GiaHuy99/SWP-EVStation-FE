@@ -3,7 +3,7 @@
 */
 
 .leaflet-container .leaflet-popup-content-wrapper {
-    background-color: #ffffff !important;
+    background-color: black !important;
     border-radius: 8px !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
     border: none !important;
@@ -29,6 +29,6 @@
 
 .leaflet-container .leaflet-popup-close-button:hover {
     color: #000 !important;
-    background: #f0f0f0 !important;
+    background: black !important;
     border-radius: 50%;
 }

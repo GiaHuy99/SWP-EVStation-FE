@@ -135,7 +135,7 @@ const CreateBatterySerialForm: React.FC = () => {
                                     },
                                 }}
                             >
-                                Tạo Serial (Backend tự sinh mã)
+                                Tạo
                             </Button>
                         </FullWidthBox>
                     </FormBox>

@@ -81,17 +81,7 @@ const UserProfile: React.FC = () => {
             <Stack direction="column" alignItems="center" spacing={4}>
                 {/* Avatar + Info */}
                 <Box textAlign="center">
-                    <Avatar
-                        sx={{
-                            width: 110,
-                            height: 110,
-                            bgcolor: "#4C428C",
-                            fontSize: "3rem",
-                            boxShadow: "0 8px 20px rgba(76, 66, 140, 0.3)",
-                        }}
-                    >
-                        <PersonIcon fontSize="inherit" />
-                    </Avatar>
+
                     <Typography variant="h4" fontWeight={700} mt={3} color="#1e293b">
                         {profile?.username || "User"}
                     </Typography>

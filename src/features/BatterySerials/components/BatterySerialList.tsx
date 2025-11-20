@@ -177,7 +177,6 @@ const BatterySerialList: React.FC = () => {
                             <TableHead>
                                 <TableRow>
                                     <TableCell><strong>Số Seri</strong></TableCell>
-                                    <TableCell><strong>Pin</strong></TableCell>
                                     <TableCell><strong>Trạng thái</strong></TableCell>
                                     <TableCell><strong>Trạm</strong></TableCell>
                                     <TableCell align="center"><strong>Hành động</strong></TableCell>
@@ -191,7 +190,6 @@ const BatterySerialList: React.FC = () => {
                                                 {s.serialNumber}
                                             </code>
                                         </TableCell>
-                                        <TableCell><strong>{s.batteryName || "—"}</strong></TableCell>
                                         <TableCell>
                                             <Box
                                                 component="span"
