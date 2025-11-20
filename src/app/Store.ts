@@ -15,6 +15,7 @@ import batterySerials from "../features/BatterySerials/BatterySerialSlice";
 import confimSwap from "../features/confirmSwap/ConfirmSlices";
 import invoice from "../features/invoiceHistory/InvoiceSlice"
 import profile from "../features/profileUser/ProfileSlice";
+import usermanagent from "../features/user/UserSlice";
 export const store = configureStore({
     reducer: {
         auth: authReducer,
@@ -32,6 +33,7 @@ export const store = configureStore({
         confimSwap:confimSwap,
         invoice:invoice,
         profile:profile,
+        user:usermanagent,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(notificationMiddleware),
