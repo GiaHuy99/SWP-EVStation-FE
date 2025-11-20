@@ -1,70 +1,76 @@
+// types/LinkVehicleType.ts
+
+// -------------------------------------------------------------------
+// PAYLOAD – Gửi lên backend khi liên kết xe
+// -------------------------------------------------------------------
 export interface LinkVehiclePayload {
     vehicleModelId: number;
     subscriptionPlanId: number;
 }
 
 // -------------------------------------------------------------------
-// TYPES CHO DỮ LIỆU LỰA CHỌN (Từ API danh sách, ví dụ /admin/vehicle-models)
+// DỮ LIỆU CHO DROPDOWN (từ API danh sách)
 // -------------------------------------------------------------------
-
-// Type cho một model xe trong danh sách lựa chọn
 export interface VehicleModelSummary {
     id: number;
     name: string;
     brand: string;
-    brakeSystem?: string;  // Optional nếu không phải lúc nào cũng có
-    weightWithBattery?: number;  // Optional
-    // Có thể thêm price hoặc imageUrl nếu API trả về
 }
 
-// Type cho một gói đăng ký trong danh sách lựa chọn
 export interface PlanSummary {
     id: number;
     planName: string;
-    price: number;  // Giả sử có giá, dựa trên ngữ cảnh subscription
-    status?: string;  // Optional, ví dụ "AVAILABLE"
-    // Có thể thêm durationMonths nếu API trả về
+    price: number;
 }
 
 // -------------------------------------------------------------------
-// TYPES CHO RESPONSE (Dữ liệu nhận về sau khi link thành công)
+// CHI TIẾT TRONG RESPONSE SAU KHI LINK XE THÀNH CÔNG
 // -------------------------------------------------------------------
-
-// Type cho đối tượng model xe chi tiết (trong response)
-export interface VehicleModel {
+export interface VehicleModelDetail {
     id: number;
     name: string;
     brand: string;
+    wheelbase: string;
+    groundClearance: string;
+    seatHeight: string;
+    frontTire: string;
+    rearTire: string;
+    frontSuspension: string;
+    rearSuspension: string;
     brakeSystem: string;
+    trunkCapacity: string;
+    weightWithoutBattery: number;
     weightWithBattery: number;
 }
 
-// Type cho một pin (battery)
 export interface Battery {
     id: number;
     serialNumber: string;
-    status: 'IN_USE' | 'AVAILABLE' | 'MAINTENANCE';  // Union type cho status enum-like
+    status: 'IN_USE' | 'AVAILABLE' | 'MAINTENANCE';
 }
 
-// Type cho subscription chi tiết
 export interface Subscription {
     id: number;
     planName: string;
-    status: 'ACTIVE' | 'INACTIVE' | 'EXPIRED';  // Union type
-    startDate: string;  // ISO format: "YYYY-MM-DD"
-    endDate: string;    // ISO format
+    status: 'PENDING' | 'ACTIVE' | 'INACTIVE' | 'EXPIRED'; // quan trọng: có thêm PENDING
+    startDate: string;   // "2025-11-20"
+    endDate: string;     // "2025-12-20"
 }
 
-// Type cho vehicle chi tiết
 export interface Vehicle {
     id: number;
     vin: string;
-    model: VehicleModel;
+    model: VehicleModelDetail;
 }
 
-// Type cho toàn bộ response sau khi link xe thành công
+// -------------------------------------------------------------------
+// RESPONSE HOÀN CHỈNH – CÓ INVOICE ĐỂ THANH TOÁN
+// -------------------------------------------------------------------
 export interface LinkedVehicleResponse {
     message: string;
+    invoiceId: number;      // bắt buộc để thanh toán
+    invoiceAmount: number;  // số tiền cần thanh toán (VND, không nhân 100)
+
     vehicle: Vehicle;
     subscription: Subscription;
     batteries: Battery[];

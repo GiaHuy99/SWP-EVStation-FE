@@ -9,6 +9,7 @@ interface SubscriptionState {
     loading: boolean;
     error: string | null;
     changeMessage: string | null;
+    result: any | null;
 }
 
 const initialState: SubscriptionState = {
@@ -17,6 +18,7 @@ const initialState: SubscriptionState = {
     loading: false,
     error: null,
     changeMessage: null,
+    result: null,
 };
 
 const changeSubscriptionSlice = createSlice({
@@ -61,11 +63,13 @@ const changeSubscriptionSlice = createSlice({
             .addCase(changeSubscriptionPlan.fulfilled, (state, action) => {
                 state.loading = false;
                 state.changeMessage = action.payload.message;
-                // Optional: cập nhật lại xe nếu cần
+                state.result = action.payload; // ← QUAN TRỌNG: lưu toàn bộ response
+                state.error = null;
             })
             .addCase(changeSubscriptionPlan.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.error.message || "Đổi gói thất bại";
+                state.error = action.payload as string;
+                state.result = null;
             });
     },
 });

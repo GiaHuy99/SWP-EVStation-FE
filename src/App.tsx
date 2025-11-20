@@ -26,7 +26,7 @@ import CreateBatterySerialForm from './features/BatterySerials/components/Create
 import {BaseMap} from "./features/map/components/BaseMap";
 import ConfirmPage from "./features/confirmSwap/form/ConfirmPage";
 import AnalyticsDashboardPage from "./features/analytics/pages/AnalyticsDashboardPage";
-
+import InvoiceHistory from './features/invoiceHistory/components/InvoiceHistory';
 function App() {
   return (
       <BrowserRouter>
@@ -46,6 +46,7 @@ function App() {
                   <Route path="/subscriptions" element={<UserSubscriptionsPage />} />
                   <Route path="/swapBattery" element={<SwapBatteryPage />} />
                   <Route path="/Map" element={<BaseMap />} />
+                  <Route path="/invoice/history" element={<InvoiceHistory />} />
               </Route>
 
               {/* Admin pages with sidebar layout */}

@@ -115,6 +115,11 @@ const SecondaryNavbar: React.FC = () => {
             label: 'Swap PIN',
             path: '/swapBattery',
             icon: <SwapHoriz />
+        },
+        {
+            label: 'invoice History',
+            path: '/invoice/history',
+            icon: <Dashboard />
         }
     ];
 

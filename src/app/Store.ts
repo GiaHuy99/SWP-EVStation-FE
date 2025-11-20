@@ -13,6 +13,7 @@ import swapBattery from "../features/swapBattery/SwapSlice";
 import stationMap from "../features/map/stationSlice"
 import batterySerials from "../features/BatterySerials/BatterySerialSlice";
 import confimSwap from "../features/confirmSwap/ConfirmSlices";
+import invoice from "../features/invoiceHistory/InvoiceSlice"
 export const store = configureStore({
     reducer: {
         auth: authReducer,
@@ -28,6 +29,7 @@ export const store = configureStore({
         stationMap:stationMap,
         batterySerials:batterySerials,
         confimSwap:confimSwap,
+        invoice:invoice,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(notificationMiddleware),

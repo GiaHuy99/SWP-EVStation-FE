@@ -16,12 +16,15 @@ export interface Plan {
 }
 
 export interface ChangePlanResponse {
+    message: string;
+    invoiceId?: number;
+    invoiceAmount?: number;
     subscription: {
         id: number;
         currentPlan: string;
         nextPlanId: number;
+        nextPlanName: string;
         endDate: string;
-        status: string;
+        status: "PENDING" | "ACTIVE";
     };
-    message: string;
 }

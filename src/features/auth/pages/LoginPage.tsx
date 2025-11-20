@@ -17,6 +17,10 @@ const LoginPage = () => {
             } else if (role === "USER") {
                 navigate("/homepage");
             }
+            else if (role === "STAFF") {
+                navigate("/staff/swap/status");
+            }
+
             // Bạn có thể thêm else cho các trường hợp role khác nếu cần
         }
     }, [token, role, navigate]); // Thêm role vào dependency array
