@@ -1,181 +1,111 @@
+// src/features/vehicle/components/VehicleDetailForm.tsx
 import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
-import { getVehicleById } from "../VehicleMockThunks";
-import { Vehicle, VehicleState } from "../types/VehicleMockType";
-import {
-    Box,
-    Card,
-    CardContent,
-    Typography,
-    Chip,
-    CircularProgress,
-    Alert,
-    styled
-} from "@mui/material";
+import { fetchVehicleById } from "../VehicleThunks";
+import { Box, Card, CardContent, Typography, Chip, CircularProgress, Alert } from "@mui/material";
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
-import SpeedIcon from '@mui/icons-material/Speed';
-import BatteryChargingFullIcon from '@mui/icons-material/BatteryChargingFull';
-import PaletteIcon from '@mui/icons-material/Palette';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import BadgeIcon from '@mui/icons-material/Badge';
+import HeightIcon from '@mui/icons-material/Height';
+import ScaleIcon from '@mui/icons-material/Scale';
+import { styled } from "@mui/material/styles";
+import { PageContainer } from "../styles/VehicleFormStyles";
 
 const StyledCard = styled(Card)(({ theme }) => ({
-    maxWidth: 800,
-    margin: '0 auto',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-    borderRadius: 12,
+    maxWidth: 900,
+    margin: "0 auto",
+    borderRadius: 16,
+    boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
 }));
 
 const DetailItem = styled(Box)(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(3),
     '& .MuiSvgIcon-root': {
         marginRight: theme.spacing(2),
-        color: theme.palette.primary.main,
+        color: "#04C4D9",
+        fontSize: "2rem",
     },
 }));
 
-const StatusChip = styled(Chip)<{ status: string }>(({ status }) => ({
-    fontWeight: 'bold',
-    backgroundColor: status === 'ACTIVE' ? '#E8F5E9' : '#FFEBEE',
-    color: status === 'ACTIVE' ? '#2E7D32' : '#C62828',
-}));
-
-const BatteryIndicator = styled(Box)<{ percentage: number }>(({ percentage }) => ({
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    '& .MuiTypography-root': {
-        color: percentage > 20 ? '#2E7D32' : '#C62828',
-        fontWeight: 'bold',
-    },
-    '& .MuiSvgIcon-root': {
-        color: percentage > 20 ? '#2E7D32' : '#C62828',
-    },
-}));
-
-interface VehicleDetailProps {
+interface Props {
     id: number;
 }
 
-const VehicleDetail: React.FC<VehicleDetailProps> = ({ id }) => {
+const VehicleDetailForm: React.FC<Props> = ({ id }) => {
     const dispatch = useAppDispatch();
-    const { loading, error, selectedVehicle: vehicle } = useAppSelector((state: { vehicle: VehicleState }) => state.vehicle);
+    const { selectedVehicle: v, loading, error } = useAppSelector(state => state.vehicle);
 
     useEffect(() => {
-        if (id) {
-            dispatch(getVehicleById(id));
-        }
+        dispatch(fetchVehicleById(id));
     }, [id, dispatch]);
 
-    if (loading) return <CircularProgress />;
-    if (error) return <Alert severity="error">{error}</Alert>;
-    if (!vehicle) return <div>Không tìm thấy thông tin phương tiện</div>;
+    if (loading) return <CircularProgress sx={{ display: "block", mx: "auto", mt: 8 }} />;
+    if (error) return <Alert severity="error" sx={{ maxWidth: 900, mx: "auto", mt: 4 }}>{error}</Alert>;
+    if (!v) return <Typography align="center" sx={{ mt: 8 }}>Không tìm thấy mẫu xe</Typography>;
 
     return (
-        <Box sx={{ p: 3 }}>
+        <PageContainer>
             <StyledCard>
-                <CardContent>
-                    <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Typography variant="h4">
-                            {vehicle.manufacturer} {vehicle.model}
+                <CardContent sx={{ p: 5 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+                        <Typography variant="h4" fontWeight={700} color="#1a3681">
+                            {v.brand} {v.name}
                         </Typography>
-                        <StatusChip
-                            label={vehicle.status === 'ACTIVE' ? 'Hoạt động' : 'Không hoạt động'}
-                            status={vehicle.status}
-                        />
                     </Box>
 
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
                         <DetailItem>
-                            <BadgeIcon />
+                            <DirectionsCarIcon />
                             <Box>
-                                <Typography variant="subtitle2" color="textSecondary">
-                                    Biển số xe
-                                </Typography>
-                                <Typography variant="h6">
-                                    {vehicle.licensePlate}
-                                </Typography>
+                                <Typography variant="subtitle2" color="textSecondary">Thông tin cơ bản</Typography>
+                                <Typography variant="h6">{v.brand} - {v.name}</Typography>
                             </Box>
                         </DetailItem>
 
                         <DetailItem>
-                            <BatteryChargingFullIcon />
+                            <HeightIcon />
                             <Box>
-                                <Typography variant="subtitle2" color="textSecondary">
-                                    Trạng thái pin
-                                </Typography>
-                                <BatteryIndicator percentage={vehicle.batteryPercentage}>
-                                    <Typography variant="h6">
-                                        {vehicle.batteryPercentage}%
-                                    </Typography>
-                                </BatteryIndicator>
+                                <Typography variant="subtitle2" color="textSecondary">Chiều dài cơ sở</Typography>
+                                <Typography variant="h6">{v.wheelbase}</Typography>
                             </Box>
                         </DetailItem>
 
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                            <Box sx={{ flex: '1 1 45%', minWidth: '250px' }}>
-                                <DetailItem>
-                                    <DirectionsCarIcon />
-                                    <Box>
-                                        <Typography variant="subtitle2" color="textSecondary">
-                                            Thông tin xe
-                                        </Typography>
-                                        <Typography variant="body1">
-                                            {vehicle.manufacturer} - {vehicle.model}
-                                        </Typography>
-                                    </Box>
-                                </DetailItem>
+                        <DetailItem>
+                            <HeightIcon />
+                            <Box>
+                                <Typography variant="subtitle2" color="textSecondary">Khoảng sáng gầm</Typography>
+                                <Typography variant="h6">{v.groundClearance}</Typography>
                             </Box>
+                        </DetailItem>
 
-                            <Box sx={{ flex: '1 1 45%', minWidth: '250px' }}>
-                                <DetailItem>
-                                    <CalendarTodayIcon />
-                                    <Box>
-                                        <Typography variant="subtitle2" color="textSecondary">
-                                            Năm sản xuất
-                                        </Typography>
-                                        <Typography variant="body1">
-                                            {vehicle.year}
-                                        </Typography>
-                                    </Box>
-                                </DetailItem>
+                        <DetailItem>
+                            <HeightIcon />
+                            <Box>
+                                <Typography variant="subtitle2" color="textSecondary">Chiều cao yên</Typography>
+                                <Typography variant="h6">{v.seatHeight}</Typography>
                             </Box>
+                        </DetailItem>
 
-                            <Box sx={{ flex: '1 1 45%', minWidth: '250px' }}>
-                                <DetailItem>
-                                    <PaletteIcon />
-                                    <Box>
-                                        <Typography variant="subtitle2" color="textSecondary">
-                                            Màu sắc
-                                        </Typography>
-                                        <Typography variant="body1">
-                                            {vehicle.color}
-                                        </Typography>
-                                    </Box>
-                                </DetailItem>
+                        <DetailItem>
+                            <ScaleIcon />
+                            <Box>
+                                <Typography variant="subtitle2" color="textSecondary">Trọng lượng (không pin)</Typography>
+                                <Typography variant="h6">{v.weightWithoutBattery} kg</Typography>
                             </Box>
+                        </DetailItem>
 
-                            <Box sx={{ flex: '1 1 45%', minWidth: '250px' }}>
-                                <DetailItem>
-                                    <SpeedIcon />
-                                    <Box>
-                                        <Typography variant="subtitle2" color="textSecondary">
-                                            Số km đã chạy
-                                        </Typography>
-                                        <Typography variant="body1">
-                                            {vehicle.mileage.toLocaleString()} km
-                                        </Typography>
-                                    </Box>
-                                </DetailItem>
+                        <DetailItem>
+                            <ScaleIcon />
+                            <Box>
+                                <Typography variant="subtitle2" color="textSecondary">Trọng lượng (có pin)</Typography>
+                                <Typography variant="h6">{v.weightWithBattery} kg</Typography>
                             </Box>
-                        </Box>
+                        </DetailItem>
                     </Box>
                 </CardContent>
             </StyledCard>
-        </Box>
+        </PageContainer>
     );
 };
 
-export default VehicleDetail;
+export default VehicleDetailForm;

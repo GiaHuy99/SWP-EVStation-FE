@@ -1,79 +1,68 @@
-import { styled } from "@mui/material/styles";
-import { Card, Typography, Box, Button } from "@mui/material";
+// src/styles/VehicleModelStyles.ts
+import { Box, Card, TextField, Typography, styled } from "@mui/material";
 
-// Container tổng cho trang
-export const PageContainer = styled("div")({
-    padding: "24px",
-    display: "flex",
-    justifyContent: "center",   // căn giữa ngang
-    alignItems: "center",       // căn giữa dọc
-    minHeight: "100vh",         // chiều cao 100% viewport
-    backgroundColor: "#f5f5f5",
-});
+export const PageContainer = styled(Box)(({ theme }) => ({
+    padding: theme.spacing(4),
+    backgroundColor: "#f5f7fa",
+    minHeight: "100vh",
+}));
 
-export const FormCard = styled(Card)({
-    width: "100%",
-    maxWidth: 600,
-    padding: "24px",
-    borderRadius: "8px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-    backgroundColor: "#fff",
-    margin: "40px auto", // căn giữa ngang
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center", // căn giữa các nội dung bên trong
-});
+export const FormCard = styled(Card)(({ theme }) => ({
+    maxWidth: 900,
+    margin: "0 auto",
+    padding: theme.spacing(4),
+    borderRadius: 16,
+    boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
+    backgroundColor: "#ffffff",
+}));
 
-// Tiêu đề form
-export const Title = styled(Typography)({
-    fontWeight: 600,
-    marginBottom: 24,
+export const ListCard = styled(Card)(({ theme }) => ({
+    maxWidth: 1200,
+    margin: "0 auto",
+    padding: theme.spacing(4),
+    borderRadius: 16,
+    boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
+    backgroundColor: "#ffffff",
+}));
+
+export const Title = styled(Typography)(({ theme }) => ({
+    fontWeight: 700,
+    fontSize: "1.8rem",
+    marginBottom: theme.spacing(3),
+    color: "#1a3681",
     textAlign: "center",
-});
+}));
 
-// Hàng input trong form
-export const FormRow = styled(Box)({
-    display: "flex",
-    flexDirection: "column",
-    gap: "16px",
-    width: "100%", // input chiếm toàn bộ width của FormCard
-    maxWidth: 400, // giới hạn độ rộng input
-});
-
-// Styles for action buttons (View, Edit, Delete)
-export const ActionButton = styled(Button)(({ theme }) => ({
-    marginRight: theme.spacing(1),
-    minWidth: 80,
-    fontWeight: 500,
-    textTransform: "none",
-    boxShadow: "none",
-    borderRadius: 6,
-    '&:last-child': {
-        marginRight: 0,
+export const FormBox = styled(Box)(({ theme }) => ({
+    display: "grid",
+    gap: theme.spacing(2.5),
+    gridTemplateColumns: "1fr 1fr",
+    [theme.breakpoints.down("sm")]: {
+        gridTemplateColumns: "1fr",
     },
 }));
 
-// Dialog container for view/edit/delete
-export const DialogContainer = styled(Box)({
-    padding: "16px 0",
-    display: "flex",
-    flexDirection: "column",
-    gap: "12px",
-});
-
-// Title for dialogs
-export const DialogTitleStyled = styled(Typography)({
-    fontWeight: 600,
-    fontSize: "1.25rem",
-    marginBottom: 8,
-    textAlign: "center",
-});
-
-// Style for delete warning text
-export const DeleteWarning = styled(Typography)(({ theme }) => ({
-    color: theme.palette.error.main,
-    fontWeight: 500,
-    textAlign: "center",
-    margin: "12px 0",
+export const FullWidthBox = styled(Box)(({ theme }) => ({
+    gridColumn: "1 / -1",
 }));
 
+export const StyledTextField = styled(TextField)(({ theme }) => ({
+    "& .MuiOutlinedInput-root": {
+        borderRadius: 12,
+        backgroundColor: "#f8fafc",
+        "&:hover": {
+            backgroundColor: "#edf2f7",
+        },
+        "&.Mui-focused": {
+            backgroundColor: "#ffffff",
+            boxShadow: "0 0 0 2px rgba(4, 196, 217, 0.2)",
+        },
+    },
+}));
+
+export const TableWrapper = styled(Box)(({ theme }) => ({
+    overflowX: "auto",
+    marginTop: theme.spacing(3),
+    borderRadius: 12,
+    boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+}));

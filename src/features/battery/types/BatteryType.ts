@@ -1,27 +1,29 @@
-export interface Battery {
+// src/features/batteryType/types/BatteryTypeTypes.ts
+export interface BatteryType {
     id: number;
-    serialNumber: string;
-    status: "AVAILABLE" | "IN_USE" | "DAMAGED"|"MAINTENANCE";
-    swapCount: number;
-    stationId: number | null;
-    stationName: string | null;
+    name: string;
+    type: string; // Scooter, Bike, ...
+    designCapacity: number; // Ah hoặc Wh
+    description: string | null;
+    createdAt: string; // ISO string
 }
 
-export interface CreateBatteryPayload {
-    serialNumber: string;
-    status: "AVAILABLE" | "IN_USE" | "DAMAGED"|"MAINTENANCE";
-    swapCount: number;
-    stationId: number | null;
+export interface CreateBatteryTypePayload {
+    name: string;
+    type: string;
+    designCapacity: number;
+    description?: string;
 }
 
-export interface BatteryState {
-    batteries: Battery[];
-    selectedBattery: Battery | null;
+export interface UpdateBatteryTypePayload {
+    id: number;
+    payload: Partial<CreateBatteryTypePayload>;
+}
+
+export interface BatteryTypeState {
+    batteryTypes: BatteryType[];
+    selectedBatteryType: BatteryType | null;
     loading: boolean;
     error: string | null;
 }
 
-export interface UpdateBatteryPayload {
-    id: number;
-    payload: Partial<CreateBatteryPayload>;
-}

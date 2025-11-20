@@ -1,66 +1,76 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { CreateStationPayload, Station } from "./types/StationMockType";
-import { StationMockService } from "./services/StationMockService";
-
-// Create station
-export const createStation = createAsyncThunk<
-    Station,
-    CreateStationPayload,
-    { rejectValue: string }
->("station/createStation", async (payload, { rejectWithValue }) => {
-    try {
-        return await StationMockService.create(payload);
-    } catch (error: any) {
-        return rejectWithValue(error.message || "Failed to create station");
-    }
-});
+import StationServices from "./services/StationServices";
+import { Station } from "./types/StationType";
 
 export const fetchStations = createAsyncThunk<
-    Station[],
-    void,
-    { rejectValue: string }
+  Station[],
+  void,
+  { rejectValue: string }
 >("station/fetchAll", async (_, { rejectWithValue }) => {
-    try {
-        return await StationMockService.fetchAll();
-    } catch (err: any) {
-        return rejectWithValue(err.message || "Failed to fetch stations");
-    }
+  try {
+    return await StationServices.getStations();
+  } catch (err: any) {
+    return rejectWithValue(err.message || "Failed to fetch stations");
+  }
 });
 
 export const getStationById = createAsyncThunk<
-    Station,
-    number,
-    { rejectValue: string }
+  Station,
+  number,
+  { rejectValue: string }
 >("station/getById", async (id, { rejectWithValue }) => {
-    try {
-        return await StationMockService.getById(id);
-    } catch (err: any) {
-        return rejectWithValue(err.message || "Failed to fetch station");
-    }
+  try {
+    return await StationServices.getStationById(id);
+  } catch (err: any) {
+    return rejectWithValue(err.message || "Failed to fetch station by id");
+  }
 });
 
-export const updateStationThunk = createAsyncThunk<
-    Station,
-    { id: number; payload: CreateStationPayload },
-    { rejectValue: string }
->("station/updateStation", async ({ id, payload }, { rejectWithValue }) => {
-    try {
-        return await StationMockService.update(id, payload);
-    } catch (err: any) {
-        return rejectWithValue(err.message || "Failed to update station");
-    }
+export const createStation = createAsyncThunk<
+  Station,
+  Omit<Station, "id">,
+  { rejectValue: string }
+>("station/create", async (payload, { rejectWithValue }) => {
+  try {
+    return await StationServices.createStation(payload);
+  } catch (err: any) {
+    return rejectWithValue(err.message || "Failed to create station");
+  }
+});
+
+export const updateStation = createAsyncThunk<
+  Station,
+  { id: number; payload: Partial<Station> },
+  { rejectValue: string }
+>("station/update", async ({ id, payload }, { rejectWithValue }) => {
+  try {
+    return await StationServices.updateStation(id, payload);
+  } catch (err: any) {
+    return rejectWithValue(err.message || "Failed to update station");
+  }
 });
 
 export const deleteStation = createAsyncThunk<
-    number,
-    number,
-    { rejectValue: string }
->("station/deleteStation", async (id, { rejectWithValue }) => {
-    try {
-            await StationMockService.delete(id);
-            return id;
-        } catch (err: any) {
-            return rejectWithValue(err.message || "Failed to delete station");
-        }
-    }
-);
+  number,
+  number,
+  { rejectValue: string }
+>("station/delete", async (id, { rejectWithValue }) => {
+  try {
+    await StationServices.deleteStation(id);
+    return id;
+  } catch (err: any) {
+    return rejectWithValue(err.message || "Failed to delete station");
+  }
+});
+
+export const fetchAllSummaries = createAsyncThunk<
+  any[],
+  void,
+  { rejectValue: string }
+>("station/fetchAllSummaries", async (_, { rejectWithValue }) => {
+  try {
+    return await StationServices.getAllSummary();
+  } catch (err: any) {
+    return rejectWithValue(err.message || "Failed to fetch summaries");
+  }
+});

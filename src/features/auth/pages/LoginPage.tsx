@@ -5,14 +5,25 @@ import LoginForm from "../components/LoginForm";
 import styles from "../styles/LoginPage.module.css";
 
 const LoginPage = () => {
-    const { token } = useAppSelector((state) => state.auth); // check token thay vì user
+    // Lấy cả token và role từ Redux state
+    const { token, role } = useAppSelector((state) => state.auth);
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (token) {
-            navigate("/stations/list"); // login thành công thì sang HelloPage
+        // Chỉ thực hiện điều hướng khi có cả token và role
+        if (token && role) {
+            if (role === "ADMIN") {
+                navigate("/stations/list");
+            } else if (role === "USER") {
+                navigate("/homepage");
+            }
+            else if (role === "STAFF") {
+                navigate("/staff/swap/status");
+            }
+
+            // Bạn có thể thêm else cho các trường hợp role khác nếu cần
         }
-    }, [token, navigate]);
+    }, [token, role, navigate]); // Thêm role vào dependency array
 
     return (
         <div className={styles.loginPage}>

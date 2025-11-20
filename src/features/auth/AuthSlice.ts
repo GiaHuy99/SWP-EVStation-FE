@@ -1,15 +1,35 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AuthState, LoginResponse, RegisterResponse } from "./types/AuthTypes";
+import { AuthState } from "./types/AuthTypes";
 import { login, register } from "./AuthThunks";
 import AuthService from "./services/AuthService";
 
-const initialState: AuthState = {
-    token: localStorage.getItem("token"),
-    username: localStorage.getItem("username"),
-    loading: false,
-    error: null,
-    registerSuccess: false,
+const getInitialAuthState = (): AuthState => {
+    const token = localStorage.getItem("token");
+    const username = localStorage.getItem("username");
+    const role = localStorage.getItem("role");
+
+    if (token && username && role) {
+        return {
+            token,
+            username,
+            role,
+            loading: false,
+            error: null,
+            registerSuccess: false,
+        };
+    }
+
+    return {
+        token: null,
+        username: null,
+        role: null,
+        loading: false,
+        error: null,
+        registerSuccess: false,
+    };
 };
+
+const initialState: AuthState = getInitialAuthState();
 
 const authSlice = createSlice({
     name: "auth",
@@ -18,13 +38,11 @@ const authSlice = createSlice({
         logout: (state) => {
             state.token = null;
             state.username = null;
-            AuthService.logout(); // Xóa localStorage
+            state.role = null;
+            AuthService.logout();
         },
-        loadFromStorage: (state) => {
-            const token = localStorage.getItem("token");
-            const username = localStorage.getItem("username");
-            if (token) state.token = token;
-            if (username) state.username = username;
+        resetRegisterSuccess: (state) => {
+            state.registerSuccess = false;
         },
     },
     extraReducers: (builder) => {
@@ -33,37 +51,39 @@ const authSlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(login.fulfilled, (state, action: PayloadAction<LoginResponse>) => {
+            .addCase(login.fulfilled, (state, action) => {
                 state.loading = false;
                 state.token = action.payload.token;
                 state.username = action.payload.username;
-                localStorage.setItem("token", action.payload.token);
-                localStorage.setItem("username", action.payload.username);
+                state.role = action.payload.role;
             })
-            .addCase(login.rejected, (state, action: any) => {
+            .addCase(login.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload as string; // Lấy lỗi backend, sửa trùng lặp
+                state.error = action.payload as string;
+                state.token = null;
+                state.username = null;
+                state.role = null;
+            })
+            .addCase(register.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.registerSuccess = false;
+            })
+            .addCase(register.fulfilled, (state) => {
+                state.loading = false;
+                state.error = null;
+                state.registerSuccess = true;
+            })
+            .addCase(register.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+                state.registerSuccess = false;
             });
-        // Register cases
-        builder.addCase(register.pending, (state) => {
-            state.loading = true;
-            state.error = null;
-            state.registerSuccess = false;
-        });
-        builder.addCase(register.fulfilled, (state, action: PayloadAction<RegisterResponse>) => { // Sửa type cho nhất quán
-            state.loading = false;
-            state.registerSuccess = true;
-        });
-        builder.addCase(register.rejected, (state, action: any) => {
-            state.loading = false;
-            state.error = action.payload as string;
-            state.registerSuccess = false;
-        });
     },
 });
 
-// Thêm selector để check login state (dùng trong Navbar)
 export const selectIsLoggedIn = (state: { auth: AuthState }) => !!state.auth.token;
+export const selectUserRole = (state: { auth: AuthState }) => state.auth.role;
 
-export const { logout, loadFromStorage } = authSlice.actions;
+export const { logout, resetRegisterSuccess } = authSlice.actions;
 export default authSlice.reducer;

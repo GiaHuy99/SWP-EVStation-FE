@@ -1,32 +1,50 @@
-// src/store/swap/SwapSlice.ts
-
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-// Import cả 2 thunks
-import { swapBattery, getVehicleDetail } from "./SwapThunks";
-import { SwapBatteryResponse, VehicleSubscriptionDetail } from "./types/SwapBatteryType";
+// ⚡️ Import các thunk đã cập nhật
+import {
+    swapBattery,
+    getAllVehicles, // Đã đổi tên
+    getAllStations
+} from "./SwapThunks";
+// ⚡️ Import các type (không cần Battery riêng lẻ)
+import {
+    SwapBatteryResponse,
+    VehicleDetail,
+    StationDetail
+} from "./types/SwapBatteryType";
 
-// 1. Cập nhật kiểu dữ liệu cho State
+// 1. ⚡️ Cập nhật State (Bỏ batteries)
 interface SwapBatteryState {
     // Trạng thái cho hành động SWAP
     swapLoading: boolean;
     swapResult: SwapBatteryResponse | null;
     swapError: string | null;
 
-    // ⚡️ TRẠNG THÁI MỚI: Cho việc lấy thông tin xe
-    vehicleDetail: VehicleSubscriptionDetail | null;
-    vehicleLoading: boolean;
-    vehicleError: string | null;
+    // Trạng thái cho danh sách XE
+    vehicles: VehicleDetail[]; // ⬅️ Đã bao gồm pin
+    vehiclesLoading: boolean;
+    vehiclesError: string | null;
+
+    // Trạng thái cho danh sách TRẠM
+    stations: StationDetail[];
+    stationsLoading: boolean;
+    stationsError: string | null;
+
+    // ⛔️ Đã BỎ: State cho 'batteries' (batteries, batteriesLoading, batteriesError)
 }
 
-// 2. Cập nhật trạng thái ban đầu
+// 2. ⚡️ Cập nhật trạng thái ban đầu
 const initialState: SwapBatteryState = {
     swapLoading: false,
     swapResult: null,
     swapError: null,
 
-    vehicleDetail: null,
-    vehicleLoading: false,
-    vehicleError: null,
+    vehicles: [],
+    vehiclesLoading: false,
+    vehiclesError: null,
+
+    stations: [],
+    stationsLoading: false,
+    stationsError: null,
 };
 
 const swapBatterySlice = createSlice({
@@ -37,15 +55,12 @@ const swapBatterySlice = createSlice({
             state.swapResult = null;
             state.swapError = null;
         },
-        // ⚡️ ACTION MỚI: Xóa thông tin xe khi cần
-        clearVehicleDetail: (state) => {
-            state.vehicleDetail = null;
-            state.vehicleError = null;
-        }
+        // ⛔️ Đã BỎ: clearBatteries (không cần nữa)
     },
+    // 3. ⚡️ Cập nhật extraReducers
     extraReducers: (builder) => {
         builder
-            // --- Xử lý cho swapBattery ---
+            // --- Xử lý cho swapBattery (Không đổi) ---
             .addCase(swapBattery.pending, (state) => {
                 state.swapLoading = true;
                 state.swapError = null;
@@ -60,23 +75,41 @@ const swapBatterySlice = createSlice({
                 state.swapError = action.payload as string;
             })
 
-            // --- ⚡️ XỬ LÝ MỚI: Cho getVehicleDetail ---
-            .addCase(getVehicleDetail.pending, (state) => {
-                state.vehicleLoading = true;
-                state.vehicleError = null;
-                state.vehicleDetail = null;
+            // --- ⚡️ CẬP NHẬT: Xử lý cho getAllVehicles (thay vì getAllVehicleSubscriptions) ---
+            .addCase(getAllVehicles.pending, (state) => {
+                state.vehiclesLoading = true;
+                state.vehiclesError = null;
+                state.vehicles = []; // Xóa danh sách cũ khi tải
             })
-            .addCase(getVehicleDetail.fulfilled, (state, action: PayloadAction<VehicleSubscriptionDetail>) => {
-                state.vehicleLoading = false;
-                state.vehicleDetail = action.payload;
+            .addCase(getAllVehicles.fulfilled, (state, action: PayloadAction<VehicleDetail[]>) => {
+                state.vehiclesLoading = false;
+                state.vehicles = action.payload;
             })
-            .addCase(getVehicleDetail.rejected, (state, action) => {
-                state.vehicleLoading = false;
-                state.vehicleError = action.payload as string;
+            .addCase(getAllVehicles.rejected, (state, action) => {
+                state.vehiclesLoading = false;
+                state.vehiclesError = action.payload as string;
+            })
+
+            // --- ⛔️ ĐÃ BỎ: Xử lý cho getBatteriesForVehicle ---
+
+            // --- Xử lý cho getAllStations (Không đổi) ---
+            .addCase(getAllStations.pending, (state) => {
+                state.stationsLoading = true;
+                state.stationsError = null;
+                state.stations = []; // Xóa danh sách cũ khi tải
+            })
+            .addCase(getAllStations.fulfilled, (state, action: PayloadAction<StationDetail[]>) => {
+                state.stationsLoading = false;
+                state.stations = action.payload;
+            })
+            .addCase(getAllStations.rejected, (state, action) => {
+                state.stationsLoading = false;
+                state.stationsError = action.payload as string;
             });
     },
 });
 
-// 5. Export các action và reducer
-export const { clearSwapResult, clearVehicleDetail } = swapBatterySlice.actions;
+// 5. ⚡️ Cập nhật export (Bỏ clearBatteries)
+export const { clearSwapResult } = swapBatterySlice.actions;
 export default swapBatterySlice.reducer;
+

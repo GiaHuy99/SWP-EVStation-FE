@@ -1,0 +1,34 @@
+/* Phiên bản này dùng !important để "ép" trình duyệt
+  phải nhận style mới.
+*/
+
+.leaflet-container .leaflet-popup-content-wrapper {
+    background-color: #ffffff !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+    border: none !important;
+}
+
+.leaflet-container .leaflet-popup-content {
+    font-family: "Roboto", sans-serif !important;
+    font-size: 14px !important;
+    margin: 12px 15px !important;
+    line-height: 1.6 !important;
+    color: #333 !important;
+}
+
+.leaflet-container .leaflet-popup-tip-container {
+    display: none !important; /* Ẩn mũi tên tam giác */
+}
+
+.leaflet-container .leaflet-popup-close-button {
+    color: #555 !important;
+    padding: 8px !important;
+    transition: all 0.2s ease;
+}
+
+.leaflet-container .leaflet-popup-close-button:hover {
+    color: #000 !important;
+    background: #f0f0f0 !important;
+    border-radius: 50%;
+}

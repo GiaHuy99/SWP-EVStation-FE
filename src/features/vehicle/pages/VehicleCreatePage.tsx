@@ -1,7 +1,7 @@
 import React from "react";
 import { Container } from "@mui/material";
 import VehicleCreateForm from "../components/VehicleCreateForm";
-import { PageContainer } from "../styles/VehicleStyles";
+import { PageContainer } from "../styles/VehicleFormStyles";
 
 const VehicleCreatePage: React.FC = () => {
     return (

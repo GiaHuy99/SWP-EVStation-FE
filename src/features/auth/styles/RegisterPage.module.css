@@ -1,7 +1,8 @@
+/* Updated to remove padding/margin since form handles full layout */
+
 .registerPage {
     min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(135deg, #93c5fd, #bfdbfe);
+    width: 100%;
+    margin: 0;
+    padding: 0;
 }

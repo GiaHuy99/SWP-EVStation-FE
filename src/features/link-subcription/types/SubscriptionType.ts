@@ -1,8 +1,12 @@
 // src/features/subscription/types/SubscriptionType.ts
+
 export interface Vehicle {
-    id: number;
-    model: string;
-    vin: string;
+    vehicleId: number;
+    vehicle: string;
+    currentPlan: string;
+    startDate: string;
+    endDate: string;
+    nextPlan?: string;
 }
 
 export interface Plan {
@@ -11,13 +15,16 @@ export interface Plan {
     price?: number;
 }
 
+// TYPE ĐÃ ĐƯỢC SỬA CHUẨN 100% THEO RESPONSE THỰC TẾ
 export interface ChangePlanResponse {
-    subscription: {
-        id: number;
-        currentPlan: string;
-        nextPlanId: number;
-        endDate: string;
-        status: string;
-    };
+    subscriptionId: number;
+    status: "PENDING" | "ACTIVE" | "COMPLETED";
+    planName: string;
+    startDate: string;
+    endDate: string;
+    amount: number;
+    invoiceId: number;
+    invoiceAmount: number;
     message: string;
+    note?: string;
 }

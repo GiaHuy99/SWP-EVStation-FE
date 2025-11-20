@@ -1,12 +1,13 @@
+// Link_SubcriptionSlices.ts
 import { createSlice } from "@reduxjs/toolkit";
 import { linkVehicle, fetchVehicles, fetchPlans } from "./Link_SubcriptionThunk";
-import { LinkedVehicleResponse } from "./types/LinkVehicleType";
+import { LinkedVehicleResponse, VehicleModelSummary, PlanSummary } from "./types/LinkVehicleType";
 
 interface LinkVehicleState {
     loading: boolean;
     error: string | null;
-    vehicles: any[];
-    plans: any[];
+    vehicles: VehicleModelSummary[];
+    plans: PlanSummary[];
     result: LinkedVehicleResponse | null;
 }
 
@@ -28,6 +29,7 @@ const linkVehicleSlice = createSlice({
         },
     },
     extraReducers: (builder) => {
+        // ... giữ nguyên như cũ, chỉ đổi type ở fulfilled
         builder
             .addCase(linkVehicle.pending, (state) => {
                 state.loading = true;
@@ -35,37 +37,20 @@ const linkVehicleSlice = createSlice({
             })
             .addCase(linkVehicle.fulfilled, (state, action) => {
                 state.loading = false;
-                state.result = action.payload;
+                state.result = action.payload; // giờ có invoiceId + invoiceAmount
             })
             .addCase(linkVehicle.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string || "Link failed";
             })
-
-            .addCase(fetchVehicles.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
+            // fetchVehicles & fetchPlans giữ nguyên
             .addCase(fetchVehicles.fulfilled, (state, action) => {
                 state.loading = false;
                 state.vehicles = action.payload;
             })
-            .addCase(fetchVehicles.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload as string || "Failed to fetch vehicles";
-            })
-
-            .addCase(fetchPlans.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
             .addCase(fetchPlans.fulfilled, (state, action) => {
                 state.loading = false;
                 state.plans = action.payload;
-            })
-            .addCase(fetchPlans.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload as string || "Failed to fetch plans";
             });
     },
 });

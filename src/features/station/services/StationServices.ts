@@ -1,25 +1,60 @@
+import { Station } from "../types/StationType";
 import axiosInstance from "../../../shared/utils/AxiosInstance";
-import {CreateStationPayload, Station, UpdateStationPayload} from "../types/StationType";
 
-class StationServices {
-    async createStation(payload: CreateStationPayload): Promise<Station> {
-        const res = await axiosInstance.post<Station>("/stations", payload);
-        return res.data;
-    }
-    async getAll(): Promise<Station[]> {
-        const res = await axiosInstance.get<Station[]>("/stations");
-        return res.data;
-    }
-    async getStationById(id: number): Promise<Station> {
-        const res = await axiosInstance.get<Station>(`/stations/${id}`);
-        return res.data;
-    }
-}
-export async function updateStation(payload: UpdateStationPayload): Promise<Station> {
-    const res = await axiosInstance.put<Station>(`/stations/${payload.id}`, payload);
+const API_BASE = "/stations";
+
+const StationServices = {
+  async getStations(): Promise<Station[]> {
+    const res = await axiosInstance.get(API_BASE);
     return res.data;
-}
-export const deleteStation = async (id: number): Promise<void> => {
-    await axiosInstance.delete(`/stations/${id}`);
+  },
+
+  async getStationById(id: number): Promise<Station> {
+    const res = await axiosInstance.get(`${API_BASE}/${id}`);
+    return res.data;
+  },
+
+  async createStation(payload: Omit<Station, "id">): Promise<Station> {
+    const res = await axiosInstance.post(API_BASE, payload);
+    return res.data;
+  },
+
+  async updateStation(id: number, payload: Partial<Station>): Promise<Station> {
+    const res = await axiosInstance.put(`${API_BASE}/${id}`, payload);
+    return res.data;
+  },
+
+  async deleteStation(id: number): Promise<void> {
+    await axiosInstance.delete(`${API_BASE}/${id}`);
+  },
+
+  async getAllSummary(): Promise<
+    {
+      stationId: number;
+      stationName: string;
+      capacity: number;
+      totalBatteries: number;
+      usableBatteries: number;
+      maintenanceBatteries: number;
+      status: string;
+    }[]
+  > {
+    const res = await axiosInstance.get(`${API_BASE}/summary`);
+    return res.data;
+  },
+
+  async getStationSummary(id: number): Promise<{
+    stationId: number;
+    stationName: string;
+    capacity: number;
+    totalBatteries: number;
+    usableBatteries: number;
+    maintenanceBatteries: number;
+    status: string;
+  }> {
+    const res = await axiosInstance.get(`${API_BASE}/${id}/summary`);
+    return res.data;
+  },
 };
-export default new StationServices();
+
+export default StationServices;

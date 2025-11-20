@@ -3,14 +3,18 @@ import authReducer from "../features/auth/AuthSlice";
 import stationReducer from "../features/station/StationSlice";
 import batteryReducer from "../features/battery/BatterySlice";
 import subscriptionPlanReducer from "../features/subcriptionPlan/SubcriptionPlantSlice";
-import vehicleReducer from "../features/vehicle/VehicleMockSlice";
+import vehicleReducer from "../features/vehicle/VehicleSlices";
 import notificationReducer from "../shared/utils/notification/notificationSlice";
 import { notificationMiddleware } from "../shared/utils/notification/notificationMiddleware";
 import link_SubcriptionReducer from "../features/link-subcription/Link_SubcriptionSlices";
 import subcriptionReducer from "../features/link-subcription/ChangeSubscriptionSlice";
 import subcription from "../features/subcription/subscriptionSlice"
 import swapBattery from "../features/swapBattery/SwapSlice";
-import batteryType from "../features/batteryType/BatterySliceType";
+import stationMap from "../features/map/stationSlice"
+import batterySerials from "../features/BatterySerials/BatterySerialSlice";
+import confimSwap from "../features/confirmSwap/ConfirmSlices";
+import invoice from "../features/invoiceHistory/InvoiceSlice"
+import profile from "../features/profileUser/ProfileSlice";
 export const store = configureStore({
     reducer: {
         auth: authReducer,
@@ -23,7 +27,11 @@ export const store = configureStore({
         subcription:subcriptionReducer,
         subcsription1:subcription,
         swapBattery:swapBattery,
-        batteryType:batteryType,
+        stationMap:stationMap,
+        batterySerials:batterySerials,
+        confimSwap:confimSwap,
+        invoice:invoice,
+        profile:profile,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(notificationMiddleware),
