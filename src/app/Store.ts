@@ -14,6 +14,7 @@ import stationMap from "../features/map/stationSlice"
 import batterySerials from "../features/BatterySerials/BatterySerialSlice";
 import confimSwap from "../features/confirmSwap/ConfirmSlices";
 import invoice from "../features/invoiceHistory/InvoiceSlice"
+import profile from "../features/profileUser/ProfileSlice";
 export const store = configureStore({
     reducer: {
         auth: authReducer,
@@ -30,6 +31,7 @@ export const store = configureStore({
         batterySerials:batterySerials,
         confimSwap:confimSwap,
         invoice:invoice,
+        profile:profile,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(notificationMiddleware),

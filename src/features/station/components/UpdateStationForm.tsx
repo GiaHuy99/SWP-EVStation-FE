@@ -41,7 +41,8 @@ const UpdateStationForm: React.FC<Props> = ({ open, station, onClose }) => {
             setFormData({
                 name: station.name,
                 location: station.location,
-                status: station.status,
+                // CHỈ CHO PHÉP ACTIVE/INACTIVE → tự động chuyển FULL/EMPTY → ACTIVE
+                status: station.status === "INACTIVE" ? "INACTIVE" : "ACTIVE",
                 capacity: station.capacity,
                 phone: station.phone,
                 latitude: station.latitude,
@@ -58,10 +59,9 @@ const UpdateStationForm: React.FC<Props> = ({ open, station, onClose }) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
-            [name!]:
-                ["capacity", "latitude", "longitude"].includes(name!)
-                    ? Number(value)
-                    : value,
+            [name!]: ["capacity", "latitude", "longitude"].includes(name!)
+                ? Number(value)
+                : value,
         }));
         if (errors[name!]) {
             setErrors((prev) => ({ ...prev, [name!]: "" }));
@@ -70,16 +70,10 @@ const UpdateStationForm: React.FC<Props> = ({ open, station, onClose }) => {
 
     const validate = (): boolean => {
         const newErrors: Record<string, string> = {};
-        if (formData.name && !formData.name.trim())
-            newErrors.name = "Tên trạm không được để trống";
-        if (formData.location && !formData.location.trim())
-            newErrors.location = "Địa điểm không được để trống";
-        if (formData.capacity !== undefined && formData.capacity < 1)
-            newErrors.capacity = "Sức chứa phải ≥ 1";
-        if (
-            formData.phone &&
-            !/^\+?[0-9]{10,15}$/.test(formData.phone.replace(/\s/g, ""))
-        )
+        if (formData.name && !formData.name.trim()) newErrors.name = "Tên trạm không được để trống";
+        if (formData.location && !formData.location.trim()) newErrors.location = "Địa điểm không được để trống";
+        if (formData.capacity !== undefined && formData.capacity < 1) newErrors.capacity = "Sức chứa phải ≥ 1";
+        if (formData.phone && !/^\+?[0-9]{10,15}$/.test(formData.phone.replace(/\s/g, "")))
             newErrors.phone = "Số điện thoại không hợp lệ";
         if (formData.latitude !== undefined && (formData.latitude < -90 || formData.latitude > 90))
             newErrors.latitude = "Vĩ độ phải từ -90 đến 90";
@@ -121,7 +115,6 @@ const UpdateStationForm: React.FC<Props> = ({ open, station, onClose }) => {
             <DialogTitle sx={{ fontWeight: "bold", fontSize: "1.4rem", pb: 1 }}>
                 Cập nhật: {station.name}
             </DialogTitle>
-
             <DialogContent dividers>
                 <FormCard>
                     <FormBox>
@@ -143,6 +136,8 @@ const UpdateStationForm: React.FC<Props> = ({ open, station, onClose }) => {
                             error={!!errors.location}
                             helperText={errors.location}
                         />
+
+                        {/* CHỈ HIỆN 2 TRẠNG THÁI - AN TOÀN 100% */}
                         <FormControl fullWidth>
                             <InputLabel>Trạng thái</InputLabel>
                             <Select
@@ -155,6 +150,7 @@ const UpdateStationForm: React.FC<Props> = ({ open, station, onClose }) => {
                                 <MenuItem value="INACTIVE">Ngừng hoạt động</MenuItem>
                             </Select>
                         </FormControl>
+
                         <StyledTextField
                             label="Sức chứa"
                             name="capacity"
@@ -166,6 +162,7 @@ const UpdateStationForm: React.FC<Props> = ({ open, station, onClose }) => {
                             helperText={errors.capacity || "Phải ≥ 1"}
                             inputProps={{ min: 1 }}
                         />
+
                         <FullWidthBox>
                             <StyledTextField
                                 label="Số điện thoại"
@@ -178,6 +175,7 @@ const UpdateStationForm: React.FC<Props> = ({ open, station, onClose }) => {
                                 placeholder="+846464373666"
                             />
                         </FullWidthBox>
+
                         <StyledTextField
                             label="Vĩ độ (Latitude)"
                             name="latitude"
@@ -189,6 +187,7 @@ const UpdateStationForm: React.FC<Props> = ({ open, station, onClose }) => {
                             helperText={errors.latitude || "Từ -90 đến 90"}
                             inputProps={{ step: "0.000001" }}
                         />
+
                         <StyledTextField
                             label="Kinh độ (Longitude)"
                             name="longitude"

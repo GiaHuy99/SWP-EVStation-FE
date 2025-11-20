@@ -27,6 +27,7 @@ import {BaseMap} from "./features/map/components/BaseMap";
 import ConfirmPage from "./features/confirmSwap/form/ConfirmPage";
 import AnalyticsDashboardPage from "./features/analytics/pages/AnalyticsDashboardPage";
 import InvoiceHistory from './features/invoiceHistory/components/InvoiceHistory';
+import ProfilePage from './features/profileUser/components/UserProfile';
 function App() {
   return (
       <BrowserRouter>
@@ -47,6 +48,7 @@ function App() {
                   <Route path="/swapBattery" element={<SwapBatteryPage />} />
                   <Route path="/Map" element={<BaseMap />} />
                   <Route path="/invoice/history" element={<InvoiceHistory />} />
+                  <Route path="/user/profile" element={<ProfilePage />} />
               </Route>
 
               {/* Admin pages with sidebar layout */}

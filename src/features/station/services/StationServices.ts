@@ -1,4 +1,3 @@
-import axios from "axios";
 import { Station } from "../types/StationType";
 import axiosInstance from "../../../shared/utils/AxiosInstance";
 
@@ -21,12 +20,12 @@ const StationServices = {
   },
 
   async updateStation(id: number, payload: Partial<Station>): Promise<Station> {
-    const res = await axios.put(`${API_BASE}/${id}`, payload);
+    const res = await axiosInstance.put(`${API_BASE}/${id}`, payload);
     return res.data;
   },
 
   async deleteStation(id: number): Promise<void> {
-    await axios.delete(`${API_BASE}/${id}`);
+    await axiosInstance.delete(`${API_BASE}/${id}`);
   },
 
   async getAllSummary(): Promise<
@@ -40,7 +39,7 @@ const StationServices = {
       status: string;
     }[]
   > {
-    const res = await axios.get(`${API_BASE}/summary`);
+    const res = await axiosInstance.get(`${API_BASE}/summary`);
     return res.data;
   },
 
@@ -53,7 +52,7 @@ const StationServices = {
     maintenanceBatteries: number;
     status: string;
   }> {
-    const res = await axios.get(`${API_BASE}/${id}/summary`);
+    const res = await axiosInstance.get(`${API_BASE}/${id}/summary`);
     return res.data;
   },
 };

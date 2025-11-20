@@ -35,12 +35,12 @@ import {
     CreditCard,
     Subscriptions,
     SwapHoriz,
-    Battery6Bar,
-    LocalGasStation,
     Dashboard,
     Logout,
+    user
 
 } from '@mui/icons-material';
+import PersonIcon from '@mui/icons-material/Person';
 import battery from "../../asset/icons/battery.png"
 import charge from "../../asset/icons/charging-station.png"
 import ContactSection from "../contactSection/ContactSection";
@@ -97,6 +97,10 @@ const SecondaryNavbar: React.FC = () => {
 
     const navItems = [
         {
+            label:'profile',
+            path: '/user/profile',
+            icon: <PersonIcon/>
+        },{
             label: 'Link Vehicle',
             path: '/linkVehicle/regist',
             icon: <DirectionsCar />
