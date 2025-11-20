@@ -155,6 +155,18 @@ const Sidebar: FC = () => {
                             <ListItemText primary="Thông tin cá nhân" />
                         </ListItemButton>
                     </ListItem>
+                    <ListItem disablePadding>
+                        <ListItemButton
+                            component={Link as any}
+                            to="/users/list"
+                            sx={sidebarItemStyle}
+                        >
+                            <ListItemIcon sx={{ color: '#04C4D9', minWidth: 40 }}>
+                                <Person />
+                            </ListItemIcon>
+                            <ListItemText primary="User Management" />
+                        </ListItemButton>
+                    </ListItem>
                     {/* Trạm Sạc */}
                     <ListItem disablePadding>
                         <ListItemButton onClick={() => toggleMenu('stations')} sx={sidebarItemStyle}>

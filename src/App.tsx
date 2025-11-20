@@ -28,6 +28,7 @@ import ConfirmPage from "./features/confirmSwap/form/ConfirmPage";
 import AnalyticsDashboardPage from "./features/analytics/pages/AnalyticsDashboardPage";
 import InvoiceHistory from './features/invoiceHistory/components/InvoiceHistory';
 import ProfilePage from './features/profileUser/components/UserProfile';
+import UserListPage from './features/user/pages/UserListPage';
 function App() {
   return (
       <BrowserRouter>
@@ -66,6 +67,7 @@ function App() {
                   <Route path="/vehicles/:id" element={<VehicleDetailPage />} />
                   <Route path="/staff/swap/status" element={<ConfirmPage/>}/>
                   <Route path="/analytics/dashboard" element={<AnalyticsDashboardPage />} />
+                  <Route path="/users/list" element={<UserListPage />} />
               </Route>
           </Routes>
       </BrowserRouter>

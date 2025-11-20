@@ -125,7 +125,6 @@ const InvoiceHistory: React.FC = () => {
                         <TableRow>
                             <TableCell sx={{ color: "white", fontWeight: 600 }}>Mã HĐ</TableCell>
                             <TableCell sx={{ color: "white", fontWeight: 600 }}>Xe</TableCell>
-                            <TableCell sx={{ color: "white", fontWeight: 600 }}>Gói</TableCell>
                             <TableCell sx={{ color: "white", fontWeight: 600 }}>Số tiền</TableCell>
                             <TableCell sx={{ color: "white", fontWeight: 600 }}>Trạng thái</TableCell>
                             <TableCell sx={{ color: "white", fontWeight: 600 }}>Ngày tạo</TableCell>
@@ -141,9 +140,7 @@ const InvoiceHistory: React.FC = () => {
                                     <br />
                                     <Box fontSize="0.85rem" color="text.secondary">{inv.vehicleVin}</Box>
                                 </TableCell>
-                                <TableCell>
-                                    <Chip label={inv.planName} size="small" color="primary" variant="outlined" />
-                                </TableCell>
+
                                 <TableCell sx={{ fontWeight: 600, color: "#dc2626" }}>
                                     {inv.amount.toLocaleString("vi-VN")} ₫
                                 </TableCell>
