@@ -29,6 +29,8 @@ import AnalyticsDashboardPage from "./features/analytics/pages/AnalyticsDashboar
 import InvoiceHistory from './features/invoiceHistory/components/InvoiceHistory';
 import ProfilePage from './features/profileUser/components/UserProfile';
 import UserListPage from './features/user/pages/UserListPage';
+import Reservation from './features/reservation/components/PreReserveBattery'
+import ReservationHistory from './features/reservation/components/ReservationHistory';
 function App() {
   return (
       <BrowserRouter>
@@ -50,6 +52,8 @@ function App() {
                   <Route path="/Map" element={<BaseMap />} />
                   <Route path="/invoice/history" element={<InvoiceHistory />} />
                   <Route path="/user/profile" element={<ProfilePage />} />
+                  <Route path="/reservation/preReserve" element={<Reservation />} />
+                  <Route path="/reservation/history" element={<ReservationHistory />} />
               </Route>
 
               {/* Admin pages with sidebar layout */}
