@@ -22,10 +22,10 @@ class SwapBatteryService {
 
         // Map dữ liệu mới
         return res.data.map(vehicle => ({
-            id: vehicle.vehicleId,          // ⬅️ ID xe
-            vehicleName: vehicle.vin,       // ⬅️ Tên xe (dùng 'vin')
-            currentPlan: vehicle.planName,  // ⬅️ Gói cước
-            batteries: vehicle.batteries,   // ⬅️ Pin đi kèm
+            id: vehicle.vehicleId,
+            vehicleName: vehicle.vin,
+            currentPlan: vehicle.planName,
+            batteries: vehicle.batteries,
         }));
     }
 

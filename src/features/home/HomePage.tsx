@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../../app/Hooks';
 import { logout } from '../auth/AuthSlice';
+import PhoneIcon from '@mui/icons-material/Phone';
 import evstation from '../../asset/images/Hyundai-iF-Design-Award.jpg'
 import {
     Box,
@@ -37,8 +38,10 @@ import {
     SwapHoriz,
     Dashboard,
     Logout,
-    user
-
+    user,
+    ReceiptLong as ReceiptLongIcon,
+    AccountBalanceWallet as AccountBalanceWalletIcon,
+    CalendarMonth as CalendarMonthIcon,
 } from '@mui/icons-material';
 import PersonIcon from '@mui/icons-material/Person';
 import battery from "../../asset/icons/battery.png"
@@ -47,6 +50,7 @@ import ContactSection from "../contactSection/ContactSection";
 import bangGiaQuangDuong from '../../asset/images/quangduong.jpg';
 import bangGiaNangLuong from '../../asset/images/nangluong.jpg';
 import Paper from "@mui/material/Paper";
+import {FacebookIcon} from "lucide-react";
 // Secondary Navigation Bar Component
 const SecondaryNavbar: React.FC = () => {
     const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -96,37 +100,11 @@ const SecondaryNavbar: React.FC = () => {
     };
 
     const navItems = [
-        {
-            label:'profile',
-            path: '/user/profile',
-            icon: <PersonIcon/>
-        },{
-            label: 'Link Vehicle',
-            path: '/linkVehicle/regist',
-            icon: <DirectionsCar />
-        },
-        {
-            label: 'Change Plan',
-            path: '/subcriptionPlan/changePlanPage',
-            icon: <CreditCard />
-        },
-        {
-            label: 'My Plan',
-            path: '/subscriptions',
-            icon: <Subscriptions />
-        },
-        {
-            label: 'Swap PIN',
-            path: '/swapBattery',
-            icon: <SwapHoriz />
-        },
-        {
-            label: 'invoice History',
-            path: '/invoice/history',
-            icon: <Dashboard />
-        }
+        { label: 'Profile', path: '/user/profile', icon: <PersonIcon /> },
+        { label: 'Change Plan', path: '/subcriptionPlan/changePlanPage', icon: <CreditCard /> },
+        { label: 'Invoice History', path: '/invoice/history', icon: <AccountBalanceWalletIcon /> },
+        { label: 'Reservation History', path: '/reservation/history', icon: <CalendarMonthIcon /> },
     ];
-
     const drawer = (
         <Box 
             onClick={handleDrawerToggle} 
@@ -614,6 +592,23 @@ const HomePage: React.FC = () => {
                         </Typography>
                         <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
                             <Button
+                                variant="outlined"
+                                size="large"
+                                component={Link}
+                                to="/reservation/preReserve"
+                                sx={{
+                                    borderColor: theme.palette.common.white,
+                                    color: theme.palette.common.white,
+                                    px: 4,
+                                    '&:hover': {
+                                        backgroundColor: 'rgba(255,255,255,0.1)',
+                                        borderColor: theme.palette.common.white,
+                                    },
+                                }}
+                            >
+                                Reserve Battery
+                            </Button>
+                            <Button
                                 variant="contained"
                                 size="large"
                                 component={Link}
@@ -646,6 +641,7 @@ const HomePage: React.FC = () => {
                             >
                                 Find Swap Station
                             </Button>
+
                         </Box>
                     </Container>
                 </Box>
@@ -739,7 +735,7 @@ const HomePage: React.FC = () => {
                                     }}
                                 />
                                 <Typography variant="h5" component="h3" sx={{ mb: 2 }}>
-                                    Vehicle Management
+                                    Link Vehicle
                                 </Typography>
                                 <Typography variant="body1" sx={{ lineHeight: 1.6 }}>
                                     Link and manage your electric vehicles for seamless battery swap services.
@@ -859,7 +855,7 @@ const HomePage: React.FC = () => {
             <AdvertisementSection />
 
             <ContactSection />
-
+            <FloatingContactButtons />
 
 
             {/* Footer */}
@@ -878,6 +874,55 @@ const HomePage: React.FC = () => {
                     </Typography>
                 </Container>
             </Box>
+        </Box>
+    );
+};
+// ──────────────────────────────────────────────────────────────
+// 2 BONG BÓNG NỔI: GỌI ĐIỆN + MESSENGER FACEBOOK (luôn hiển thị khi scroll)
+const FloatingContactButtons: React.FC = () => {
+    const phoneNumber = "0984768713";           // Thay số điện thoại thật của bạn
+    const facebookMessenger = "https://m.me/evbatteryswap.vn"; // Thay link Messenger Fanpage
+
+    return (
+        <Box
+            sx={{
+                position: 'fixed',
+                bottom: { xs: 16, sm: 24 },
+                right: { xs: 16, sm: 24 },
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2,
+                zIndex: 1400, // cao hơn mọi thứ
+                '& > a': {
+                    width: 56,
+                    height: 56,
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.35)',
+                    transition: 'all 0.3s ease',
+                    animation: 'float 3s ease-in-out infinite',
+                    '&:hover': {
+                        transform: 'scale(1.15)',
+                        boxShadow: '0 8px 30px rgba(0,0,0,0.5)',
+                    },
+                },
+                '@keyframes float': {
+                    '0%, 100%': { transform: 'translateY(0)' },
+                    '50%': { transform: 'translateY(-10px)' },
+                },
+            }}
+        >
+            {/* Bong bóng Gọi điện */}
+            <a
+                href={`tel:${phoneNumber}`}
+                aria-label="Gọi hotline"
+                style={{ backgroundColor: '#04BF33', color: 'white' }} // Màu xanh lá hotline
+            >
+                <PhoneIcon sx={{ fontSize: 32 }} />
+            </a>
+
         </Box>
     );
 };
