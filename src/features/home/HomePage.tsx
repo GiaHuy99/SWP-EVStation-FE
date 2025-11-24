@@ -32,14 +32,9 @@ import {
 } from '@mui/material';
 import {
     Menu as MenuIcon,
-    DirectionsCar,
     CreditCard,
-    Subscriptions,
-    SwapHoriz,
-    Dashboard,
+
     Logout,
-    user,
-    ReceiptLong as ReceiptLongIcon,
     AccountBalanceWallet as AccountBalanceWalletIcon,
     CalendarMonth as CalendarMonthIcon,
 } from '@mui/icons-material';
@@ -50,7 +45,6 @@ import ContactSection from "../contactSection/ContactSection";
 import bangGiaQuangDuong from '../../asset/images/quangduong.jpg';
 import bangGiaNangLuong from '../../asset/images/nangluong.jpg';
 import Paper from "@mui/material/Paper";
-import {FacebookIcon} from "lucide-react";
 // Secondary Navigation Bar Component
 const SecondaryNavbar: React.FC = () => {
     const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -106,11 +100,11 @@ const SecondaryNavbar: React.FC = () => {
         { label: 'Reservation History', path: '/reservation/history', icon: <CalendarMonthIcon /> },
     ];
     const drawer = (
-        <Box 
-            onClick={handleDrawerToggle} 
-            sx={{ 
-                textAlign: 'center', 
-                backgroundColor: '#022601' // Dark green background
+        <Box
+            onClick={handleDrawerToggle}
+            sx={{
+                textAlign: 'center',
+                backgroundColor: '#000000' // Dark green background
             }}
         >
             <Typography variant="h6" sx={{ my: 2, color: theme.palette.primary.main }}>
@@ -163,7 +157,7 @@ const SecondaryNavbar: React.FC = () => {
             <AppBar
                 position="fixed"
                 sx={{
-                    backgroundColor: '#022601', // Dark green background
+                    backgroundColor: '#000000', // Dark green background
                     boxShadow: theme.shadows[2],
                     zIndex: theme.zIndex.drawer + 1,
                     borderRadius: 0
@@ -544,7 +538,7 @@ const AdvertisementSection: React.FC = () => {
 // Thành phần Trang chủ (Homepage Component)
 const HomePage: React.FC = () => {
     const theme = useTheme();
-    
+
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             {/* Secondary Navigation Bar */}
@@ -880,9 +874,7 @@ const HomePage: React.FC = () => {
 // ──────────────────────────────────────────────────────────────
 // 2 BONG BÓNG NỔI: GỌI ĐIỆN + MESSENGER FACEBOOK (luôn hiển thị khi scroll)
 const FloatingContactButtons: React.FC = () => {
-    const phoneNumber = "0984768713";           // Thay số điện thoại thật của bạn
-    const facebookMessenger = "https://m.me/evbatteryswap.vn"; // Thay link Messenger Fanpage
-
+    const phoneNumber = process.env.REACT_APP_PHONE_NUMBER;           // Thay số điện thoại thật của bạn
     return (
         <Box
             sx={{
