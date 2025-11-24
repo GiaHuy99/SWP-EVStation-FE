@@ -13,19 +13,16 @@ import {
     CircularProgress,
     Alert,
     Box,
+    Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import Paper from "@mui/material/Paper";
 
-// Local StyledTableRow cho hover xanh pastel (không import external)
+// Hover row xanh pastel mượt mà
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:hover": {
-        backgroundColor: "#E8F5E8", // Xanh pastel đồng bộ
-        transition: "background-color 0.3s ease-in-out",
-        transform: "scale(1.01)", // Nâng nhẹ
-    },
-    "& td": {
-        borderBottom: `1px solid ${theme.palette.divider}`,
+        backgroundColor: "#E8F5E8",
+        transition: "all 0.3s ease",
+        transform: "scale(1.01)",
     },
 }));
 
@@ -41,100 +38,167 @@ const UserSubscriptionsTable: React.FC = () => {
 
     const handleAutoRenew = () => {
         dispatch(runAutoRenew()).then(() => {
-            dispatch(fetchSubscriptions()); // reload sau khi renew
+            dispatch(fetchSubscriptions());
         });
     };
 
     return (
         <Box
-            sx={{ // Inline PageContainer: bg nhẹ, center, full height
+            sx={{
                 minHeight: "100vh",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                backgroundColor: "#F9FAFB", // Đồng bộ nhẹ
-                padding: 4,
+                backgroundColor: "#F9FAFB",
+                padding: { xs: 2, sm: 4 },
             }}
         >
             <Box
-                sx={{ // Inline ListCard: maxWidth, padding, shadow, border
+                sx={{
                     width: "100%",
                     maxWidth: 1000,
-                    padding: 3,
-                    borderRadius: 1,
-                    boxShadow: "0px 12px 30px rgba(0, 0, 0, 0.06)", // Đồng bộ mượt
+                    padding: 4,
+                    borderRadius: 2,
+                    boxShadow: "0px 12px 30px rgba(0, 0, 0, 0.08)",
                     backgroundColor: "white",
-                    border: "1px solid #e5e7eb", // Border xám nhạt
+                    border: "1px solid #e5e7eb",
                 }}
             >
-                <Button
-                    variant="outlined"
-                    color="success" // Xanh lá
-                    onClick={handleAutoRenew}
+                {/* Tiêu đề đẹp như app Tesla */}
+                <Typography
+                    variant="h4"
+                    component="h1"
                     sx={{
-                        mb: 2, // Margin bottom
-                        backgroundColor: "transparent", // Trắng như hình
-                        borderColor: "#22C55E", // Viền xanh nhạt
-                        color: "#22C55E", // Chữ xanh đậm
-                        textTransform: "uppercase", // "RENEW" in hoa
-                        borderRadius: "8px", // Bo tròn mỏng
-                        fontWeight: 600, // Đậm
-                        transition: "all 0.3s ease-in-out",
-                        "&:hover": {
-                            backgroundColor: "rgba(34, 197, 94, 0.05)", // Nhạt hover
-                            borderColor: "#16A34A", // Sáng hơn
-                            transform: "translateY(-1px)", // Nâng
-                        },
+                        fontWeight: 800,
+                        color: "#022601",
+                        mb: 1,
+                        textAlign: "center",
+                        fontSize: { xs: "1.8rem", md: "2.5rem" },
                     }}
                 >
-                    RENEW
-                </Button>
+                    Subscription Management
+                </Typography>
+                <Typography
+                    variant="body2"
+                    sx={{
+                        color: "#6B7280",
+                        textAlign: "center",
+                        mb: 4,
+                        fontSize: "1rem",
+                    }}
+                >
+                    Quản lý gói thuê pin và gia hạn tự động
+                </Typography>
 
-                {loading && <CircularProgress sx={{ display: "block", mx: "auto", my: 2 }} />}
+                {/* Nút RENEW đẹp đúng như ảnh */}
+                <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
+                    <Button
+                        variant="outlined"
+                        color="success"
+                        size="large"
+                        onClick={handleAutoRenew}
+                        disabled={loading}
+                        sx={{
+                            textTransform: "uppercase",
+                            fontWeight: 600,
+                            fontSize: "1.1rem",
+                            px: 6,
+                            py: 1.5,
+                            borderRadius: "12px",
+                            borderColor: "#22C55E",
+                            color: "#22C55E",
+                            backgroundColor: "white",
+                            boxShadow: "0 4px 15px rgba(34, 197, 94, 0.15)",
+                            transition: "all 0.3s ease",
+                            "&:hover": {
+                                backgroundColor: "#F0FDF4",
+                                borderColor: "#16A34A",
+                                transform: "translateY(-3px)",
+                                boxShadow: "0 8px 25px rgba(34, 197, 94, 0.25)",
+                            },
+                            "&:disabled": {
+                                opacity: 0.6,
+                                cursor: "not-allowed",
+                            },
+                        }}
+                    >
+                        {loading ? <CircularProgress size={24} color="success" /> : "RENEW"}
+                    </Button>
+                </Box>
+
+                {/* Loading & Error */}
+                {loading && !autoRenewMessage && (
+                    <Box sx={{ textAlign: "center", my: 3 }}>
+                        <CircularProgress color="success" />
+                    </Box>
+                )}
                 {error && <Alert severity="error" sx={{ my: 2 }}>{error}</Alert>}
 
-                <Box sx={{ // Inline TableWrapper: overflow auto
-                    width: "100%",
-                    overflowX: "auto",
-                }}>
-                    <TableContainer component={Paper}>
-                        <Table>
-                            <TableHead>
+                {/* Bảng - ĐÃ XÓA VIỀN NGOÀI HOÀN TOÀN */}
+                <TableContainer
+                    sx={{
+                        borderRadius: 2,
+                        overflow: "hidden",
+                        boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
+                        border: "none", // XÓA VIỀN NGOÀI
+                    }}
+                >
+                    <Table>
+                        <TableHead>
+                            <TableRow sx={{ backgroundColor: "#F0FDF4" }}>
+                                <TableCell sx={{ fontWeight: 700, color: "#022601" }}>Vehicle</TableCell>
+                                <TableCell sx={{ fontWeight: 700, color: "#022601" }}>Current Plan</TableCell>
+                                <TableCell sx={{ fontWeight: 700, color: "#022601" }}>Start Date</TableCell>
+                                <TableCell sx={{ fontWeight: 700, color: "#022601" }}>End Date</TableCell>
+                                <TableCell sx={{ fontWeight: 700, color: "#022601" }}>Next Plan</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {list.length === 0 && !loading ? (
                                 <TableRow>
-                                    <TableCell>Vehicle</TableCell>
-                                    <TableCell>Current Plan</TableCell>
-                                    <TableCell>Start</TableCell>
-                                    <TableCell>End</TableCell>
-                                    <TableCell>Next Plan</TableCell>
+                                    <TableCell colSpan={5} align="center" sx={{ py: 6, color: "#6B7280" }}>
+                                        Chưa có gói thuê pin nào
+                                    </TableCell>
                                 </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {list.map((sub, idx) => (
-                                    <StyledTableRow key={idx}> {/* Hover xanh local */}
+                            ) : (
+                                list.map((sub, idx) => (
+                                    <StyledTableRow key={idx}>
                                         <TableCell>{sub.vehicle}</TableCell>
                                         <TableCell>{sub.currentPlan}</TableCell>
                                         <TableCell>{sub.startDate}</TableCell>
                                         <TableCell>{sub.endDate}</TableCell>
-                                        <TableCell>{sub.nextPlan}</TableCell>
+                                        <TableCell>
+                                            <Box component="span" sx={{ color: "#16A34A", fontWeight: 600 }}>
+                                                {sub.nextPlan || "-"}
+                                            </Box>
+                                        </TableCell>
                                     </StyledTableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </Box>
+                                ))
+                            )}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
 
+                {/* Snackbar thông báo thành công */}
                 <Snackbar
                     open={!!autoRenewMessage}
-                    message={autoRenewMessage || ""}
-                    autoHideDuration={3000}
+                    autoHideDuration={4000}
                     onClose={() => dispatch(clearMessage())}
-                    sx={{
-                        "& .MuiSnackbarContent-root": {
-                            backgroundColor: "rgba(34, 197, 94, 0.9)", // Xanh success
-                            color: "white",
-                        },
-                    }}
-                />
+                    anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+                >
+                    <Alert
+                        onClose={() => dispatch(clearMessage())}
+                        severity="success"
+                        variant="filled"
+                        sx={{
+                            backgroundColor: "#22C55E",
+                            fontWeight: 600,
+                            fontSize: "1rem",
+                        }}
+                    >
+                        {autoRenewMessage}
+                    </Alert>
+                </Snackbar>
             </Box>
         </Box>
     );

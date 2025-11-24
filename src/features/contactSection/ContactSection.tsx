@@ -33,15 +33,15 @@ const ContactSection = () => {
 
         try {
             await emailjs.send(
-                "service_w7eyg1t", // ✅ service ID của bạn
-                "template_s8u76ep", // ✅ template ID của bạn
+                 process.env.REACT_APP_EMAILJS_SERVICE_ID,
+                 process.env.REACT_APP_EMAILJS_TEMPLATE_ID,
                 {
                     fullname: formData.name,
                     email: formData.email,
                     phone: formData.phone,
                     description: formData.message,
                 },
-                "-MhRSjYpD87lcYJ1c" // ✅ public key của bạn
+                process.env.REACT_APP_EMAILJS_PUBLIC_KEY // ✅ public key của bạn
             );
 
             setStatusMessage({
