@@ -29,24 +29,12 @@ class SwapBatteryService {
         }));
     }
 
-    /**
-     * ⛔️ ĐÃ XÓA: getBatteriesByVehicleId
-     * Hàm này không cần nữa vì API /user/vehicles đã bao gồm pin.
-     */
 
-    /**
-     * Lấy TẤT CẢ các trạm (Không đổi)
-     * (Đã bỏ /api ở đầu)
-     */
     async getAllStations(): Promise<StationDetail[]> {
         const res = await axiosInstance.get<StationDetail[]>('/stations');
         return res.data;
     }
 
-    /**
-     * Thực hiện Swap (Không đổi)
-     * (Đã bỏ /api ở đầu)
-     */
     async swapBattery(payload: SwapBatteryPayload): Promise<SwapBatteryResponse> {
         const res = await axiosInstance.post<SwapBatteryResponse>("/user/swap", payload);
         return res.data;

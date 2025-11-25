@@ -7,6 +7,7 @@ import {
     rejectSwapApi,
 } from "./services/ConfirmServices";
 import { BatterySwapRecord } from "./types/ConfirmTypes";
+import axiosInstance from "../../shared/utils/AxiosInstance";
 
 export const fetchPendingSwaps = createAsyncThunk<BatterySwapRecord[]>(
     "staffSwap/fetchPending",
@@ -38,3 +39,14 @@ export const rejectSwap = createAsyncThunk<
         return rejectWithValue(error.response?.data?.message || "Từ chối thất bại");
     }
 });
+export const fetchBatteriesAtStation = createAsyncThunk(
+    "staffBattery/fetchAtStation",
+    async (_, { rejectWithValue }) => {
+        try {
+            const res = await axiosInstance.get("/staff/batteries");
+            return res.data;
+        } catch (err: any) {
+            return rejectWithValue(err.response?.data?.message || "Lỗi tải danh sách pin");
+        }
+    }
+);

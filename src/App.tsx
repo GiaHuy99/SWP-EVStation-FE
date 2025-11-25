@@ -32,6 +32,8 @@ import UserListPage from './features/user/pages/UserListPage';
 import Reservation from './features/reservation/components/PreReserveBattery'
 import ReservationHistory from './features/reservation/components/ReservationHistory';
 import StaffManagement from "./features/staffManagement/components/StaffManagement";
+import StaffLayout from './shared/utils/StaffLayout/StaffLayout';
+import BatteryStation from './features/confirmSwap/form/StaffBatteryAtStationList';
 function App() {
   return (
       <BrowserRouter>
@@ -70,10 +72,13 @@ function App() {
                   <Route path="/vehicle/create" element={<VehicleCreatePage />} />
                   <Route path="/vehicle/list" element={<VehicleListPage />} />
                   <Route path="/vehicles/:id" element={<VehicleDetailPage />} />
-                  <Route path="/staff/swap/status" element={<ConfirmPage/>}/>
                   <Route path="/analytics/dashboard" element={<AnalyticsDashboardPage />} />
                   <Route path="/users/list" element={<UserListPage />} />
                   <Route path="/staff/management" element={<StaffManagement />} />
+              </Route>
+              <Route element={<StaffLayout />}>
+                  <Route path="/staff/swap/status" element={<ConfirmPage/>}/>
+                  <Route path="/staff/battery/station-list" element={<BatteryStation/>}/>
               </Route>
           </Routes>
       </BrowserRouter>
