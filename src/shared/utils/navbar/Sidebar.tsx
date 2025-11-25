@@ -47,6 +47,7 @@ const Sidebar: FC = () => {
         battery: false,
         subscription: false,
         vehicle: false,
+        staff: false,
     });
 
     // State cho dropdown user
@@ -55,7 +56,7 @@ const Sidebar: FC = () => {
 
     const toggleMenu = (key: string) => {
         setMenuStates(prev => {
-            const newState = { stations: false, battery: false, subscription: false, vehicle: false };
+            const newState = { stations: false, battery: false, subscription: false, vehicle: false, staff: false };
             newState[key as keyof typeof newState] = !prev[key];
             return newState;
         });
@@ -167,6 +168,21 @@ const Sidebar: FC = () => {
                             <ListItemText primary="User Management" />
                         </ListItemButton>
                     </ListItem>
+
+                    {/* Staff Management */}
+                    <ListItem disablePadding>
+                        <ListItemButton onClick={() => toggleMenu('staff')} sx={sidebarItemStyle}>
+                            <ListItemIcon sx={{ color: '#04C4D9', minWidth: 40 }}><Person /></ListItemIcon>
+                            <ListItemText primary="Managment Staff" />
+                            {menuStates.staff ? <ArrowDropUp /> : <ArrowDropDown />}
+                        </ListItemButton>
+                    </ListItem>
+                    <Collapse in={menuStates.staff} timeout={300}>
+                        <List sx={{ p: 0 }}>
+                            <ListItem disablePadding><ListItemButton component={Link as any} to="/staff/management" sx={subItemStyle}><ListItemText primary="Staff Management" /></ListItemButton></ListItem>
+                        </List>
+                    </Collapse>
+
                     {/* Trạm Sạc */}
                     <ListItem disablePadding>
                         <ListItemButton onClick={() => toggleMenu('stations')} sx={sidebarItemStyle}>

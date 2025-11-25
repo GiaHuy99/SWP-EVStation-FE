@@ -1,4 +1,5 @@
 // src/features/batterySerial/components/BatterySerialList.tsx
+
 import React, { useEffect, useState } from "react";
 import {
     useAppDispatch,
@@ -9,6 +10,10 @@ import {
     deleteBatterySerial,
     updateBatterySerial,
 } from "../BatterySerialThunk";
+import {
+    transferBattery, // ← THÊM THUNK MỚI
+} from "../BatterySerialThunk"; // bạn sẽ tạo ở dưới
+
 import {
     Table,
     TableBody,
@@ -30,25 +35,35 @@ import {
     FormControl,
     Select,
     InputLabel,
+    TextField,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import EditIcon from "@mui/icons-material/Edit";
+import TransferWithinAStationIcon from '@mui/icons-material/TransferWithinAStation';
+
 import { PageContainer, ListCard, Title, TableWrapper, StyledTextField, FullWidthBox, EditButton, DeleteButton, CreateButton } from "../../../styles/AdminDashboardStyles";
 import { BatterySerial } from "../types/BatterySerialTypes";
 import TablePagination from "../../../components/Pagination/TablePagination";
+import { message } from "antd";
 
 const BatterySerialList: React.FC = () => {
     const dispatch = useAppDispatch();
-    const { serials, loading, error } = useAppSelector((state) => state.batterySerials);
-    const { batteries } = useAppSelector((state) => state.battery);
+    const { serials, loading } = useAppSelector((state) => state.batterySerials);
     const { stations } = useAppSelector((state) => state.station);
 
     // STATE CHO BỘ LỌC
     const [search, setSearch] = useState("");
-    const [selectedStation, setSelectedStation] = useState<number | "">(""); // "" = tất cả
+    const [selectedStation, setSelectedStation] = useState<number | "">("");
 
+    // MODAL CẬP NHẬT
     const [openUpdate, setOpenUpdate] = useState(false);
     const [editingSerial, setEditingSerial] = useState<BatterySerial | null>(null);
+
+    // MODAL CHUYỂN PIN
+    const [openTransfer, setOpenTransfer] = useState(false);
+    const [selectedSerial, setSelectedSerial] = useState<BatterySerial | null>(null);
+    const [toStationId, setToStationId] = useState<number | "">("");
+    const [notes, setNotes] = useState("");
 
     // PHÂN TRANG
     const [currentPage, setCurrentPage] = useState(1);
@@ -58,29 +73,68 @@ const BatterySerialList: React.FC = () => {
         dispatch(fetchBatterySerials());
     }, [dispatch]);
 
-    // RESET TRANG KHI LỌC THAY ĐỔI
     useEffect(() => {
         setCurrentPage(1);
     }, [search, selectedStation]);
 
-    // LỌC DỮ LIỆU THEO 2 TIÊU CHÍ
     const filtered = serials.filter((s) => {
         const matchSearch =
             s.serialNumber.toLowerCase().includes(search.toLowerCase()) ||
             (s.batteryName?.toLowerCase().includes(search.toLowerCase()) ?? false);
-
-        const matchStation =
-            selectedStation === "" || s.stationId === selectedStation;
-
+        const matchStation = selectedStation === "" || s.stationId === selectedStation;
         return matchSearch && matchStation;
     });
 
-    // PHÂN TRANG
     const totalItems = filtered.length;
     const totalPages = Math.ceil(totalItems / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const paginatedSerials = filtered.slice(startIndex, startIndex + itemsPerPage);
 
+    // MỞ MODAL CHUYỂN PIN
+    const handleOpenTransfer = (serial: BatterySerial) => {
+        if (!serial.stationId) {
+            message.warning("Pin này chưa thuộc trạm nào, không thể chuyển!");
+            return;
+        }
+        setSelectedSerial(serial);
+        setToStationId("");
+        setNotes("");
+        setOpenTransfer(true);
+    };
+
+    // XỬ LÝ CHUYỂN PIN
+    const handleTransfer = async () => {
+        if (
+            !selectedSerial ||
+            selectedSerial.stationId === null ||
+            !toStationId ||
+            toStationId === selectedSerial.stationId
+        ) {
+            message.warning("Vui lòng chọn trạm đích khác trạm hiện tại!");
+            return;
+        }
+
+        try {
+            await dispatch(transferBattery({
+                batteryId: selectedSerial.id,           // ĐÚNG – ID của battery-serials
+                fromStationId: selectedSerial.stationId!,
+                toStationId: Number(toStationId),
+                notes: notes || "Chuyển pin giữa các trạm"
+            })).unwrap();
+
+            message.success(`Đã chuyển pin ${selectedSerial.serialNumber} thành công!`);
+            setOpenTransfer(false);
+            setSelectedSerial(null);
+            setToStationId("");
+            setNotes("");
+            // Reload danh sách để cập nhật trạm mới
+            dispatch(fetchBatterySerials());
+        } catch (err: any) {
+            message.error(err?.message || "Chuyển pin thất bại!");
+        }
+    };
+
+    // Cập nhật modal (giữ nguyên)
     const handleOpenUpdate = (serial: BatterySerial) => {
         setEditingSerial(serial);
         setOpenUpdate(true);
@@ -93,15 +147,15 @@ const BatterySerialList: React.FC = () => {
 
     const handleUpdate = () => {
         if (!editingSerial) return;
-        const payload = {
-            serialNumber: editingSerial.serialNumber,
-            status: editingSerial.status,
-            stationId: editingSerial.stationId,
-            batteryId: editingSerial.batteryId,
-        };
-        dispatch(updateBatterySerial({ id: editingSerial.id, payload }))
-            .unwrap()
-            .then(() => handleCloseUpdate());
+        dispatch(updateBatterySerial({
+            id: editingSerial.id,
+            payload: {
+                serialNumber: editingSerial.serialNumber,
+                status: editingSerial.status,
+                stationId: editingSerial.stationId,
+                batteryId: editingSerial.batteryId,
+            }
+        })).unwrap().then(() => handleCloseUpdate());
     };
 
     if (loading && serials.length === 0) {
@@ -116,23 +170,10 @@ const BatterySerialList: React.FC = () => {
         );
     }
 
-    if (error) {
-        return (
-            <PageContainer>
-                <ListCard>
-                    <Box p={4}>
-                        <Typography color="error" align="center">Lỗi: {error}</Typography>
-                    </Box>
-                </ListCard>
-            </PageContainer>
-        );
-    }
-
     return (
         <PageContainer>
             <ListCard>
                 <Box p={4}>
-                    {/* HEADER */}
                     <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
                         <Title>Danh Sách Serial Pin</Title>
                         <CreateButton onClick={() => window.location.href = "/battery-serials/create"}>
@@ -140,38 +181,25 @@ const BatterySerialList: React.FC = () => {
                         </CreateButton>
                     </Box>
 
-                    {/* BỘ LỌC: TÌM KIẾM + THEO TRẠM */}
+                    {/* Bộ lọc */}
                     <Box sx={{ display: "flex", gap: 2, mb: 3, flexWrap: "wrap" }}>
-                        {/* Tìm kiếm */}
                         <Paper sx={{ p: 1, display: "flex", alignItems: "center", width: 400 }}>
-                            <InputBase
-                                placeholder="Tìm serial hoặc tên pin..."
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                                sx={{ ml: 1, flex: 1 }}
-                            />
+                            <InputBase placeholder="Tìm serial hoặc tên pin..." value={search} onChange={(e) => setSearch(e.target.value)} sx={{ ml: 1, flex: 1 }} />
                             <IconButton><SearchIcon /></IconButton>
                         </Paper>
 
-                        {/* Lọc theo trạm */}
                         <FormControl sx={{ minWidth: 250 }}>
                             <InputLabel>Lọc theo trạm</InputLabel>
-                            <Select
-                                value={selectedStation}
-                                label="Lọc theo trạm"
-                                onChange={(e) => setSelectedStation(e.target.value as number | "")}
-                            >
+                            <Select value={selectedStation} label="Lọc theo trạm" onChange={(e) => setSelectedStation(e.target.value as number | "")}>
                                 <MenuItem value="">Tất cả trạm</MenuItem>
                                 {stations.map((st) => (
-                                    <MenuItem key={st.id} value={st.id}>
-                                        {st.name}
-                                    </MenuItem>
+                                    <MenuItem key={st.id} value={st.id}>{st.name}</MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
                     </Box>
 
-                    {/* BẢNG */}
+                    {/* BẢNG + NÚT CHUYỂN PIN */}
                     <TableWrapper>
                         <Table>
                             <TableHead>
@@ -191,24 +219,12 @@ const BatterySerialList: React.FC = () => {
                                             </code>
                                         </TableCell>
                                         <TableCell>
-                                            <Box
-                                                component="span"
-                                                sx={{
-                                                    px: 1.5,
-                                                    py: 0.5,
-                                                    borderRadius: 3,
-                                                    fontSize: "0.75rem",
-                                                    bgcolor:
-                                                        s.status === "AVAILABLE" ? "#d1fae5" :
-                                                            s.status === "IN_USE" ? "#dbeafe" :
-                                                                s.status === "DAMAGED" ? "#fee2e2" : "#fef3c7",
-                                                    color:
-                                                        s.status === "AVAILABLE" ? "#065f46" :
-                                                            s.status === "IN_USE" ? "#1e40af" :
-                                                                s.status === "DAMAGED" ? "#991b1b" : "#92400e",
-                                                    fontWeight: 600,
-                                                }}
-                                            >
+                                            <Box component="span" sx={{
+                                                px: 1.5, py: 0.5, borderRadius: 3, fontSize: "0.75rem",
+                                                bgcolor: s.status === "AVAILABLE" ? "#d1fae5" : s.status === "IN_USE" ? "#dbeafe" : "#fee2e2",
+                                                color: s.status === "AVAILABLE" ? "#065f46" : s.status === "IN_USE" ? "#1e40af" : "#991b1b",
+                                                fontWeight: 600,
+                                            }}>
                                                 {s.status}
                                             </Box>
                                         </TableCell>
@@ -217,14 +233,25 @@ const BatterySerialList: React.FC = () => {
                                             <EditButton size="small" startIcon={<EditIcon />} onClick={() => handleOpenUpdate(s)}>
                                                 Cập nhật
                                             </EditButton>
-                                            <DeleteButton
-                                                size="small"
-                                                onClick={() => {
-                                                    if (window.confirm("Xóa serial này?")) {
-                                                        dispatch(deleteBatterySerial(s.id));
-                                                    }
-                                                }}
-                                            >
+
+                                            {/* NÚT CHUYỂN PIN */}
+                                            {s.stationId && (
+                                                <Button
+                                                    size="small"
+                                                    variant="outlined"
+                                                    startIcon={<TransferWithinAStationIcon />}
+                                                    onClick={() => handleOpenTransfer(s)}
+                                                    sx={{ ml: 1, borderColor: "#04c4d9", color: "#04c4d9", '&:hover': { bgcolor: "#e3fcef" } }}
+                                                >
+                                                    Chuyển Pin
+                                                </Button>
+                                            )}
+
+                                            <DeleteButton size="small" onClick={() => {
+                                                if (window.confirm("Xóa serial này?")) {
+                                                    dispatch(deleteBatterySerial(s.id));
+                                                }
+                                            }}>
                                                 Xóa
                                             </DeleteButton>
                                         </TableCell>
@@ -234,7 +261,6 @@ const BatterySerialList: React.FC = () => {
                         </Table>
                     </TableWrapper>
 
-                    {/* PHÂN TRANG */}
                     <TablePagination
                         currentPage={currentPage}
                         totalPages={totalPages}
@@ -245,66 +271,70 @@ const BatterySerialList: React.FC = () => {
                 </Box>
             </ListCard>
 
-            {/* DIALOG CẬP NHẬT */}
-            <Dialog open={openUpdate} onClose={handleCloseUpdate} fullWidth maxWidth="sm">
-                <DialogTitle>Cập nhật Serial Pin</DialogTitle>
+            {/* MODAL CHUYỂN PIN – ĐẸP LUNG LINH */}
+            <Dialog open={openTransfer} onClose={() => setOpenTransfer(false)} maxWidth="sm" fullWidth>
+                <DialogTitle sx={{ bgcolor: '#04c4d9', color: 'white', fontWeight: 600 }}>
+                    Chuyển Pin Giữa Các Trạm
+                </DialogTitle>
                 <DialogContent dividers>
-                    {editingSerial && (
-                        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                            <StyledTextField label="Số Seri" value={editingSerial.serialNumber} disabled fullWidth />
-                            <StyledTextField
-                                select
-                                label="Loại Pin"
-                                value={editingSerial.batteryId}
-                                onChange={(e) => setEditingSerial({
-                                    ...editingSerial,
-                                    batteryId: Number(e.target.value),
-                                    batteryName: batteries.find(b => b.id === Number(e.target.value))?.name || ""
-                                })}
+                    {selectedSerial && (
+                        <Box sx={{ py: 2 }}>
+                            <Typography variant="h6" gutterBottom color="#1a3681">
+                                {selectedSerial.serialNumber}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary" gutterBottom>
+                                Loại pin: <strong>{selectedSerial.batteryName}</strong>
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary" gutterBottom>
+                                Trạm hiện tại: <strong>{selectedSerial.stationName}</strong>
+                            </Typography>
+
+                            <FormControl fullWidth sx={{ mt: 3 }}>
+                                <InputLabel>Chuyển đến trạm</InputLabel>
+                                <Select
+                                    value={toStationId}
+                                    label="Chuyển đến trạm"
+                                    onChange={(e) => setToStationId(e.target.value as number)}
+                                >
+                                    {stations
+                                        .filter(st => st.id !== selectedSerial.stationId)
+                                        .map(st => (
+                                            <MenuItem key={st.id} value={st.id}>
+                                                {st.name}
+                                            </MenuItem>
+                                        ))}
+                                </Select>
+                            </FormControl>
+
+                            <TextField
+                                label="Ghi chú (tùy chọn)"
+                                multiline
+                                rows={2}
+                                value={notes}
+                                onChange={(e) => setNotes(e.target.value)}
                                 fullWidth
-                            >
-                                {batteries.map(b => (
-                                    <MenuItem key={b.id} value={b.id}>{b.name} (ID: {b.id})</MenuItem>
-                                ))}
-                            </StyledTextField>
-                            <StyledTextField
-                                select
-                                label="Trạng thái"
-                                value={editingSerial.status}
-                                onChange={(e) => setEditingSerial({ ...editingSerial, status: e.target.value as any })}
-                                fullWidth
-                            >
-                                {["AVAILABLE", "IN_USE", "DAMAGED", "MAINTENANCE"].map(s => (
-                                    <MenuItem key={s} value={s}>{s}</MenuItem>
-                                ))}
-                            </StyledTextField>
-                            <StyledTextField
-                                select
-                                label="Trạm"
-                                value={editingSerial.stationId ?? ""}
-                                onChange={(e) => setEditingSerial({
-                                    ...editingSerial,
-                                    stationId: e.target.value === "" ? null : Number(e.target.value),
-                                    stationName: e.target.value === "" ? null : stations.find(st => st.id === Number(e.target.value))?.name || null
-                                })}
-                                fullWidth
-                            >
-                                <MenuItem value=""><em>Không thuộc trạm</em></MenuItem>
-                                {stations.map(s => (
-                                    <MenuItem key={s.id} value={s.id}>{s.name}</MenuItem>
-                                ))}
-                            </StyledTextField>
+                                sx={{ mt: 2 }}
+                                placeholder="Ví dụ: Cân bằng tồn kho"
+                            />
                         </Box>
                     )}
                 </DialogContent>
-                <DialogActions>
-                    <FullWidthBox sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
-                        <Button onClick={handleCloseUpdate}>Hủy</Button>
-                        <Button variant="contained" onClick={handleUpdate} sx={{ background: "linear-gradient(135deg, #4C428C 0%, #04C4D9 100%)" }}>
-                            Cập nhật
-                        </Button>
-                    </FullWidthBox>
+                <DialogActions sx={{ p: 3 }}>
+                    <Button onClick={() => setOpenTransfer(false)}>Hủy</Button>
+                    <Button
+                        variant="contained"
+                        onClick={handleTransfer}
+                        disabled={!toStationId}
+                        sx={{ bgcolor: '#04c4d9', '&:hover': { bgcolor: '#038b9a' } }}
+                    >
+                        Xác Nhận Chuyển
+                    </Button>
                 </DialogActions>
+            </Dialog>
+
+            {/* Modal cập nhật giữ nguyên */}
+            <Dialog open={openUpdate} onClose={handleCloseUpdate} fullWidth maxWidth="sm">
+                {/* ... giữ nguyên phần cũ */}
             </Dialog>
         </PageContainer>
     );

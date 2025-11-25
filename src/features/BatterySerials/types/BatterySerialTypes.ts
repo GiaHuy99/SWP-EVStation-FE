@@ -5,7 +5,10 @@ export interface BatterySerial {
     stationId: number | null;
     stationName: string | null;
     batteryId: number;
-    batteryName?: string; }
+    batteryName?: string;
+    soH?: number;
+}
+
 
 export interface CreateBatterySerialPayload {
     status: "AVAILABLE" | "IN_USE" | "DAMAGED" | "MAINTENANCE";

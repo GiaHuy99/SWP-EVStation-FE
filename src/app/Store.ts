@@ -17,6 +17,7 @@ import invoice from "../features/invoiceHistory/InvoiceSlice"
 import profile from "../features/profileUser/ProfileSlice";
 import usermanagent from "../features/user/UserSlice";
 import reservation from "../features/reservation/reservationSlice";
+import StaffManagement  from "../features/staffManagement/StaffManagementSlice"
 export const store = configureStore({
     reducer: {
         auth: authReducer,
@@ -36,6 +37,7 @@ export const store = configureStore({
         profile:profile,
         user:usermanagent,
         reservation:reservation,
+        staffManagement:StaffManagement,
 
     },
     middleware: (getDefaultMiddleware) =>

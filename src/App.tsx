@@ -31,6 +31,7 @@ import ProfilePage from './features/profileUser/components/UserProfile';
 import UserListPage from './features/user/pages/UserListPage';
 import Reservation from './features/reservation/components/PreReserveBattery'
 import ReservationHistory from './features/reservation/components/ReservationHistory';
+import StaffManagement from "./features/staffManagement/components/StaffManagement";
 function App() {
   return (
       <BrowserRouter>
@@ -72,6 +73,7 @@ function App() {
                   <Route path="/staff/swap/status" element={<ConfirmPage/>}/>
                   <Route path="/analytics/dashboard" element={<AnalyticsDashboardPage />} />
                   <Route path="/users/list" element={<UserListPage />} />
+                  <Route path="/staff/management" element={<StaffManagement />} />
               </Route>
           </Routes>
       </BrowserRouter>
