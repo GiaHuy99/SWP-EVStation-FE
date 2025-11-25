@@ -1,4 +1,4 @@
-export type SwapStatus = 'PENDING_CONFIRM' | 'COMPLETED' | 'REJECTED' | 'CANCELLED';
+export type SwapStatus = 'PENDING_CONFIRM' | 'COMPLETED' | 'REJECTED' | 'CANCELLED'|'RESERVED';
 export interface BatterySwapRecord {
     id: number;
     username: string;

@@ -3,7 +3,6 @@ import {
     SwapBatteryPayload,
     SwapBatteryResponse,
     VehicleDetail,
-    Battery,
     StationDetail,
     // ⚡️ Import type API mới
     VehicleApiResponse

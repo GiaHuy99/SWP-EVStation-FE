@@ -1,62 +1,28 @@
 // src/features/staff-swap/components/PendingSwapList.tsx
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
-import { fetchPendingSwaps, confirmSwap, rejectSwap } from "../ConfirmThunks";
+import { fetchPendingSwaps, rejectSwap } from "../ConfirmThunks";
 import { clearMessages } from "../ConfirmSlices";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import {
     Table, TableBody, TableCell, TableHead, TableRow, Button, CircularProgress,
-    Alert, Box, Typography, IconButton, Dialog, DialogTitle, DialogContent, DialogActions,
-    Chip, Stack, Divider, Paper
+    Alert, Box, Typography, Chip, Dialog, DialogTitle, DialogContent, DialogActions,
+    TextField, Autocomplete, Stack
 } from "@mui/material";
-import {
-    Close as CloseIcon,
-    CheckCircleOutline as CheckIcon,
-    Visibility as VisibilityIcon,
-    TwoWheeler as BikeIcon,
-    Sync as SwapIcon
-} from "@mui/icons-material";
+import { CheckCircleOutline as CheckIcon, Close as CloseIcon, Sync as SwapIcon } from "@mui/icons-material";
 import { PageContainer, ListCard, Title, TableWrapper } from "../../../styles/AdminDashboardStyles";
-import axiosInstance from "../../../shared/utils/AxiosInstance"; // Đảm bảo có axios
+import axiosInstance from "../../../shared/utils/AxiosInstance";
 
 const PendingSwapList = () => {
     const dispatch = useAppDispatch();
-    const { pendingList, loading, actionLoading, error, successMessage } = useAppSelector(state => state.confimSwap);
+    const { pendingList, loading, error, successMessage } = useAppSelector(state => state.confimSwap);
 
-    const [openDetail, setOpenDetail] = useState(false);
+    const [openConfirm, setOpenConfirm] = useState(false);
     const [selectedSwap, setSelectedSwap] = useState<any>(null);
-
-    // TỰ ĐỘNG LẤY VIN TỪ API /user/vehicles
-    const [vehicleMap, setVehicleMap] = useState<Map<number, { vin: string; model?: string }>>(new Map());
-    const [vehiclesLoading, setVehiclesLoading] = useState(true);
-
-    // GỌI API LẤY TẤT CẢ XE → MAP THEO vehicleId
-    useEffect(() => {
-        const fetchAllVehicles = async () => {
-            try {
-                setVehiclesLoading(true);
-                const res = await axiosInstance.get("/user/vehicles");
-                const vehicles = res.data;
-
-                const map = new Map<number, { vin: string; model?: string }>();
-                vehicles.forEach((v: any) => {
-                    map.set(v.vehicleId, {
-                        vin: v.vin || "Không có VIN",
-                        model: v.model || v.vehicleModel || ""
-                    });
-                });
-
-                setVehicleMap(map);
-            } catch (err) {
-                console.error("Lỗi lấy danh sách xe:", err);
-            } finally {
-                setVehiclesLoading(false);
-            }
-        };
-
-        fetchAllVehicles();
-    }, []);
+    const [selectedBattery, setSelectedBattery] = useState<any>(null);
+    const [endPercent, setEndPercent] = useState<string>("0");
+    const [confirming, setConfirming] = useState(false);
 
     useEffect(() => {
         dispatch(fetchPendingSwaps());
@@ -64,127 +30,110 @@ const PendingSwapList = () => {
 
     useEffect(() => {
         if (successMessage || error) {
-            const timer = setTimeout(() => dispatch(clearMessages()), 4000);
-            return () => clearTimeout(timer);
+            setTimeout(() => dispatch(clearMessages()), 5000);
         }
     }, [successMessage, error, dispatch]);
 
-    const handleConfirm = (id: number) => dispatch(confirmSwap(id));
-    const handleReject = (id: number) => dispatch(rejectSwap(id));
-    const handleViewDetail = (swap: any) => {
+    const handleOpenConfirm = (swap: any) => {
         setSelectedSwap(swap);
-        setOpenDetail(true);
+        setSelectedBattery(null);
+        setEndPercent("0");
+        setOpenConfirm(true);
     };
 
-    const getVin = (vehicleId: number) => {
-        const info = vehicleMap.get(vehicleId);
-        return info?.vin || (vehiclesLoading ? "Đang tải..." : "Không tìm thấy");
-    };
+    const handleConfirmSwap = async () => {
+        if (!selectedSwap || !selectedBattery) {
+            alert("Vui lòng chọn pin mới!");
+            return;
+        }
 
-    const getModel = (vehicleId: number) => {
-        const info = vehicleMap.get(vehicleId);
-        return info?.model || "";
+        const percent = parseInt(endPercent);
+        if (isNaN(percent) || percent < 0 || percent > 100) {
+            alert("Phần trăm phải từ 0 - 100!");
+            return;
+        }
+
+        setConfirming(true);
+        try {
+            const response = await axiosInstance.put(
+                `/staff/swap/${selectedSwap.id}/confirm`, // ← ID của giao dịch pending
+                {
+                    endPercent: percent,
+                    newBatterySerialId: selectedBattery.id // ← ID của pin được chọn (trong availableBatteries)
+                }
+            );
+
+            alert(response.data?.message || "Đổi pin thành công!");
+            dispatch(fetchPendingSwaps()); // Refresh danh sách
+            setOpenConfirm(false);
+        } catch (err: any) {
+            alert(err.response?.data?.message || "Đổi pin thất bại!");
+        } finally {
+            setConfirming(false);
+        }
     };
 
     return (
         <PageContainer maxWidth="lg">
-            <ListCard elevation={0}>
-                <Title> Duyệt Yêu Cầu Đổi Pin </Title>
+            <ListCard>
+                <Title>Duyệt Yêu Cầu Đổi Pin</Title>
 
-                {successMessage && <Alert severity="success" sx={{ mb: 3, borderRadius: "12px" }}>{successMessage}</Alert>}
-                {error && <Alert severity="error" sx={{ mb: 3, borderRadius: "12px" }}>{error}</Alert>}
+                {successMessage && <Alert severity="success" sx={{ mb: 3 }}>{successMessage}</Alert>}
+                {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
 
-                {loading || vehiclesLoading ? (
-                    <Box textAlign="center" py={8}>
-                        <CircularProgress size={60} />
-                        <Typography sx={{ mt: 2 }}>Đang tải dữ liệu...</Typography>
-                    </Box>
+                {loading ? (
+                    <Box textAlign="center" py={8}><CircularProgress size={60} /></Box>
                 ) : pendingList.length === 0 ? (
-                    <Alert severity="info" sx={{ borderRadius: "12px" }}>
-                        Không có yêu cầu nào đang chờ duyệt
-                    </Alert>
+                    <Alert severity="info" sx={{ p: 4 }}>Không có yêu cầu nào đang chờ duyệt</Alert>
                 ) : (
                     <TableWrapper>
                         <Table>
                             <TableHead>
-                                <TableRow sx={{ backgroundColor: "#f8fafc" }}>
-                                    <TableCell sx={{ fontWeight: 600, color: "#4C428C" }}>Người dùng</TableCell>
-                                    <TableCell sx={{ fontWeight: 600, color: "#4C428C" }}>Xe (VIN)</TableCell>
-                                    <TableCell sx={{ fontWeight: 600, color: "#4C428C" }}>Trạm</TableCell>
-                                    <TableCell sx={{ fontWeight: 600, color: "#4C428C" }}>Pin cũ → Pin mới</TableCell>
-                                    <TableCell sx={{ fontWeight: 600, color: "#4C428C" }}>SoH cũ</TableCell>
-                                    <TableCell sx={{ fontWeight: 600, color: "#4C428C" }}>Thời gian</TableCell>
-                                    <TableCell align="center" sx={{ fontWeight: 600, color: "#4C428C" }}>Hành động</TableCell>
+                                <TableRow sx={{ backgroundColor: "#f0fdf4" }}>
+                                    <TableCell><strong>Người dùng</strong></TableCell>
+                                    <TableCell><strong>Pin cũ </strong></TableCell>
+                                    <TableCell><strong>SoH cũ</strong></TableCell>
+                                    <TableCell><strong>Trạm</strong></TableCell>
+                                    <TableCell><strong>Thời gian</strong></TableCell>
+                                    <TableCell align="center"><strong>Hành động</strong></TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {pendingList.map((swap) => (
-                                    <TableRow key={swap.id} hover sx={{ "&:hover": { backgroundColor: "rgba(4, 196, 217, 0.05)" } }}>
+                                {pendingList.map((swap: any) => (
+                                    <TableRow key={swap.id} hover>
+                                        <TableCell><strong>{swap.username}</strong></TableCell>
                                         <TableCell>
-                                            <Box display="flex" alignItems="center" gap={1}>
-                                                <Typography fontWeight={600}>{swap.username}</Typography>
-                                                <IconButton size="small" onClick={() => handleViewDetail(swap)}>
-                                                    <VisibilityIcon fontSize="small" />
-                                                </IconButton>
-                                            </Box>
+                                            <code style={{ background: "#fee2e2", color: "#991b1b", px: 1, borderRadius: 4 }}>
+                                                {swap.oldBatterySerialNumber}
+                                            </code>
+
                                         </TableCell>
                                         <TableCell>
-                                            <Box display="flex" alignItems="center" gap={1}>
-                                                <BikeIcon color="primary" fontSize="small" />
-                                                <Box>
-                                                    <Typography fontWeight={700} color="#1e40af">
-                                                        {getVin(swap.vehicleId)}
-                                                    </Typography>
-                                                    {getModel(swap.vehicleId) && (
-                                                        <Typography variant="caption" color="text.secondary">
-                                                            {getModel(swap.vehicleId)}
-                                                        </Typography>
-                                                    )}
-                                                </Box>
-                                            </Box>
-                                        </TableCell>
-                                        <TableCell>
-                                            <Chip label={swap.stationName} size="small" color="info" />
-                                        </TableCell>
-                                        <TableCell>
-                                            <Box>
-                                                <code style={{ background: "#fee2e2", color: "#991b1b", px: 1, borderRadius: 4, fontSize: "0.8rem" }}>
-                                                    {swap.oldBatterySerialNumber}
-                                                </code>
-                                                <SwapIcon sx={{ mx: 1, fontSize: 16, color: "#64748b" }} />
-                                                <code style={{ background: "#d1fae5", color: "#065f46", px: 1, borderRadius: 4, fontSize: "0.8rem" }}>
-                                                    {swap.batterySerialNumber}
-                                                </code>
-                                            </Box>
-                                        </TableCell>
-                                        <TableCell>
-                                            <Typography fontWeight={700} color={swap.oldBatterySoH < 80 ? "#dc2626" : "#059669"}>
+                                            <Typography fontWeight="bold" color={swap.oldBatterySoH < 80 ? "#dc2626" : "#10b981"}>
                                                 {swap.oldBatterySoH}%
                                             </Typography>
                                         </TableCell>
-                                        <TableCell>
-                                            {format(new Date(swap.timestamp), "PPPp", { locale: vi })}
-                                        </TableCell>
+                                        <TableCell><Chip label={swap.stationName} color="info" size="small" /></TableCell>
+                                        <TableCell>{format(new Date(swap.timestamp), "dd/MM HH:mm", { locale: vi })}</TableCell>
                                         <TableCell align="center">
                                             <Button
                                                 variant="contained"
                                                 size="small"
+                                                color="success"
                                                 startIcon={<CheckIcon />}
-                                                onClick={() => handleConfirm(swap.id)}
-                                                disabled={!!actionLoading[swap.id]}
-                                                sx={{ mr: 1, background: "linear-gradient(135deg, #10b981, #059669)", minWidth: 90 }}
+                                                onClick={() => handleOpenConfirm(swap)}
                                             >
-                                                {actionLoading[swap.id] ? <CircularProgress size={18} /> : "Duyệt"}
+                                                Duyệt
                                             </Button>
                                             <Button
                                                 variant="outlined"
                                                 size="small"
+                                                color="error"
                                                 startIcon={<CloseIcon />}
-                                                onClick={() => handleReject(swap.id)}
-                                                disabled={!!actionLoading[swap.id]}
-                                                sx={{ borderColor: "#ef4444", color: "#ef4444", minWidth: 90 }}
+                                                onClick={() => dispatch(rejectSwap(swap.id))}
+                                                sx={{ ml: 1 }}
                                             >
-                                                {actionLoading[swap.id] ? <CircularProgress size={18} /> : "Từ chối"}
+                                                Từ chối
                                             </Button>
                                         </TableCell>
                                     </TableRow>
@@ -194,6 +143,51 @@ const PendingSwapList = () => {
                     </TableWrapper>
                 )}
             </ListCard>
+
+            {/* POPUP XÁC NHẬN – SIÊU CHUẨN */}
+            <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)} maxWidth="sm" fullWidth>
+                <DialogTitle sx={{ bgcolor: "#10b981", color: "white" }}>
+                    Xác Nhận Đổi Pin - ID: {selectedSwap?.id}
+                </DialogTitle>
+                <DialogContent dividers>
+                    <Stack spacing={3} sx={{ mt: 2 }}>
+                        <Alert severity="info">
+                            <strong>{selectedSwap?.username}</strong> đang đổi pin tại <strong>{selectedSwap?.stationName}</strong>
+                        </Alert>
+
+                        <Autocomplete
+                            options={selectedSwap?.availableBatteries || []}
+                            getOptionLabel={(opt: any) => `${opt.serialNumber} | ${opt.batteryModel} | ${opt.chargePercent}% | SoH ${opt.stateOfHealth}%`}
+                            value={selectedBattery}
+                            onChange={(_, value) => setSelectedBattery(value)}
+                            renderInput={(params) => (
+                                <TextField {...params} label="Chọn pin mới để cấp" required />
+                            )}
+                        />
+
+                        <TextField
+                            label="Phần trăm pin cũ khi tháo ra (endPercent)"
+                            type="number"
+                            value={endPercent}
+                            onChange={(e) => setEndPercent(e.target.value)}
+                            InputProps={{ inputProps: { min: 0, max: 100 } }}
+                            helperText="Ví dụ: 15% → nhập 15"
+                            fullWidth
+                        />
+                    </Stack>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenConfirm(false)}>Hủy</Button>
+                    <Button
+                        variant="contained"
+                        color="success"
+                        onClick={handleConfirmSwap}
+                        disabled={!selectedBattery || confirming}
+                    >
+                        {confirming ? <CircularProgress size={24} /> : "Xác Nhận Đổi Pin"}
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </PageContainer>
     );
 };
