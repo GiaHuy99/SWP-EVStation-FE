@@ -35,7 +35,6 @@ import {
     TimelineDot,
     TimelineOppositeContent,
 } from "@mui/lab";
-
 import BatteryFullIcon from "@mui/icons-material/BatteryFull";
 import BatteryChargingFullIcon from "@mui/icons-material/BatteryChargingFull";
 import BatteryAlertIcon from "@mui/icons-material/BatteryAlert";
@@ -43,7 +42,10 @@ import CloseIcon from "@mui/icons-material/Close";
 import HistoryIcon from "@mui/icons-material/History";
 import EditIcon from "@mui/icons-material/Edit";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-
+import ChangeCircleIcon from "@mui/icons-material/ChangeCircle";
+import ElectricBikeIcon from "@mui/icons-material/ElectricBike";
+import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
+import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 import axiosInstance from "../../../shared/utils/AxiosInstance";
 import { PageContainer, ListCard, Title, TableWrapper } from "../../../styles/AdminDashboardStyles";
 
@@ -245,21 +247,10 @@ const StaffBatteryAtStationList: React.FC = () => {
                 </Box>
             </ListCard>
 
-            {/* ==================== CHI TIẾT PIN - SIÊU ĐẸP ==================== */}
-            <Dialog
-                open={openDetail}
-                onClose={() => setOpenDetail(false)}
-                maxWidth="md"
-                fullWidth
-                PaperProps={{
-                    sx: {
-                        borderRadius: 4,
-                        overflow: "hidden",
-                        boxShadow: "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)",
-                    },
-                }}
-            >
-                <DialogTitle sx={{ bgcolor: "linear-gradient(135deg, #10b981 0%, #059669 100%)", color: "white", py: 3.5 }}>
+            {/* ==================== CHI TIẾT PIN ==================== */}
+            <Dialog open={openDetail} onClose={() => setOpenDetail(false)} maxWidth="md" fullWidth
+                    PaperProps={{ sx: { borderRadius: 4, overflow: "hidden", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.1)" } }}>
+                <DialogTitle sx={{ bgcolor: "linear-gradient(135deg, #10b981 0%, #059669 100%)", color: "white", pprint: 3.5 }}>
                     <Box display="flex" justifyContent="space-between" alignItems="center">
                         <Box display="flex" alignItems="center" gap={2}>
                             <BatteryFullIcon sx={{ fontSize: 42 }} />
@@ -277,128 +268,52 @@ const StaffBatteryAtStationList: React.FC = () => {
                         </IconButton>
                     </Box>
                 </DialogTitle>
-
                 <DialogContent sx={{ bgcolor: "#f8fafc", p: 0 }}>
                     {detailLoading ? (
                         <Box textAlign="center" py={12}>
                             <CircularProgress size={68} thickness={5} />
-                            <Typography variant="h6" mt={3} color="text.secondary">
-                                Đang tải thông tin pin...
-                            </Typography>
+                            <Typography variant="h6" mt={3} color="text.secondary">Đang tải thông tin pin...</Typography>
                         </Box>
                     ) : !selectedBattery ? (
-                        <Alert severity="error" sx={{ m: 4 }}>
-                            Không thể tải thông tin pin. Vui lòng thử lại.
-                        </Alert>
+                        <Alert severity="error" sx={{ m: 4 }}>Không thể tải thông tin pin.</Alert>
                     ) : (
                         <Box sx={{ p: { xs: 3, sm: 5 } }}>
-                            <Paper
-                                elevation={10}
-                                sx={{
-                                    p: 5,
-                                    borderRadius: 4,
-                                    background: "linear-gradient(145deg, #ffffff 0%, #f0fdf4 100%)",
-                                    border: "1px solid #bbf7d0",
-                                    mb: 4,
-                                }}
-                            >
+                            {/* SoH + Charge */}
+                            <Paper elevation={10} sx={{ p: 5, borderRadius: 4, background: "linear-gradient(145deg, #ffffff 0%, #f0fdf4 100%)", border: "1px solid #bbf7d0", mb: 4 }}>
                                 <Grid container spacing={6} alignItems="center">
-                                    {/* SoH */}
                                     <Grid item xs={12} md={7}>
-                                        <Typography variant="subtitle1" color="text.secondary" fontWeight={600}>
-                                            State of Health (SoH)
-                                        </Typography>
+                                        <Typography variant="subtitle1" color="text.secondary" fontWeight={600}>State of Health (SoH)</Typography>
                                         <Box display="flex" alignItems="center" gap={2} mt={1}>
-                                            <Typography
-                                                variant="h1"
-                                                fontWeight={900}
-                                                sx={{
-                                                    fontSize: { xs: "3.5rem", sm: "4.5rem" },
-                                                    background: `linear-gradient(90deg, ${getSoHColor(selectedBattery.stateOfHealth)} 0%, ${getSoHColor(selectedBattery.stateOfHealth)}cc 100%)`,
-                                                    WebkitBackgroundClip: "text",
-                                                    WebkitTextFillColor: "transparent",
-                                                }}
-                                            >
-                                                {selectedBattery.stateOfHealth}
-                                                <span style={{ fontSize: "0.5em", verticalAlign: "super" }}>%</span>
+                                            <Typography variant="h1" fontWeight={900}
+                                                        sx={{
+                                                            fontSize: { xs: "3.5rem", sm: "4.5rem" },
+                                                            background: `linear-gradient(90deg, ${getSoHColor(selectedBattery.stateOfHealth)} 0%, ${getSoHColor(selectedBattery.stateOfHealth)}cc 100%)`,
+                                                            WebkitBackgroundClip: "text",
+                                                            WebkitTextFillColor: "transparent",
+                                                        }}>
+                                                {selectedBattery.stateOfHealth}<span style={{ fontSize: "0.5em", verticalAlign: "super" }}>%</span>
                                             </Typography>
-                                            {selectedBattery.stateOfHealth < 80 && (
-                                                <BatteryAlertIcon sx={{ fontSize: 56, color: "#dc2626", opacity: 0.8 }} />
-                                            )}
-                                            {selectedBattery.stateOfHealth >= 95 && (
-                                                <CheckCircleIcon sx={{ fontSize: 56, color: "#10b981" }} />
-                                            )}
+                                            {selectedBattery.stateOfHealth < 80 && <BatteryAlertIcon sx={{ fontSize: 56, color: "#dc2626" }} />}
+                                            {selectedBattery.stateOfHealth >= 95 && <CheckCircleIcon sx={{ fontSize: 56, color: "#10b981" }} />}
                                         </Box>
-                                        <LinearProgress
-                                            variant="determinate"
-                                            value={selectedBattery.stateOfHealth}
-                                            sx={{
-                                                mt: 3,
-                                                height: 16,
-                                                borderRadius: 8,
-                                                bgcolor: "#fee2e2",
-                                                "& .MuiLinearProgress-bar": {
-                                                    borderRadius: 8,
-                                                    background: getSoHColor(selectedBattery.stateOfHealth),
-                                                },
-                                            }}
-                                        />
+                                        <LinearProgress variant="determinate" value={selectedBattery.stateOfHealth}
+                                                        sx={{ mt: 3, height: 16, borderRadius: 8, bgcolor: "#fee2e2", "& .MuiLinearProgress-bar": { borderRadius: 8, background: getSoHColor(selectedBattery.stateOfHealth) } }} />
                                     </Grid>
-
-                                    {/* Charge Percent */}
                                     <Grid item xs={12} md={5} textAlign="center">
-                                        <Typography variant="subtitle1" color="text.secondary" gutterBottom>
-                                            Mức pin hiện tại
-                                        </Typography>
+                                        <Typography variant="subtitle1" color="text.secondary" gutterBottom>Mức pin hiện tại</Typography>
                                         <Box position="relative" display="inline-flex">
-                                            <CircularProgress
-                                                variant="determinate"
-                                                value={selectedBattery.chargePercent}
-                                                size={140}
-                                                thickness={7}
-                                                sx={{
-                                                    color:
-                                                        selectedBattery.chargePercent > 70
-                                                            ? "#10b981"
-                                                            : selectedBattery.chargePercent > 30
-                                                                ? "#f59e0b"
-                                                                : "#ef4444",
-                                                }}
-                                            />
-                                            <Box
-                                                sx={{
-                                                    top: 0,
-                                                    left: 0,
-                                                    bottom: 0,
-                                                    right: 0,
-                                                    position: "absolute",
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    justifyContent: "center",
-                                                }}
-                                            >
-                                                <Typography variant="h3" fontWeight={800} color="#059669">
-                                                    {selectedBattery.chargePercent}%
-                                                </Typography>
+                                            <CircularProgress variant="determinate" value={selectedBattery.chargePercent} size={140} thickness={7}
+                                                              sx={{ color: selectedBattery.chargePercent > 70 ? "#10b981" : selectedBattery.chargePercent > 30 ? "#f59e0b" : "#ef4444" }} />
+                                            <Box sx={{ top: 0, left: 0, bottom: 0, right: 0, position: "absolute", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                                <Typography variant="h3" fontWeight={800} color="#059669">{selectedBattery.chargePercent}%</Typography>
                                             </Box>
                                         </Box>
                                     </Grid>
                                 </Grid>
 
                                 {/* Cập nhật SoH */}
-                                <Box
-                                    sx={{
-                                        mt: 5,
-                                        p: 4,
-                                        bgcolor: "#fffbeb",
-                                        borderRadius: 3,
-                                        border: "2px dashed #fbbf24",
-                                        textAlign: "center",
-                                    }}
-                                >
-                                    <Typography variant="h6" fontWeight={700} color="#92400e" gutterBottom>
-                                        Cập nhật State of Health (SoH)
-                                    </Typography>
+                                <Box sx={{ mt: 5, p: 4, bgcolor: "#fffbeb", borderRadius: 3, border: "2px dashed #fbbf24", textAlign: "center" }}>
+                                    <Typography variant="h6" fontWeight={700} color="#92400e" gutterBottom>Cập nhật State of Health (SoH)</Typography>
                                     <Stack direction="row" spacing={3} alignItems="center" justifyContent="center">
                                         <TextField
                                             label="SoH mới (%)"
@@ -413,19 +328,16 @@ const StaffBatteryAtStationList: React.FC = () => {
                                                 endAdornment: updatingSoH ? <CircularProgress size={20} /> : <EditIcon color="action" />,
                                                 inputProps: { min: 0, max: 100, step: 0.1 },
                                             }}
-                                            sx={{
-                                                width: 220,
-                                                "& .MuiOutlinedInput-root": { fontSize: "1.3rem", fontWeight: 700 },
-                                            }}
+                                            sx={{ width: 220, "& .MuiOutlinedInput-root": { fontSize: "1.3rem", fontWeight: 700 } }}
                                         />
                                         <Typography variant="body1" color="text.secondary">
-                                            Nhấn <strong>Enter</strong> hoặc rời khỏi ô để lưu ngay
+                                            Nhấn <strong>Enter</strong> hoặc rời khỏi ô để lưu
                                         </Typography>
                                     </Stack>
                                 </Box>
                             </Paper>
 
-                            {/* Thông tin chi tiết */}
+                            {/* Thông tin khác */}
                             <Grid container spacing={3}>
                                 {[
                                     { label: "Trạng thái", value: getStatusChip(selectedBattery.status) },
@@ -437,12 +349,8 @@ const StaffBatteryAtStationList: React.FC = () => {
                                 ].map((item, i) => (
                                     <Grid item xs={12} sm={6} key={i}>
                                         <Paper sx={{ p: 3, borderRadius: 3, bgcolor: "#ffffff", border: "1px solid #e2e8f0" }}>
-                                            <Typography variant="body2" color="text.secondary" gutterBottom>
-                                                {item.label}
-                                            </Typography>
-                                            <Typography variant="h6" fontWeight={700}>
-                                                {item.value}
-                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary" gutterBottom>{item.label}</Typography>
+                                            <Typography variant="h6" fontWeight={700}>{item.value}</Typography>
                                         </Paper>
                                     </Grid>
                                 ))}
@@ -455,11 +363,7 @@ const StaffBatteryAtStationList: React.FC = () => {
                                     startIcon={<HistoryIcon />}
                                     onClick={() => handleViewHistory(selectedBattery.id)}
                                     sx={{
-                                        bgcolor: "#1e40af",
-                                        px: 7,
-                                        py: 2,
-                                        borderRadius: 3,
-                                        fontSize: "1.1rem",
+                                        bgcolor: "#1e40af", px: 7, py: 2, borderRadius: 3, fontSize: "1.1rem",
                                         boxShadow: "0 10px 20px rgba(30,64,175,0.25)",
                                         "&:hover": { bgcolor: "#1e3a8a" },
                                     }}
@@ -472,7 +376,7 @@ const StaffBatteryAtStationList: React.FC = () => {
                 </DialogContent>
             </Dialog>
 
-            {/* ==================== LỊCH SỬ - GIỮ NGUYÊN NHƯ CŨ ==================== */}
+            {/* ==================== LỊCH SỬ HOẠT ĐỘNG - ĐÃ NÂNG CẤP HOÀN TOÀN ==================== */}
             <Dialog open={openHistory} onClose={() => setOpenHistory(false)} maxWidth="lg" fullWidth>
                 <DialogTitle sx={{ bgcolor: "#1e40af", color: "white" }}>
                     <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -487,41 +391,69 @@ const StaffBatteryAtStationList: React.FC = () => {
                 </DialogTitle>
                 <DialogContent dividers>
                     {historyLoading ? (
-                        <Box textAlign="center" py={6}>
-                            <CircularProgress />
-                        </Box>
+                        <Box textAlign="center" py={6}><CircularProgress /></Box>
                     ) : batteryHistory.length === 0 ? (
                         <Alert severity="info">Chưa có lịch sử hoạt động</Alert>
                     ) : (
                         <Timeline>
-                            {batteryHistory.map((item, index) => (
-                                <TimelineItem key={item.id}>
-                                    <TimelineOppositeContent color="text.secondary">
-                                        {format(new Date(item.createdAt), "dd/MM/yyyy HH:mm", { locale: vi })}
-                                    </TimelineOppositeContent>
-                                    <TimelineSeparator>
-                                        <TimelineDot color={item.eventType === "SOH_UPDATED" ? "primary" : "grey"}>
-                                            {item.eventType === "SOH_UPDATED" ? <EditIcon /> : <BatteryFullIcon />}
-                                        </TimelineDot>
-                                        {index < batteryHistory.length - 1 && <TimelineConnector />}
-                                    </TimelineSeparator>
-                                    <TimelineContent>
-                                        <Paper elevation={3} sx={{ p: 3 }}>
-                                            <Typography fontWeight={600}>
-                                                {item.eventType === "SOH_UPDATED" ? "Cập nhật SoH" : "Sự kiện"}
-                                            </Typography>
-                                            <Typography><strong>Người thực hiện:</strong> {item.performedByUsername}</Typography>
-                                            <Typography><strong>Trạm:</strong> {item.stationName}</Typography>
-                                            <Typography><strong>Thay đổi:</strong> {item.oldValue} → {item.newValue}</Typography>
-                                            {item.notes && (
-                                                <Typography color="text.secondary" fontStyle="italic">
-                                                    {item.notes}
+                            {batteryHistory.map((item, index) => {
+                                const renderEvent = () => {
+                                    switch (item.eventType) {
+                                        case "CREATED":
+                                            return { title: "Pin được tạo mới", icon: <BatteryFullIcon />, color: "success" as const, desc: `Pin được thêm vào hệ thống` };
+                                        case "STATUS_CHANGED":
+                                            return { title: "Thay đổi trạng thái", icon: <CheckCircleIcon />, color: "info" as const, desc: <>Trạng thái: <strong>{item.oldValue}</strong> → <strong>{item.newValue}</strong></> };
+                                        case "STATION_CHANGED":
+                                        case "TRANSFERRED":
+                                            return { title: "Chuyển trạm", icon: <ChangeCircleIcon />, color: "secondary" as const, desc: <>Từ <strong>{item.oldValue || "N/A"}</strong> → <strong>{item.stationName || item.newValue}</strong></> };
+                                        case "VEHICLE_ASSIGNED":
+                                            return { title: "Gắn vào xe", icon: <ElectricBikeIcon />, color: "primary" as const, desc: <>Xe: <strong>{item.vehicleVin}</strong></> };
+                                        case "VEHICLE_RETURNED":
+                                            return { title: "Trả pin về trạm", icon: <KeyboardReturnIcon />, color: "success" as const, desc: <>Từ xe <strong>{item.vehicleVin}</strong> → Trạm <strong>{item.stationName}</strong></> };
+                                        case "SOH_UPDATED":
+                                            return { title: "Cập nhật SoH", icon: <EditIcon />, color: "warning" as const, desc: <>SoH: <strong style={{ color: "#dc2626" }}>{item.oldValue}%</strong> → <strong style={{ color: getSoHColor(parseFloat(item.newValue)) }}>{item.newValue}%</strong></> };
+                                        case "SWAPPED":
+                                            return { title: "Đổi pin thành công", icon: <SwapHorizIcon />, color: "success" as const, desc: <>Khách hàng đổi pin tại <strong>{item.stationName}</strong></> };
+                                        default:
+                                            return { title: item.eventType, icon: <HistoryIcon />, color: "grey" as const, desc: item.notes || "Không có thông tin" };
+                                    }
+                                };
+
+                                const event = renderEvent();
+
+                                return (
+                                    <TimelineItem key={item.id}>
+                                        <TimelineOppositeContent color="text.secondary" sx={{ fontSize: "0.9rem" }}>
+                                            {format(new Date(item.createdAt), "dd/MM/yyyy HH:mm", { locale: vi })}
+                                        </TimelineOppositeContent>
+                                        <TimelineSeparator>
+                                            <TimelineDot color={event.color} variant={event.color === "grey" ? "outlined" : "filled"}>
+                                                {event.icon}
+                                            </TimelineDot>
+                                            {index < batteryHistory.length - 1 && <TimelineConnector />}
+                                        </TimelineSeparator>
+                                        <TimelineContent>
+                                            <Paper elevation={4} sx={{ p: 3, borderRadius: 3 }}>
+                                                <Box display="flex" alignItems="center" gap={1} mb={1}>
+                                                    {event.icon}
+                                                    <Typography variant="h6" fontWeight={700} color={`${event.color}.main`}>
+                                                        {event.title}
+                                                    </Typography>
+                                                </Box>
+                                                <Typography variant="body2" color="text.secondary">
+                                                    <strong>Người thực hiện:</strong> {item.performedByUsername || "Hệ thống"}
                                                 </Typography>
-                                            )}
-                                        </Paper>
-                                    </TimelineContent>
-                                </TimelineItem>
-                            ))}
+                                                <Typography variant="body1" mt={1}>{event.desc}</Typography>
+                                                {item.notes && (
+                                                    <Typography variant="body2" color="text.secondary" fontStyle="italic" mt={1}>
+                                                        Ghi chú: {item.notes}
+                                                    </Typography>
+                                                )}
+                                            </Paper>
+                                        </TimelineContent>
+                                    </TimelineItem>
+                                );
+                            })}
                         </Timeline>
                     )}
                 </DialogContent>

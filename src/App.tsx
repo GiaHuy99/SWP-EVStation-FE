@@ -34,6 +34,7 @@ import ReservationHistory from './features/reservation/components/ReservationHis
 import StaffManagement from "./features/staffManagement/components/StaffManagement";
 import StaffLayout from './shared/utils/StaffLayout/StaffLayout';
 import BatteryStation from './features/confirmSwap/form/StaffBatteryAtStationList';
+import BatteryHistory from'./features/BatterySerials/components/BatteryRecentUpdates';
 function App() {
   return (
       <BrowserRouter>
@@ -75,6 +76,7 @@ function App() {
                   <Route path="/analytics/dashboard" element={<AnalyticsDashboardPage />} />
                   <Route path="/users/list" element={<UserListPage />} />
                   <Route path="/staff/management" element={<StaffManagement />} />
+                  <Route path="/battery-serials/history" element={<BatteryHistory/>}/>
               </Route>
               <Route element={<StaffLayout />}>
                   <Route path="/staff/swap/status" element={<ConfirmPage/>}/>

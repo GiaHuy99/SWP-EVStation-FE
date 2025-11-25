@@ -78,3 +78,14 @@ export const updateBatterySoH = createAsyncThunk(
         }
     }
 );
+export const fetchRecentBatteryUpdates = createAsyncThunk<BatterySerial[]>(
+    "batterySerial/fetchRecentUpdates",
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get("/admin/batteries/recent-updates");
+            return response.data as BatterySerial[];
+        } catch (err: any) {
+            return rejectWithValue(err.response?.data?.message || "Không tải được lịch sử cập nhật");
+        }
+    }
+);
