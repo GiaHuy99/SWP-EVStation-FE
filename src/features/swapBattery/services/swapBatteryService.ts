@@ -3,7 +3,6 @@ import {
     SwapBatteryPayload,
     SwapBatteryResponse,
     VehicleDetail,
-    Battery,
     StationDetail,
     // ⚡️ Import type API mới
     VehicleApiResponse
@@ -29,27 +28,29 @@ class SwapBatteryService {
         }));
     }
 
-    /**
-     * ⛔️ ĐÃ XÓA: getBatteriesByVehicleId
-     * Hàm này không cần nữa vì API /user/vehicles đã bao gồm pin.
-     */
 
-    /**
-     * Lấy TẤT CẢ các trạm (Không đổi)
-     * (Đã bỏ /api ở đầu)
-     */
     async getAllStations(): Promise<StationDetail[]> {
         const res = await axiosInstance.get<StationDetail[]>('/stations');
         return res.data;
     }
 
-    /**
-     * Thực hiện Swap (Không đổi)
-     * (Đã bỏ /api ở đầu)
-     */
     async swapBattery(payload: SwapBatteryPayload): Promise<SwapBatteryResponse> {
         const res = await axiosInstance.post<SwapBatteryResponse>("/user/swap", payload);
         return res.data;
+    }
+    async getSwapHistory(page = 1, pageSize = 20) {
+        const res = await axiosInstance.get("/user/swap/history", {
+            params: { page, pageSize }
+        });
+
+        const arr = res.data; // API trả về MẢNG
+
+        return {
+            history: Array.isArray(arr) ? arr : [],
+            total: arr.length,
+            page,
+            pageSize
+        };
     }
 }
 

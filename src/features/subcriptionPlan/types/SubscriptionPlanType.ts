@@ -4,8 +4,10 @@ export interface SubscriptionPlan {
     price: number;
     durationDays: number;
     maxBatteries: number;
-    baseMileage: number;
-    baseEnergy: number;
+    baseMileage: number | null;
+    baseEnergy: number | null;
+    minSoH?: number | null;
+    maxSoH?: number | null;
     planType: "DISTANCE" | "ENERGY" | "UNLIMITED";
     status: "ACTIVE" | "INACTIVE";
 }
@@ -15,8 +17,10 @@ export interface CreateSubscriptionPlanPayload {
     price: number;
     durationDays: number;
     maxBatteries: number;
-    baseMileage: number;
-    baseEnergy: number;
+    baseMileage?: number | null;
+    baseEnergy?: number | null;
+    minSoH?: number | null;
+    maxSoH?: number | null;
     planType: "DISTANCE" | "ENERGY" | "UNLIMITED";
     status: "ACTIVE" | "INACTIVE";
 }

@@ -1,310 +1,242 @@
+// src/features/swapBattery/components/SwapBatteryForm.tsx
 import React, { useEffect, useState } from "react";
 import {
     CircularProgress,
     Alert,
     Typography,
     Button,
-    // ⚡️ Import các component cho Dropdown
     Select,
     MenuItem,
     FormControl,
     InputLabel,
     FormHelperText,
-    SelectChangeEvent,
-    TextField // ⚡️ Dùng TextField chuẩn cho % Pin
+    Box,
 } from "@mui/material";
-// (Bỏ SearchIcon vì không cần nữa)
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
-// 1. ⚡️ Import hooks (đường dẫn giả định)
 import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
-// 2. ⚡️ Import thunk/action (đã cập nhật)
 import {
     swapBattery,
-    getAllVehicles, // Thunk mới
-    getAllStations  // Thunk mới
-} from "../SwapThunks"; // Giả định đường dẫn
+    getAllVehicles,
+    getAllStations,
+} from "../SwapThunks";
+import { clearSwapResult } from "../SwapSlice";
+
+import { RootState } from "../../../app/Store";
+import { VehicleDetail, StationDetail, Battery } from "../types/SwapBatteryType";
+
 import {
-    clearSwapResult
-    // ⛔️ Đã Bỏ: clearBatteries
-} from "../SwapSlice"; // Giả định đường dẫn
-
-// 3. ⚡️ Import types (đã cập nhật)
-import {
-    SwapBatteryPayload,
-    VehicleDetail,
-    Battery,
-    StationDetail
-} from "../types/SwapBatteryType";
-
-// 4. ⚡️ Import style (giả định)
-import { PageContainer, FormCard, Title, FormBox, FullWidthBox } from "../Style/Styles";
-import {RootState} from "../../../app/Store";
-
-// 5. ⚡️ Lấy RootState (Cần thiết cho TypeScript)
-// (Bạn cần import RootState từ file store của mình)
-// import { RootState } from '../../../app/Store';
-
+    PageContainer,
+    FormCard,
+    Title,
+    FormBox,
+    FullWidthBox,
+} from "../Style/Styles"; // Hoặc đường dẫn của bạn
 
 const SwapBatteryForm: React.FC = () => {
     const dispatch = useAppDispatch();
 
-    // 6. ⚡️ Lấy State từ Redux (đã cập nhật)
     const {
         swapLoading: loading,
         swapResult: result,
         swapError: error,
-
-        // Danh sách xe (đã bao gồm pin)
         vehicles,
         vehiclesLoading,
-        vehiclesError,
-
-        // Danh sách trạm
         stations,
         stationsLoading,
-        stationsError
+    } = useAppSelector((state: RootState) => state.swapBattery);
 
-        // ⛔️ Đã Bỏ: 'batteries' state
-    } = useAppSelector((state: RootState) => state.swapBattery); // ⚡️ Sửa (state: RootState)
-
-    // 7. ⚡️ State cho Form (Lưu ID đã chọn)
+    // Form state - chỉ còn 3 trường theo API mới
     const [form, setForm] = useState({
-        vehicleId: "",       // Lưu ID xe (ví dụ: 5)
-        batterySerialId: "", // Lưu ID pin (ví dụ: 11)
-        stationId: "",       // Lưu ID trạm (ví dụ: 1)
-        endPercent: "",      // Lưu % pin
+        vehicleId: "",
+        batterySerialId: "",
+        stationId: "",
     });
 
-    // 8. ⚡️ State Cục bộ (MỚI): Lưu danh sách pin của xe đã chọn
+    // Danh sách pin của xe được chọn
     const [selectedVehicleBatteries, setSelectedVehicleBatteries] = useState<Battery[]>([]);
 
-    // 9. ⚡️ State cho Lỗi Cục bộ (thay cho alert)
-    const [localError, setLocalError] = useState<string | null>(null);
-
-    // 10. ⚡️ useEffect: Tải dữ liệu ban đầu (Tải Xe và Trạm)
+    // Tải dữ liệu khi mount
     useEffect(() => {
         dispatch(getAllVehicles());
         dispatch(getAllStations());
     }, [dispatch]);
 
-    // 11. useEffect để dọn dẹp
+    // Dọn dẹp khi rời trang
     useEffect(() => {
         return () => {
             dispatch(clearSwapResult());
         };
     }, [dispatch]);
 
-    // 12. ⚡️ Hàm xử lý thay đổi Dropdown & Input
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string>) => {
+    // Xử lý thay đổi form
+    const handleChange = (e: React.ChangeEvent<{ name?: string; value: unknown }>) => {
         const { name, value } = e.target;
+        if (!name) return;
 
-        // Xóa lỗi local khi người dùng bắt đầu nhập lại
-        if (localError) setLocalError(null);
+        setForm(prev => ({ ...prev, [name]: value as string }));
 
-        // Cập nhật state của form
-        setForm((prev) => ({ ...prev, [name as string]: value as string }));
-
-        // ----------------------------------------------------
-        // ⚡️ LOGIC MỚI: Xử lý khi chọn XE
-        // ----------------------------------------------------
-        if (name === 'vehicleId') {
-            // Tìm xe đầy đủ trong danh sách 'vehicles'
+        // Khi chọn xe → load pin của xe đó
+        if (name === "vehicleId" && value) {
             const selectedVehicle = vehicles.find(v => v.id === Number(value));
-
-            if (selectedVehicle) {
-                // Lưu lại danh sách pin của xe đó
-                setSelectedVehicleBatteries(selectedVehicle.batteries);
-            } else {
-                // Nếu không tìm thấy (ví dụ: chọn "None"), xóa danh sách pin
-                setSelectedVehicleBatteries([]);
-            }
-            // Reset pin đã chọn
-            setForm(prev => ({ ...prev, batterySerialId: "" }));
+            setSelectedVehicleBatteries(selectedVehicle?.batteries || []);
+            setForm(prev => ({ ...prev, batterySerialId: "" })); // Reset pin
         }
-        // ----------------------------------------------------
     };
 
-    // 13. Hàm xử lý khi nhấn nút submit
-    const handleSubmitSwap = () => {
-        setLocalError(null); // Xóa lỗi cũ
-        const { vehicleId, batterySerialId, stationId, endPercent } = form;
+    // Submit đổi pin
+    const handleSubmit = () => {
+        const { vehicleId, batterySerialId, stationId } = form;
 
-        if (!vehicleId || !batterySerialId || !stationId || !endPercent) {
-            setLocalError("Vui lòng điền đầy đủ thông tin.");
+        if (!vehicleId || !batterySerialId || !stationId) {
             return;
         }
 
-        // Kiểm tra % pin (API của bạn nhận 0.8, nhưng component cũ gửi 80?)
-        // Tạm thời gửi 80 (nếu bạn cần 0.8, hãy chia 100)
-        const percentValue = Number(endPercent);
-        if (isNaN(percentValue) || percentValue < 0 || percentValue > 100) {
-            setLocalError("Phần trăm pin phải là số từ 0 đến 100.");
-            return;
-        }
-
-        const payload: SwapBatteryPayload = {
+        const payload = {
             vehicleId: Number(vehicleId),
             batterySerialId: Number(batterySerialId),
             stationId: Number(stationId),
-            endPercent: percentValue, // ⚡️ Gửi 80
-            // endPercent: percentValue / 100, // ⚡️ Gửi 0.8
         };
 
         dispatch(swapBattery(payload));
     };
 
-    // 14. Hàm render (JSX)
+    const isFormValid = form.vehicleId && form.batterySerialId && form.stationId;
+
     return (
         <PageContainer>
             <FormCard>
-                <Title variant="h5">Thực hiện Đổi Pin (Swap)</Title>
+                <Title>
+                    <CheckCircleIcon sx={{ mr: 1, verticalAlign: "middle" }} />
+                    Thực Hiện Đổi Pin
+                </Title>
 
-                <FormBox>
-                    {/* ----------------------------------- */}
-                    {/* ⚡️ 1. Dropdown CHỌN XE             */}
-                    {/* ----------------------------------- */}
-                    <FormControl
-                        fullWidth
-                        disabled={vehiclesLoading}
-                        error={!!vehiclesError}
-                    >
-                        <InputLabel id="vehicle-select-label">Chọn Xe</InputLabel>
+                <FormBox gap={3}>
+
+                    {/* 1. Chọn Xe */}
+                    <FormControl fullWidth>
+                        <InputLabel>Chọn Xe Cần Đổi Pin</InputLabel>
                         <Select
-                            labelId="vehicle-select-label"
                             name="vehicleId"
                             value={form.vehicleId}
-                            label="Chọn Xe"
+                            label="Chọn Xe Cần Đổi Pin"
                             onChange={handleChange}
+                            disabled={vehiclesLoading}
                         >
-                            {vehiclesLoading && <MenuItem disabled value=""><em>Đang tải danh sách xe...</em></MenuItem>}
-                            {vehiclesError && <MenuItem disabled value=""><em>Lỗi tải danh sách xe</em></MenuItem>}
-                            {!vehiclesLoading && vehicles.map((vehicle: VehicleDetail) => (
+                            {vehiclesLoading && (
+                                <MenuItem disabled><em>Đang tải xe...</em></MenuItem>
+                            )}
+                            {vehicles.map((vehicle: VehicleDetail) => (
                                 <MenuItem key={vehicle.id} value={vehicle.id}>
-                                    {vehicle.vehicleName} (Gói: {vehicle.currentPlan})
+                                    {vehicle.vehicleName}
+                                    {vehicle.currentPlan && ` (Gói: ${vehicle.currentPlan})`}
                                 </MenuItem>
                             ))}
                         </Select>
-                        {vehiclesError && <FormHelperText>{vehiclesError}</FormHelperText>}
+                        {vehicles.length === 0 && !vehiclesLoading && (
+                            <FormHelperText color="warning">
+                                Không có xe nào trong hệ thống
+                            </FormHelperText>
+                        )}
                     </FormControl>
 
-                    {/* ----------------------------------- */}
-                    {/* ⚡️ 2. Dropdown CHỌN PIN            */}
-                    {/* ----------------------------------- */}
-                    <FormControl
-                        fullWidth
-                        // ⚡️ Tắt khi chưa chọn xe
-                        disabled={!form.vehicleId || selectedVehicleBatteries.length === 0}
-                    >
-                        <InputLabel id="battery-select-label">Chọn Pin Cần Đổi</InputLabel>
+                    {/* 2. Chọn Pin Cần Đổi */}
+                    <FormControl fullWidth disabled={!form.vehicleId || selectedVehicleBatteries.length === 0}>
+                        <InputLabel>Pin Cần Thay</InputLabel>
                         <Select
-                            labelId="battery-select-label"
                             name="batterySerialId"
                             value={form.batterySerialId}
-                            label="Chọn Pin Cần Đổi"
+                            label="Pin Cần Thay"
                             onChange={handleChange}
                         >
-                            {/* ⚡️ Hiển thị pin từ state cục bộ 'selectedVehicleBatteries' */}
                             {selectedVehicleBatteries.map((battery: Battery) => (
                                 <MenuItem key={battery.id} value={battery.id}>
                                     {battery.serialNumber}
+                                    {battery.soH ? ` (SoH: ${battery.soH}%)` : ""}
                                 </MenuItem>
                             ))}
                         </Select>
-                        {selectedVehicleBatteries.length === 0 && form.vehicleId && <FormHelperText>Xe này không có pin nào.</FormHelperText>}
+                        {form.vehicleId && selectedVehicleBatteries.length === 0 && (
+                            <FormHelperText>Xe này chưa gắn pin nào</FormHelperText>
+                        )}
                     </FormControl>
 
-                    {/* ----------------------------------- */}
-                    {/* ⚡️ 3. Dropdown CHỌN TRẠM           */}
-                    {/* ----------------------------------- */}
-                    <FormControl
-                        fullWidth
-                        disabled={stationsLoading}
-                        error={!!stationsError}
-                    >
-                        <InputLabel id="station-select-label">Chọn Trạm Swap</InputLabel>
+                    {/* 3. Chọn Trạm Swap */}
+                    <FormControl fullWidth>
+                        <InputLabel>Trạm Đổi Pin</InputLabel>
                         <Select
-                            labelId="station-select-label"
                             name="stationId"
                             value={form.stationId}
-                            label="Chọn Trạm Swap"
+                            label="Trạm Đổi Pin"
                             onChange={handleChange}
+                            disabled={stationsLoading}
                         >
-                            {stationsLoading && <MenuItem disabled value=""><em>Đang tải danh sách trạm...</em></MenuItem>}
-                            {stationsError && <MenuItem disabled value=""><em>Lỗi tải danh sách trạm</em></MenuItem>}
-                            {!stationsLoading && stations.map((station: StationDetail) => (
+                            {stationsLoading && (
+                                <MenuItem disabled><em>Đang tải trạm...</em></MenuItem>
+                            )}
+                            {stations.map((station: StationDetail) => (
                                 <MenuItem key={station.id} value={station.id}>
                                     {station.name}
                                 </MenuItem>
                             ))}
                         </Select>
-                        {stationsError && <FormHelperText>{stationsError}</FormHelperText>}
                     </FormControl>
 
-                    {/* ----------------------------------- */}
-                    {/* ⚡️ 4. Input % PIN                  */}
-                    {/* ----------------------------------- */}
-                    <TextField
-                        label="Phần trăm pin cuối (%)"
-                        name="endPercent"
-                        value={form.endPercent}
-                        onChange={handleChange}
-                        fullWidth
-                        placeholder="Nhập % pin (ví dụ: 80)"
-                        // Chỉ bật khi đã chọn xong 3 mục trên
-                        disabled={!form.vehicleId || !form.batterySerialId || !form.stationId}
-                        // ⚡️ Đảm bảo chỉ nhập số
-                        inputProps={{
-                            inputMode: 'numeric',
-                            pattern: '[0-9]*',
-                            type: 'number'
-                        }}
-                    />
+                    {/* Nút Xác Nhận */}
+                    <FullWidthBox>
+                        <Button
+                            variant="contained"
+                            size="large"
+                            fullWidth
+                            onClick={handleSubmit}
+                            disabled={!isFormValid || loading}
+                            sx={{
+                                py: 2,
+                                borderRadius: "16px",
+                                background: "linear-gradient(135deg, #16A34A 0%, #22C55E 100%)",
+                                fontSize: "1.2rem",
+                                fontWeight: 700,
+                                textTransform: "none",
+                                boxShadow: "0 10px 25px rgba(34, 197, 94, 0.3)",
+                                "&:hover": {
+                                    background: "linear-gradient(135deg, #15803D 0%, #16A34A 100%)",
+                                    transform: "translateY(-2px)",
+                                },
+                            }}
+                        >
+                            {loading ? (
+                                <CircularProgress size={28} color="inherit" />
+                            ) : (
+                                "XÁC NHẬN ĐỔI PIN"
+                            )}
+                        </Button>
+                    </FullWidthBox>
+
+                    {/* Kết quả thành công */}
+                    {result && (
+                        <Alert severity="success" sx={{ borderRadius: "12px", fontSize: "1.1rem" }}>
+                            <Typography fontWeight={600} gutterBottom>
+                                Đổi pin thành công!
+                            </Typography>
+                            <Box component="ul" sx={{ m: 0, pl: 2 }}>
+                                <li>Pin cũ: <strong>{result.oldSerialNumber}</strong></li>
+                                <li>Pin mới: <strong>{result.newSerialNumber}</strong></li>
+                                <li>Chi phí: <strong>{result.cost.toLocaleString()} ₫</strong></li>
+                                <li>Trạng thái: <strong>{result.status}</strong></li>
+                            </Box>
+                        </Alert>
+                    )}
+
+                    {/* Lỗi */}
+                    {error && (
+                        <Alert severity="error" sx={{ borderRadius: "12px" }}>
+                            {error}
+                        </Alert>
+                    )}
                 </FormBox>
-
-                {/* ⚡️ Hiển thị lỗi local (thay cho alert) */}
-                {localError && <Alert severity="warning" sx={{ mt: 3, borderRadius: '12px' }}>
-                    {localError}
-                </Alert>}
-
-
-                {/* Nút Submit */}
-                <FullWidthBox sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-                    <Button
-                        variant="contained"
-                        color="success"
-                        onClick={handleSubmitSwap}
-                        // ⚡️ Cập nhật điều kiện disabled
-                        disabled={loading || !form.vehicleId || !form.batterySerialId || !form.stationId || !form.endPercent}
-                        sx={{
-                            px: 5, py: 1.5, borderRadius: "12px", textTransform: "uppercase", fontWeight: 700,
-                            backgroundColor: "#22C55E", color: "#fff",
-                            "&:hover": { backgroundColor: "#16A34A" },
-                            "&.Mui-disabled": { backgroundColor: "#D1D5DB" },
-                        }}
-                    >
-                        {loading ? <CircularProgress size={24} color="inherit" /> : "Xác nhận Swap"}
-                    </Button>
-                </FullWidthBox>
-
-                {/* Hiển thị kết quả (Không đổi) */}
-                {result && (
-                    <Alert severity="success" sx={{ mt: 3, borderRadius: '12px', backgroundColor: '#F0FDF4' }}>
-                        <Typography variant="body1" fontWeight={600} mb={1.5}>{result.message}</Typography>
-                        <Typography><strong>Pin cũ:</strong> {result.oldSerialNumber}</Typography>
-                        <Typography><strong>Pin mới:</strong> {result.newSerialNumber}</Typography>
-                        <Typography><strong>Chi phí:</strong> {result.cost.toLocaleString()} VND</Typography>
-                        <Typography><strong>Trạng thái pin mới:</strong> {result.status}</Typography>
-                    </Alert>
-                )}
-
-                {/* Hiển thị lỗi (Không đổi) */}
-                {error && <Alert severity="error" sx={{ mt: 3, borderRadius: '12px' }}>
-                    {error}
-                </Alert>}
             </FormCard>
         </PageContainer>
     );
 };
 
 export default SwapBatteryForm;
-

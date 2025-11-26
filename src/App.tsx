@@ -31,6 +31,12 @@ import ProfilePage from './features/profileUser/components/UserProfile';
 import UserListPage from './features/user/pages/UserListPage';
 import Reservation from './features/reservation/components/PreReserveBattery'
 import ReservationHistory from './features/reservation/components/ReservationHistory';
+import StaffManagement from "./features/staffManagement/components/StaffManagement";
+import StaffLayout from './shared/utils/StaffLayout/StaffLayout';
+import BatteryStation from './features/confirmSwap/form/StaffBatteryAtStationList';
+import BatteryHistory from'./features/BatterySerials/components/BatteryRecentUpdates';
+import SwapHistory from './features/swapBattery/components/SwapHistoryList';
+import Reputation from'./features/user/components/ReputationBadge';
 function App() {
   return (
       <BrowserRouter>
@@ -46,7 +52,7 @@ function App() {
               {/* User-facing pages with standalone layout */}
               <Route element={<UserPageLayout />}>
                   <Route path="/linkVehicle/regist" element={<LinkVehiclePage />} />
-                  <Route path="/subcriptionPlan/changePlanPage" element={<ChangePlanPage />} />
+                  <Route path="/subscriptionPlan/changePlanPage" element={<ChangePlanPage />} />
                   <Route path="/subscriptions" element={<UserSubscriptionsPage />} />
                   <Route path="/swapBattery" element={<SwapBatteryPage />} />
                   <Route path="/Map" element={<BaseMap />} />
@@ -54,6 +60,8 @@ function App() {
                   <Route path="/user/profile" element={<ProfilePage />} />
                   <Route path="/reservation/preReserve" element={<Reservation />} />
                   <Route path="/reservation/history" element={<ReservationHistory />} />
+                  <Route path="/swap/history" element={<SwapHistory />} />
+                  <Route path="/user/reputation" element={<Reputation />} />
               </Route>
 
               {/* Admin pages with sidebar layout */}
@@ -69,9 +77,14 @@ function App() {
                   <Route path="/vehicle/create" element={<VehicleCreatePage />} />
                   <Route path="/vehicle/list" element={<VehicleListPage />} />
                   <Route path="/vehicles/:id" element={<VehicleDetailPage />} />
-                  <Route path="/staff/swap/status" element={<ConfirmPage/>}/>
                   <Route path="/analytics/dashboard" element={<AnalyticsDashboardPage />} />
                   <Route path="/users/list" element={<UserListPage />} />
+                  <Route path="/staff/management" element={<StaffManagement />} />
+                  <Route path="/battery-serials/history" element={<BatteryHistory/>}/>
+              </Route>
+              <Route element={<StaffLayout />}>
+                  <Route path="/staff/swap/status" element={<ConfirmPage/>}/>
+                  <Route path="/staff/battery/station-list" element={<BatteryStation/>}/>
               </Route>
           </Routes>
       </BrowserRouter>

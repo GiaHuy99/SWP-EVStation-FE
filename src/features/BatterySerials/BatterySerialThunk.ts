@@ -2,6 +2,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import {BatterySerial, CreateBatterySerialPayload, UpdateBatterySerialPayload} from "./types/BatterySerialTypes";
 import BatterySerialServices from "./services/BatterySerialServices";
+import axiosInstance from "../../shared/utils/AxiosInstance";
 
 export const fetchBatterySerials = createAsyncThunk<BatterySerial[]>(
     "batterySerial/fetchAll",
@@ -47,6 +48,44 @@ export const deleteBatterySerial = createAsyncThunk<number, number>(
             return id;
         } catch (err: any) {
             return rejectWithValue(err.response?.data || "Xóa thất bại");
+        }
+    }
+);
+export const transferBattery = createAsyncThunk(
+    "batterySerial/transfer",
+    async (payload: {
+        batteryId: number;
+        fromStationId: number;
+        toStationId: number;
+        notes?: string;
+    }, { rejectWithValue }) => {
+        try {
+            const res = await axiosInstance.post("/admin/batteries/transfer", payload);
+            return res.data;
+        } catch (err: any) {
+            return rejectWithValue(err.response?.data?.message || "Chuyển pin thất bại");
+        }
+    }
+);
+export const updateBatterySoH = createAsyncThunk(
+    "batterySerial/updateSoH",
+    async ({ batteryId, newSoH }: { batteryId: number; newSoH: number }, { rejectWithValue }) => {
+        try {
+            const res = await axiosInstance.put(`/admin/batteries/${batteryId}/soh`, { newSoH });
+            return res.data;
+        } catch (err: any) {
+            return rejectWithValue(err.response?.data?.message || "Cập nhật SoH thất bại");
+        }
+    }
+);
+export const fetchRecentBatteryUpdates = createAsyncThunk<BatterySerial[]>(
+    "batterySerial/fetchRecentUpdates",
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get("/admin/batteries/recent-updates");
+            return response.data as BatterySerial[];
+        } catch (err: any) {
+            return rejectWithValue(err.response?.data?.message || "Không tải được lịch sử cập nhật");
         }
     }
 );

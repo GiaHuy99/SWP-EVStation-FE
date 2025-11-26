@@ -1,5 +1,5 @@
 import axiosInstance from "../../../shared/utils/AxiosInstance";
-import { User, CreateUserPayload, UpdateUserPayload } from "../types/UserType";
+import {User, CreateUserPayload, UpdateUserPayload, UserReputation} from "../types/UserType";
 
 class UserService {
     // Get all users
@@ -23,6 +23,10 @@ class UserService {
     // Delete user
     async deleteUser(userId: number): Promise<void> {
         await axiosInstance.delete(`/admin/users/${userId}`);
+    }
+    async getUserReputation(userId?: number): Promise<UserReputation> {
+        const response = await axiosInstance.get(`user/reputation`);
+        return response.data;
     }
 }
 

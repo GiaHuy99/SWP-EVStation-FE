@@ -1,7 +1,7 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAppDispatch } from '../../app/Hooks';
-import { logout } from '../auth/AuthSlice';
+import {Link, useNavigate} from 'react-router-dom';
+import {useAppDispatch} from '../../app/Hooks';
+import {logout} from '../auth/AuthSlice';
 import PhoneIcon from '@mui/icons-material/Phone';
 import evstation from '../../asset/images/Hyundai-iF-Design-Award.jpg'
 import {
@@ -33,7 +33,8 @@ import {
 import {
     Menu as MenuIcon,
     CreditCard,
-
+    History as HistoryIcon,           // Thêm icon lịch sử đổi pin
+    SwapHoriz as SwapHorizIcon,
     Logout,
     AccountBalanceWallet as AccountBalanceWalletIcon,
     CalendarMonth as CalendarMonthIcon,
@@ -45,6 +46,8 @@ import ContactSection from "../contactSection/ContactSection";
 import bangGiaQuangDuong from '../../asset/images/quangduong.jpg';
 import bangGiaNangLuong from '../../asset/images/nangluong.jpg';
 import Paper from "@mui/material/Paper";
+import {CreditCardIcon} from "lucide-react";
+import UserMenuDropdown from "../../shared/utils/layout/UserMenuDropdown";
 // Secondary Navigation Bar Component
 const SecondaryNavbar: React.FC = () => {
     const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -80,7 +83,7 @@ const SecondaryNavbar: React.FC = () => {
                 });
 
                 console.log('Navigating to login page...');
-                navigate('/login', { replace: true });
+                navigate('/login', {replace: true});
             }, 100);
 
         } catch (error) {
@@ -89,16 +92,11 @@ const SecondaryNavbar: React.FC = () => {
             localStorage.removeItem('token');
             localStorage.removeItem('username');
             localStorage.removeItem('role');
-            navigate('/login', { replace: true });
+            navigate('/login', {replace: true});
         }
     };
 
-    const navItems = [
-        { label: 'Profile', path: '/user/profile', icon: <PersonIcon /> },
-        { label: 'Change Plan', path: '/subcriptionPlan/changePlanPage', icon: <CreditCard /> },
-        { label: 'Invoice History', path: '/invoice/history', icon: <AccountBalanceWalletIcon /> },
-        { label: 'Reservation History', path: '/reservation/history', icon: <CalendarMonthIcon /> },
-    ];
+    const navItems = [];
     const drawer = (
         <Box
             onClick={handleDrawerToggle}
@@ -107,7 +105,7 @@ const SecondaryNavbar: React.FC = () => {
                 backgroundColor: '#000000' // Dark green background
             }}
         >
-            <Typography variant="h6" sx={{ my: 2, color: theme.palette.primary.main }}>
+            <Typography variant="h6" sx={{my: 2, color: theme.palette.primary.main}}>
                 EV Battery Swap
             </Typography>
             <List>
@@ -123,10 +121,10 @@ const SecondaryNavbar: React.FC = () => {
                                 },
                             }}
                         >
-                            <ListItemIcon sx={{ color: theme.palette.primary.main }}>
+                            <ListItemIcon sx={{color: theme.palette.primary.main}}>
                                 {item.icon}
                             </ListItemIcon>
-                            <ListItemText primary={item.label} />
+                            <ListItemText primary={item.label}/>
                         </ListItemButton>
                     </ListItem>
                 ))}
@@ -142,10 +140,10 @@ const SecondaryNavbar: React.FC = () => {
                             },
                         }}
                     >
-                        <ListItemIcon sx={{ color: theme.palette.primary.main }}>
-                            <Logout />
+                        <ListItemIcon sx={{color: theme.palette.primary.main}}>
+                            <Logout/>
                         </ListItemIcon>
-                        <ListItemText primary="Logout" />
+                        <ListItemText primary="Logout"/>
                     </ListItemButton>
                 </ListItem>
             </List>
@@ -163,7 +161,7 @@ const SecondaryNavbar: React.FC = () => {
                     borderRadius: 0
                 }}
             >
-                <Toolbar sx={{ justifyContent: 'space-between' }}>
+                <Toolbar sx={{justifyContent: 'space-between'}}>
                     {/* Logo */}
                     <Typography
                         variant="h6"
@@ -180,45 +178,12 @@ const SecondaryNavbar: React.FC = () => {
                     </Typography>
 
                     {/* Desktop Navigation */}
-                    <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1, alignItems: 'center' }}>
-                        {navItems.map((item) => (
-                            <Button
-                                key={item.path}
-                                component={Link}
-                                to={item.path}
-                                startIcon={item.icon}
-                                sx={{
-                                    color: theme.palette.common.white,
-                                    backgroundColor: 'transparent',
-                                    borderRadius: theme.shape.borderRadius,
-                                    '&:hover': {
-                                        backgroundColor: 'rgba(4, 191, 51, 0.15)', // Primary green with opacity
-                                        color: theme.palette.primary.main, // Bright green
-                                        transform: 'translateY(-1px)',
-                                    },
-                                }}
-                            >
-                                {item.label}
-                            </Button>
-                        ))}
+                    <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 2, alignItems: 'center' }}>
 
-                        {/* Logout Button */}
-                        <Button
-                            onClick={handleLogout}
-                            startIcon={<Logout />}
-                            variant="outlined"
-                            sx={{
-                                color: theme.palette.primary.main, // Bright green
-                                borderColor: theme.palette.primary.main,
-                                '&:hover': {
-                                    backgroundColor: 'rgba(4, 191, 51, 0.15)',
-                                    borderColor: theme.palette.primary.main,
-                                    transform: 'translateY(-1px)',
-                                },
-                            }}
-                        >
-                            Logout
-                        </Button>
+                        {/* ĐÂY LÀ CHỖ ĐÚNG ĐỂ HIỆN USER MENU DROPDOWN */}
+                        <UserMenuDropdown />
+
+
                     </Box>
 
                     {/* Mobile menu button */}
@@ -227,9 +192,9 @@ const SecondaryNavbar: React.FC = () => {
                         aria-label="open drawer"
                         edge="start"
                         onClick={handleDrawerToggle}
-                        sx={{ display: { xs: 'block', md: 'none' } }}
+                        sx={{display: {xs: 'block', md: 'none'}}}
                     >
-                        <MenuIcon />
+                        <MenuIcon/>
                     </IconButton>
                 </Toolbar>
             </AppBar>
@@ -244,7 +209,7 @@ const SecondaryNavbar: React.FC = () => {
                     keepMounted: true,
                 }}
                 sx={{
-                    display: { xs: 'block', md: 'none' },
+                    display: {xs: 'block', md: 'none'},
                     '& .MuiDrawer-paper': {
                         boxSizing: 'border-box',
                         width: 280,
@@ -272,7 +237,7 @@ const AdvertisementSection: React.FC = () => {
                     }
                 });
             },
-            { threshold: 0.1 }
+            {threshold: 0.1}
         );
 
         const element = document.getElementById('advertisement-section');
@@ -311,10 +276,10 @@ const AdvertisementSection: React.FC = () => {
     ];
 
     return (
-        <Box id="advertisement-section" sx={{ py: 10, backgroundColor: '#022601' }}>
+        <Box id="advertisement-section" sx={{py: 10, backgroundColor: '#022601'}}>
             <Container maxWidth="lg">
                 <Fade in={isVisible} timeout={1000}>
-                    <Box sx={{ textAlign: 'center', mb: 8 }}>
+                    <Box sx={{textAlign: 'center', mb: 8}}>
                         <Typography
                             variant="h3"
                             component="h2"
@@ -322,7 +287,7 @@ const AdvertisementSection: React.FC = () => {
                                 fontWeight: 700,
                                 mb: 2,
                                 color: theme.palette.common.white,
-                                fontSize: { xs: '2rem', md: '3rem' }
+                                fontSize: {xs: '2rem', md: '3rem'}
                             }}
                         >
                             Why Choose Our Service?
@@ -391,7 +356,7 @@ const AdvertisementSection: React.FC = () => {
                                     }
                                 }}
                             >
-                                <CardContent sx={{ p: 4, textAlign: 'center' }}>
+                                <CardContent sx={{p: 4, textAlign: 'center'}}>
                                     <Box
                                         sx={{
                                             fontSize: '4rem',
@@ -418,7 +383,7 @@ const AdvertisementSection: React.FC = () => {
                                             fontWeight: 700,
                                             mb: 2,
                                             color: theme.palette.common.white,
-                                            fontSize: { xs: '1.3rem', md: '1.5rem' }
+                                            fontSize: {xs: '1.3rem', md: '1.5rem'}
                                         }}
                                     >
                                         {service.title}
@@ -482,10 +447,10 @@ const AdvertisementSection: React.FC = () => {
                             }}
                         >
                             {[
-                                { number: '50K+', label: 'Active Users' },
-                                { number: '10+', label: 'Swap Stations In Viet Nam' },
-                                { number: '1M+', label: 'Battery Swaps' },
-                                { number: '99%', label: 'Satisfaction Rate' }
+                                {number: '50K+', label: 'Active Users'},
+                                {number: '10+', label: 'Swap Stations In Viet Nam'},
+                                {number: '1M+', label: 'Battery Swaps'},
+                                {number: '99%', label: 'Satisfaction Rate'}
                             ].map((stat, index) => (
                                 <Box
                                     key={index}
@@ -510,7 +475,7 @@ const AdvertisementSection: React.FC = () => {
                                             fontWeight: theme.typography.fontWeightBold,
                                             color: theme.palette.common.white,
                                             mb: 1,
-                                            fontSize: { xs: '2.5rem', md: '3.5rem' }
+                                            fontSize: {xs: '2.5rem', md: '3.5rem'}
                                         }}
                                     >
                                         {stat.number}
@@ -540,12 +505,11 @@ const HomePage: React.FC = () => {
     const theme = useTheme();
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+        <Box sx={{display: 'flex', flexDirection: 'column', minHeight: '100vh'}}>
             {/* Secondary Navigation Bar */}
-            <SecondaryNavbar />
-
+            <SecondaryNavbar/>
             {/* Main Content */}
-            <Box component="main" sx={{ flexGrow: 1, pt: 8 }}>
+            <Box component="main" sx={{flexGrow: 1, pt: 8}}>
                 {/* Hero Section */}
                 <Box
                     sx={{
@@ -556,6 +520,7 @@ const HomePage: React.FC = () => {
                         py: 16,
                         textAlign: 'center'
                     }}
+
                 >
                     <Container maxWidth="lg">
                         <Typography
@@ -564,7 +529,7 @@ const HomePage: React.FC = () => {
                             sx={{
                                 fontWeight: theme.typography.fontWeightBold,
                                 mb: 3,
-                                fontSize: { xs: '2.5rem', md: '3.5rem' },
+                                fontSize: {xs: '2.5rem', md: '3.5rem'},
                                 lineHeight: 1.2,
                                 color: theme.palette.common.white
                             }}
@@ -576,7 +541,7 @@ const HomePage: React.FC = () => {
                             sx={{
                                 mb: 4,
                                 opacity: 0.9,
-                                fontSize: { xs: '1.2rem', md: '1.5rem' },
+                                fontSize: {xs: '1.2rem', md: '1.5rem'},
                                 maxWidth: '600px',
                                 mx: 'auto',
                                 color: theme.palette.common.white
@@ -584,7 +549,7 @@ const HomePage: React.FC = () => {
                         >
                             Manage your electric vehicle battery subscriptions and swap services efficiently
                         </Typography>
-                        <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
+                        <Box sx={{display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap'}}>
                             <Button
                                 variant="outlined"
                                 size="large"
@@ -641,7 +606,7 @@ const HomePage: React.FC = () => {
                 </Box>
 
                 {/* Features Section */}
-                <Container maxWidth="lg" sx={{ py: 8 }}>
+                <Container maxWidth="lg" sx={{py: 8}}>
                     <Typography
                         variant="h3"
                         component="h2"
@@ -663,8 +628,8 @@ const HomePage: React.FC = () => {
                             mt: 4
                         }}
                     >
-                        <Card sx={{ height: '100%' }}>
-                            <CardContent sx={{ p: 4, textAlign: 'center' }}>
+                        <Card sx={{height: '100%'}}>
+                            <CardContent sx={{p: 4, textAlign: 'center'}}>
                                 <Box
                                     component="img"
                                     src={battery}
@@ -675,14 +640,14 @@ const HomePage: React.FC = () => {
                                         mb: 2,
                                     }}
                                 />
-                                <Typography variant="h5" component="h3" sx={{ mb: 2 }}>
+                                <Typography variant="h5" component="h3" sx={{mb: 2}}>
                                     Battery Swap
                                 </Typography>
-                                <Typography variant="body1" sx={{ lineHeight: 1.6 }}>
+                                <Typography variant="body1" sx={{lineHeight: 1.6}}>
                                     Quick and efficient battery swapping at our network of stations across the city.
                                 </Typography>
                             </CardContent>
-                            <CardActions sx={{ justifyContent: 'center', pb: 3 }}>
+                            <CardActions sx={{justifyContent: 'center', pb: 3}}>
                                 <Button
                                     component={Link}
                                     to="/swapBattery"
@@ -693,19 +658,19 @@ const HomePage: React.FC = () => {
                             </CardActions>
                         </Card>
 
-                        <Card sx={{ height: '100%' }}>
-                            <CardContent sx={{ p: 4, textAlign: 'center' }}>
-                                <Box sx={{ fontSize: '3rem', mb: 2 }}>
+                        <Card sx={{height: '100%'}}>
+                            <CardContent sx={{p: 4, textAlign: 'center'}}>
+                                <Box sx={{fontSize: '3rem', mb: 2}}>
                                     📋
                                 </Box>
-                                <Typography variant="h5" component="h3" sx={{ mb: 2 }}>
+                                <Typography variant="h5" component="h3" sx={{mb: 2}}>
                                     Plan Management
                                 </Typography>
-                                <Typography variant="body1" sx={{ lineHeight: 1.6 }}>
+                                <Typography variant="body1" sx={{lineHeight: 1.6}}>
                                     Manage your subscription plans, upgrade or downgrade as needed for your usage.
                                 </Typography>
                             </CardContent>
-                            <CardActions sx={{ justifyContent: 'center', pb: 3 }}>
+                            <CardActions sx={{justifyContent: 'center', pb: 3}}>
                                 <Button
                                     component={Link}
                                     to="/subscriptions"
@@ -716,8 +681,8 @@ const HomePage: React.FC = () => {
                             </CardActions>
                         </Card>
 
-                        <Card sx={{ height: '100%' }}>
-                            <CardContent sx={{ p: 4, textAlign: 'center' }}>
+                        <Card sx={{height: '100%'}}>
+                            <CardContent sx={{p: 4, textAlign: 'center'}}>
                                 <Box
                                     component="img"
                                     src={charge}
@@ -728,14 +693,14 @@ const HomePage: React.FC = () => {
                                         mb: 2,
                                     }}
                                 />
-                                <Typography variant="h5" component="h3" sx={{ mb: 2 }}>
+                                <Typography variant="h5" component="h3" sx={{mb: 2}}>
                                     Link Vehicle
                                 </Typography>
-                                <Typography variant="body1" sx={{ lineHeight: 1.6 }}>
+                                <Typography variant="body1" sx={{lineHeight: 1.6}}>
                                     Link and manage your electric vehicles for seamless battery swap services.
                                 </Typography>
                             </CardContent>
-                            <CardActions sx={{ justifyContent: 'center', pb: 3 }}>
+                            <CardActions sx={{justifyContent: 'center', pb: 3}}>
                                 <Button
                                     component={Link}
                                     to="/linkVehicle/regist"
@@ -749,7 +714,7 @@ const HomePage: React.FC = () => {
                 </Container>
 
                 {/* === BẮT ĐẦU SECTION BẢNG GIÁ DỊCH VỤ === */}
-                <Box sx={{ py: 8, backgroundColor: theme.palette.background.paper }}>
+                <Box sx={{py: 8, backgroundColor: theme.palette.background.paper}}>
                     <Container maxWidth="lg">
                         <Typography
                             variant="h3"
@@ -764,7 +729,7 @@ const HomePage: React.FC = () => {
 
                         <Grid container spacing={4} justifyContent="center">
                             {/* Ảnh 1 */}
-                            <Grid >
+                            <Grid>
                                 <Paper
                                     elevation={3}
                                     sx={{
@@ -781,7 +746,7 @@ const HomePage: React.FC = () => {
                                         component="img"
                                         src={bangGiaNangLuong}
                                         alt="Bảng giá dịch vụ 1"
-                                        sx={{ width: '100%', height: 'auto', display: 'block' }}
+                                        sx={{width: '100%', height: 'auto', display: 'block'}}
                                     />
                                 </Paper>
                             </Grid>
@@ -804,7 +769,7 @@ const HomePage: React.FC = () => {
                                         component="img"
                                         src={bangGiaQuangDuong}
                                         alt="Bảng giá dịch vụ 2"
-                                        sx={{ width: '100%', height: 'auto', display: 'block' }}
+                                        sx={{width: '100%', height: 'auto', display: 'block'}}
                                     />
                                 </Paper>
                             </Grid>
@@ -814,7 +779,7 @@ const HomePage: React.FC = () => {
                 {/* === KẾT THÚC SECTION BẢNG GIÁ === */}
 
                 {/* CTA Section */}
-                <Box sx={{ backgroundColor: theme.palette.background.default, py: 8, textAlign: 'center' }}>
+                <Box sx={{backgroundColor: theme.palette.background.default, py: 8, textAlign: 'center'}}>
                     <Container maxWidth="md">
                         <Typography
                             variant="h3"
@@ -825,7 +790,7 @@ const HomePage: React.FC = () => {
                         >
                             Ready to Get Started?
                         </Typography>
-                        <Typography variant="h6" sx={{ mb: 4, lineHeight: 1.6 }}>
+                        <Typography variant="h6" sx={{mb: 4, lineHeight: 1.6}}>
                             Join thousands of satisfied EV users and experience seamless battery swapping.
                         </Typography>
                         <Button
@@ -846,10 +811,10 @@ const HomePage: React.FC = () => {
             </Box>
 
             {/* Advertisement Section */}
-            <AdvertisementSection />
+            <AdvertisementSection/>
 
-            <ContactSection />
-            <FloatingContactButtons />
+            <ContactSection/>
+            <FloatingContactButtons/>
 
 
             {/* Footer */}
@@ -863,7 +828,7 @@ const HomePage: React.FC = () => {
                 }}
             >
                 <Container maxWidth="lg">
-                    <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                    <Typography variant="body2" sx={{opacity: 0.9}}>
                         © 2025 EV Battery Swap Management. All rights reserved.
                     </Typography>
                 </Container>
@@ -879,8 +844,8 @@ const FloatingContactButtons: React.FC = () => {
         <Box
             sx={{
                 position: 'fixed',
-                bottom: { xs: 16, sm: 24 },
-                right: { xs: 16, sm: 24 },
+                bottom: {xs: 16, sm: 24},
+                right: {xs: 16, sm: 24},
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 2,
@@ -901,8 +866,8 @@ const FloatingContactButtons: React.FC = () => {
                     },
                 },
                 '@keyframes float': {
-                    '0%, 100%': { transform: 'translateY(0)' },
-                    '50%': { transform: 'translateY(-10px)' },
+                    '0%, 100%': {transform: 'translateY(0)'},
+                    '50%': {transform: 'translateY(-10px)'},
                 },
             }}
         >
@@ -910,9 +875,9 @@ const FloatingContactButtons: React.FC = () => {
             <a
                 href={`tel:${phoneNumber}`}
                 aria-label="Gọi hotline"
-                style={{ backgroundColor: '#04BF33', color: 'white' }} // Màu xanh lá hotline
+                style={{backgroundColor: '#04BF33', color: 'white'}} // Màu xanh lá hotline
             >
-                <PhoneIcon sx={{ fontSize: 32 }} />
+                <PhoneIcon sx={{fontSize: 32}}/>
             </a>
 
         </Box>

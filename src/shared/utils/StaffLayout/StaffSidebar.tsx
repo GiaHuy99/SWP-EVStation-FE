@@ -156,57 +156,7 @@ const Sidebar: FC = () => {
                             <ListItemText primary="Thông tin cá nhân" />
                         </ListItemButton>
                     </ListItem>
-                    <ListItem disablePadding>
-                        <ListItemButton
-                            component={Link as any}
-                            to="/users/list"
-                            sx={sidebarItemStyle}
-                        >
-                            <ListItemIcon sx={{ color: '#04C4D9', minWidth: 40 }}>
-                                <Person />
-                            </ListItemIcon>
-                            <ListItemText primary="User Management" />
-                        </ListItemButton>
-                    </ListItem>
 
-                    {/* Staff Management */}
-                    <ListItem disablePadding>
-                        <ListItemButton onClick={() => toggleMenu('staff')} sx={sidebarItemStyle}>
-                            <ListItemIcon sx={{ color: '#04C4D9', minWidth: 40 }}><Person /></ListItemIcon>
-                            <ListItemText primary="Managment Staff" />
-                            {menuStates.staff ? <ArrowDropUp /> : <ArrowDropDown />}
-                        </ListItemButton>
-                    </ListItem>
-                    <Collapse in={menuStates.staff} timeout={300}>
-                        <List sx={{ p: 0 }}>
-                            <ListItem disablePadding><ListItemButton component={Link as any} to="/staff/management" sx={subItemStyle}><ListItemText primary="Staff Management" /></ListItemButton></ListItem>
-                        </List>
-                    </Collapse>
-
-                    {/* Trạm Sạc */}
-                    <ListItem disablePadding>
-                        <ListItemButton onClick={() => toggleMenu('stations')} sx={sidebarItemStyle}>
-                            <ListItemIcon sx={{ color: '#04C4D9', minWidth: 40 }}><LocalGasStation /></ListItemIcon>
-                            <ListItemText primary="Trạm Sạc" />
-                            {menuStates.stations ? <ArrowDropUp /> : <ArrowDropDown />}
-                        </ListItemButton>
-                    </ListItem>
-                    <Collapse in={menuStates.stations} timeout={300}>
-                        <List sx={{ p: 0 }}>
-                            <ListItem disablePadding>
-                                <ListItemButton component={Link as any} to="/stations/create" sx={subItemStyle}>
-                                    <ListItemText primary="Tạo Trạm Sạc" />
-                                </ListItemButton>
-                            </ListItem>
-                            <ListItem disablePadding>
-                                <ListItemButton component={Link as any} to="/stations/list" sx={subItemStyle}>
-                                    <ListItemText primary="Danh Sách Trạm" />
-                                </ListItemButton>
-                            </ListItem>
-                        </List>
-                    </Collapse>
-
-                    {/* Pin */}
                     <ListItem disablePadding>
                         <ListItemButton onClick={() => toggleMenu('battery')} sx={sidebarItemStyle}>
                             <ListItemIcon sx={{ color: '#04C4D9', minWidth: 40 }}><Battery6Bar /></ListItemIcon>
@@ -216,51 +166,11 @@ const Sidebar: FC = () => {
                     </ListItem>
                     <Collapse in={menuStates.battery} timeout={300}>
                         <List sx={{ p: 0 }}>
-                            <ListItem disablePadding><ListItemButton component={Link as any} to="/battery/create" sx={subItemStyle}><ListItemText primary="Tạo Pin" /></ListItemButton></ListItem>
-                            <ListItem disablePadding><ListItemButton component={Link as any} to="/battery/list" sx={subItemStyle}><ListItemText primary="Danh Sách Pin" /></ListItemButton></ListItem>
-                            <ListItem disablePadding><ListItemButton component={Link as any} to="/battery-serials/list" sx={subItemStyle}><ListItemText primary="Danh Sách Serial Pin" /></ListItemButton></ListItem>
-                            <ListItem disablePadding><ListItemButton component={Link as any} to="/battery-serials/create" sx={subItemStyle}><ListItemText primary="Tạo Pin trong trạm" /></ListItemButton></ListItem>
-                            <ListItem disablePadding><ListItemButton component={Link as any} to="/battery-serials/history" sx={subItemStyle}><ListItemText primary="Lịch sử cập nhật pin" /></ListItemButton></ListItem>
+
+                            <ListItem disablePadding><ListItemButton component={Link as any} to="/staff/swap/status" sx={subItemStyle}><ListItemText primary="Quản lý trao đổi pin" /></ListItemButton></ListItem>
+                            <ListItem disablePadding><ListItemButton component={Link as any} to="/staff/battery/station-list" sx={subItemStyle}><ListItemText primary="Danh sách pin tại trạm" /></ListItemButton></ListItem>
                         </List>
                     </Collapse>
-
-                    {/* Gói Đăng Ký */}
-                    <ListItem disablePadding>
-                        <ListItemButton onClick={() => toggleMenu('subscription')} sx={sidebarItemStyle}>
-                            <ListItemIcon sx={{ color: '#04C4D9', minWidth: 40 }}><Subscriptions /></ListItemIcon>
-                            <ListItemText primary="Gói Đăng Ký" />
-                            {menuStates.subscription ? <ArrowDropUp /> : <ArrowDropDown />}
-                        </ListItemButton>
-                    </ListItem>
-                    <Collapse in={menuStates.subscription} timeout={300}>
-                        <List sx={{ p: 0 }}>
-                            <ListItem disablePadding><ListItemButton component={Link as any} to="/subcriptionPlan/create" sx={subItemStyle}><ListItemText primary="Tạo Gói Đăng Ký" /></ListItemButton></ListItem>
-                            <ListItem disablePadding><ListItemButton component={Link as any} to="/subcriptionPlan/list" sx={subItemStyle}><ListItemText primary="Danh Sách Gói" /></ListItemButton></ListItem>
-                        </List>
-                    </Collapse>
-
-                    {/* Xe */}
-                    <ListItem disablePadding>
-                        <ListItemButton onClick={() => toggleMenu('vehicle')} sx={sidebarItemStyle}>
-                            <ListItemIcon sx={{ color: '#04C4D9', minWidth: 40 }}><DirectionsCar /></ListItemIcon>
-                            <ListItemText primary="Xe" />
-                            {menuStates.vehicle ? <ArrowDropUp /> : <ArrowDropDown />}
-                        </ListItemButton>
-                    </ListItem>
-                    <Collapse in={menuStates.vehicle} timeout={300}>
-                        <List sx={{ p: 0 }}>
-                            <ListItem disablePadding><ListItemButton component={Link as any} to="/vehicle/create" sx={subItemStyle}><ListItemText primary="Tạo Xe" /></ListItemButton></ListItem>
-                            <ListItem disablePadding><ListItemButton component={Link as any} to="/vehicle/list" sx={subItemStyle}><ListItemText primary="Danh Sách Xe" /></ListItemButton></ListItem>
-                        </List>
-                    </Collapse>
-
-                    {/* Thống Kê */}
-                    <ListItem disablePadding>
-                        <ListItemButton component={Link as any} to="/analytics/dashboard" sx={sidebarItemStyle}>
-                            <ListItemIcon sx={{ color: '#04C4D9', minWidth: 40 }}><BarChart /></ListItemIcon>
-                            <ListItemText primary="Thống Kê" />
-                        </ListItemButton>
-                    </ListItem>
                 </List>
             </Box>
 
