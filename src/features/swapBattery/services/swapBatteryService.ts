@@ -38,11 +38,19 @@ class SwapBatteryService {
         const res = await axiosInstance.post<SwapBatteryResponse>("/user/swap", payload);
         return res.data;
     }
-    async getSwapHistory(page: number = 1, pageSize: number = 20) {
-        const response = await axiosInstance.get("/user/swap/history", {
+    async getSwapHistory(page = 1, pageSize = 20) {
+        const res = await axiosInstance.get("/user/swap/history", {
             params: { page, pageSize }
         });
-        return response.data; // { history: [...], total: 150, ... }
+
+        const arr = res.data; // API trả về MẢNG
+
+        return {
+            history: Array.isArray(arr) ? arr : [],
+            total: arr.length,
+            page,
+            pageSize
+        };
     }
 }
 

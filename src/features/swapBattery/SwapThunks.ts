@@ -89,5 +89,11 @@ export const fetchSwapHistory = createAsyncThunk<
             const msg = err.response?.data?.message || "Tải lịch sử đổi pin thất bại";
             return rejectWithValue(msg);
         }
+    },
+    {
+        condition: (args, { getState }) => {
+            // Luôn cho phép gọi lại, không cache
+            return true;
+        },
     }
 );

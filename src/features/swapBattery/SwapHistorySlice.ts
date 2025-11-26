@@ -38,10 +38,13 @@ const swapHistorySlice = createSlice({
             })
             .addCase(fetchSwapHistory.fulfilled, (state, action: PayloadAction<SwapHistoryResponse>) => {
                 state.loading = false;
-                state.history = action.payload.history;
-                state.total = action.payload.total;
-                state.pageSize = action.payload.pageSize || 20;
-                // page không cần lưu vì đã có currentPage
+                state.history = action.payload.history || [];
+                state.total = action.payload.total ?? 0;
+                state.pageSize = action.payload.pageSize ?? state.pageSize ?? 20;
+                // Nếu API có trả page thì cập nhật currentPage (tùy chọn)
+                if (action.payload.page != null) {
+                    state.currentPage = action.payload.page;
+                }
             })
             .addCase(fetchSwapHistory.rejected, (state, action) => {
                 state.loading = false;

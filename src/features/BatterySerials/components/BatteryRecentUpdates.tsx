@@ -1,4 +1,4 @@
-// src/features/admin-battery/components/BatteryRecentUpdates.tsx
+// src/features/admin-battery/component.tsx
 import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
 import { fetchRecentBatteryUpdates } from "../BatterySerialThunk";
@@ -15,7 +15,6 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    Avatar,
     Stack,
 } from "@mui/material";
 import BatteryFullIcon from "@mui/icons-material/BatteryFull";
@@ -24,29 +23,52 @@ import { format, formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
 import { PageContainer, ListCard, Title } from "../../../styles/AdminDashboardStyles";
 
+// Helper để định dạng số an toàn
+const formatNumber = (
+    value: number | null | undefined,
+    fixed: number = 0,
+    suffix: string = ""
+): string => {
+    if (value === null || value === undefined) return "—";
+    return `${Number(value).toFixed(fixed)}${suffix}`;
+};
+
+// Helper để làm tròn số nguyên (chu kỳ)
+const formatCycle = (value: number | null | undefined): string => {
+    if (value === null || value === undefined) return "—";
+    return Math.round(Number(value)).toString();
+};
+
 const getStatusChip = (status: string) => {
     switch (status) {
-        case "AVAILABLE": return <Chip label="Sẵn sàng" color="success" size="small" icon={<BatteryFullIcon />} />;
-        case "IN_USE": return <Chip label="Đang dùng" color="primary" size="small" />;
-        case "MAINTENANCE": return <Chip label="Bảo trì" color="warning" size="small" />;
-        case "DAMAGED": return <Chip label="Hỏng" color="error" size="small" />;
-        default: return <Chip label={status} size="small" variant="outlined" />;
+        case "AVAILABLE":
+            return <Chip label="Sẵn sàng" color="success" size="small" icon={<BatteryFullIcon />} />;
+        case "IN_USE":
+            return <Chip label="Đang dùng" color="primary" size="small" />;
+        case "MAINTENANCE":
+            return <Chip label="Bảo trì" color="warning" size="small" />;
+        case "DAMAGED":
+            return <Chip label="Hỏng" color="error" size="small" />;
+        default:
+            return <Chip label={status || "—"} size="small" variant="outlined" />;
     }
 };
 
-const getSoHColor = (soh: number): string => {
-    if (soh >= 90) return "#059669";
-    if (soh >= 80) return "#d97706";
-    return "#dc2626";
+const getSoHColor = (soh: number | null | undefined): string => {
+    const value = soh ?? 0;
+    if (value >= 90) return "#059669";  // xanh lá đậm
+    if (value >= 80) return "#d97706";  // cam
+    return "#dc2626";                   // đỏ
 };
 
 const BatteryRecentUpdates: React.FC = () => {
     const dispatch = useAppDispatch();
     const {
-        recentUpdates: updates,           // ← đổi tên khi lấy ra
+        recentUpdates: updates,
         recentUpdatesLoading: loading,
-        recentUpdatesError: error
+        recentUpdatesError: error,
     } = useAppSelector((state) => state.batterySerials);
+
     useEffect(() => {
         dispatch(fetchRecentBatteryUpdates());
     }, [dispatch]);
@@ -109,42 +131,77 @@ const BatteryRecentUpdates: React.FC = () => {
                                 </TableHead>
                                 <TableBody>
                                     {updates.map((battery) => (
-                                        <TableRow key={battery.id} hover sx={{ "&:hover": { bgcolor: "#f8fafc" } }}>
+                                        <TableRow
+                                            key={battery.id}
+                                            hover
+                                            sx={{ "&:hover": { bgcolor: "#f8fafc" } }}
+                                        >
+                                            {/* Thời gian */}
                                             <TableCell>
                                                 <Stack direction="column">
                                                     <Typography variant="body2" fontWeight={600}>
-                                                        {format(new Date(battery.updatedAt), "HH:mm dd/MM/yyyy", { locale: vi })}
+                                                        {battery.updatedAt
+                                                            ? format(new Date(battery.updatedAt), "HH:mm dd/MM/yyyy", { locale: vi })
+                                                            : "—"}
                                                     </Typography>
                                                     <Typography variant="caption" color="text.secondary">
-                                                        {formatDistanceToNow(new Date(battery.updatedAt), { addSuffix: true, locale: vi })}
+                                                        {battery.updatedAt
+                                                            ? formatDistanceToNow(new Date(battery.updatedAt), {
+                                                                addSuffix: true,
+                                                                locale: vi,
+                                                            })
+                                                            : ""}
                                                     </Typography>
                                                 </Stack>
                                             </TableCell>
+
+                                            {/* Số seri */}
                                             <TableCell>
                                                 <Typography fontFamily="monospace" fontWeight={700} color="#1e40af">
-                                                    {battery.serialNumber}
+                                                    {battery.serialNumber || "—"}
                                                 </Typography>
                                             </TableCell>
+
+                                            {/* Model */}
                                             <TableCell>
-                                                <Chip label={battery.batteryName} size="small" color="info" variant="outlined" />
+                                                <Chip
+                                                    label={battery.batteryName || "—"}
+                                                    size="small"
+                                                    color="info"
+                                                    variant="outlined"
+                                                />
                                             </TableCell>
-                                            <TableCell>{battery.stationName}</TableCell>
-                                            <TableCell align="center">{getStatusChip(battery.status)}</TableCell>
+
+                                            {/* Trạm */}
+                                            <TableCell>{battery.stationName || "—"}</TableCell>
+
+                                            {/* Trạng thái */}
+                                            <TableCell align="center">
+                                                {getStatusChip(battery.status)}
+                                            </TableCell>
+
+                                            {/* Dung lượng (%) */}
                                             <TableCell align="center">
                                                 <Typography fontWeight={700} color="#059669">
-                                                    {battery.chargePercent.toFixed(0)}%
+                                                    {formatNumber(battery.chargePercent, 0, "%")}
                                                 </Typography>
                                             </TableCell>
+
+                                            {/* SoH (%) */}
                                             <TableCell align="center">
                                                 <Typography
                                                     fontWeight={800}
                                                     color={getSoHColor(battery.stateOfHealth)}
                                                     sx={{ fontSize: "1.1rem" }}
                                                 >
-                                                    {battery.stateOfHealth.toFixed(1)}%
+                                                    {formatNumber(battery.stateOfHealth, 1, "%")}
                                                 </Typography>
                                             </TableCell>
-                                            <TableCell align="center">{battery.totalCycleCount.toFixed(0)}</TableCell>
+
+                                            {/* Chu kỳ */}
+                                            <TableCell align="center">
+                                                {formatCycle(battery.totalCycleCount)}
+                                            </TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>

@@ -220,7 +220,6 @@ const Sidebar: FC = () => {
                             <ListItem disablePadding><ListItemButton component={Link as any} to="/battery/list" sx={subItemStyle}><ListItemText primary="Danh Sách Pin" /></ListItemButton></ListItem>
                             <ListItem disablePadding><ListItemButton component={Link as any} to="/battery-serials/list" sx={subItemStyle}><ListItemText primary="Danh Sách Serial Pin" /></ListItemButton></ListItem>
                             <ListItem disablePadding><ListItemButton component={Link as any} to="/battery-serials/create" sx={subItemStyle}><ListItemText primary="Tạo Pin trong trạm" /></ListItemButton></ListItem>
-                            <ListItem disablePadding><ListItemButton component={Link as any} to="/staff/swap/status" sx={subItemStyle}><ListItemText primary="Quản lý trao đổi pin" /></ListItemButton></ListItem>
                             <ListItem disablePadding><ListItemButton component={Link as any} to="/battery-serials/history" sx={subItemStyle}><ListItemText primary="Lịch sử cập nhật pin" /></ListItemButton></ListItem>
                         </List>
                     </Collapse>
