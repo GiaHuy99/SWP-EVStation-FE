@@ -17,7 +17,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 
 import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
-import { fetchUserProfile, updateProfile } from "../ProfileThunks";
+import {fetchUserProfile, fetchUserVehicles, updateProfile} from "../ProfileThunks";
 import { clearMessages } from "../ProfileSlice";
 
 const ProfileContainer = styled(Paper)(({ theme }) => ({
@@ -39,6 +39,8 @@ const UserProfile: React.FC = () => {
 
     useEffect(() => {
         dispatch(fetchUserProfile());
+            dispatch(fetchUserVehicles()); // load xe & pin
+
     }, [dispatch]);
 
     useEffect(() => {
@@ -133,6 +135,23 @@ const UserProfile: React.FC = () => {
                             variant="outlined"
                         />
                     </Stack>
+                    {profile?.vehicles && profile.vehicles.length > 0 && (
+                        <Box mt={5}>
+                            <Typography variant="h6" fontWeight={600} mb={2}>
+                                Xe và Pin đang sở hữu
+                            </Typography>
+                            {profile.vehicles.map((v) => (
+                                <Box key={v.id} mb={2} p={2} sx={{ border: "1px solid #e2e8f0", borderRadius: 2 }}>
+                                    <Typography fontWeight={600}>{v.vehicleName} ({v.currentPlan})</Typography>
+                                    {v.batteries.map((b) => (
+                                        <Typography key={b.id} variant="body2" sx={{ pl: 2 }}>
+                                            {b.serialNumber}
+                                        </Typography>
+                                    ))}
+                                </Box>
+                            ))}
+                        </Box>
+                    )}
 
                     {/* Nút hành động */}
                     <Box textAlign="right" mt={5}>

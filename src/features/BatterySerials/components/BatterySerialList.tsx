@@ -93,9 +93,6 @@ const ActionButtons: React.FC<{
 }> = ({ serial, onEdit, onTransfer, onUpdateSoH, onViewHistory, onDelete }) => {
     return (
         <Stack direction="row" spacing={1} justifyContent="center" flexWrap="wrap" sx={{ py: 0.5 }}>
-            <EditButton size="small" startIcon={<EditIcon />} onClick={(e) => { e.stopPropagation(); onEdit(); }}>
-                Sửa
-            </EditButton>
 
             {serial.stationId && (
                 <Button

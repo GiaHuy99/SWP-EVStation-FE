@@ -19,6 +19,7 @@ import usermanagent from "../features/user/UserSlice";
 import reservation from "../features/reservation/reservationSlice";
 import StaffManagement  from "../features/staffManagement/StaffManagementSlice"
 import swapHistoryReducer from "../features/swapBattery/SwapHistorySlice";
+import reservationSwap from "../features/confirmReserve/ConfirmReserveSlice";
 export const store = configureStore({
     reducer: {
         auth: authReducer,
@@ -40,6 +41,7 @@ export const store = configureStore({
         reservation:reservation,
         staffManagement:StaffManagement,
         swapHistory:swapHistoryReducer,
+        reservationSwap:reservationSwap
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(notificationMiddleware),

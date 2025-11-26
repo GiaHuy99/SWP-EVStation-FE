@@ -6,7 +6,7 @@ export interface BatterySerial {
     stationName: string | null;
     batteryId: number;
     batteryName?: string;
-    soH?: number;
+    stateOfHealth?: number;
 }
 
 

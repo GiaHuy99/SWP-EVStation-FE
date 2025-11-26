@@ -14,10 +14,7 @@ import {
     ListItemIcon,
     Typography,
     Paper,
-    Avatar,
-    Menu,         // ← THÊM
-    MenuItem,     // ← THÊM
-    Divider,      // ← THÊM
+
 } from '@mui/material';
 import {
     ArrowDropDown,
@@ -166,9 +163,9 @@ const Sidebar: FC = () => {
                     </ListItem>
                     <Collapse in={menuStates.battery} timeout={300}>
                         <List sx={{ p: 0 }}>
-
                             <ListItem disablePadding><ListItemButton component={Link as any} to="/staff/swap/status" sx={subItemStyle}><ListItemText primary="Quản lý trao đổi pin" /></ListItemButton></ListItem>
                             <ListItem disablePadding><ListItemButton component={Link as any} to="/staff/battery/station-list" sx={subItemStyle}><ListItemText primary="Danh sách pin tại trạm" /></ListItemButton></ListItem>
+                            <ListItem disablePadding><ListItemButton component={Link as any} to="/reservation/pending-reservation-swap" sx={subItemStyle}><ListItemText primary="Quản lý đặt pin" /></ListItemButton></ListItem>
                         </List>
                     </Collapse>
                 </List>
