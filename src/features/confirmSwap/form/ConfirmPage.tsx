@@ -242,7 +242,7 @@ const PendingSwapList = () => {
                         <Autocomplete
                             options={batteriesAtStation}
                             getOptionLabel={(opt: any) =>
-                                `${opt.serialNumber} | ${opt.batteryModel || opt.model} | ${opt.currentCharge || opt.chargePercent || 0}% | SoH ${opt.soh || opt.stateOfHealth || 0}%`
+                                `${opt.serialNumber}  | ${opt.currentCharge || opt.chargePercent || 0}% | SoH ${opt.soh || opt.stateOfHealth || 0}%`
                             }
                             value={selectedBattery}
                             onChange={(_, val) => setSelectedBattery(val)}

@@ -8,7 +8,13 @@ export const fetchBatterySerials = createAsyncThunk<BatterySerial[]>(
     "batterySerial/fetchAll",
     async (_, { rejectWithValue }) => {
         try {
-            return await BatterySerialServices.getAll();
+            const response = await BatterySerialServices.getAll(); // API trả về stateOfHealth
+            // Ánh xạ stateOfHealth -> soH
+            const serials: BatterySerial[] = response.map((item: any) => ({
+                ...item,
+                soH: item.stateOfHealth,  // ánh xạ mới
+            }));
+            return serials;
         } catch (err: any) {
             return rejectWithValue(err.response?.data || "Lỗi tải danh sách serial");
         }
