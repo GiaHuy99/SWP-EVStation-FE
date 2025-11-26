@@ -37,6 +37,7 @@ import BatteryStation from './features/confirmSwap/form/StaffBatteryAtStationLis
 import BatteryHistory from'./features/BatterySerials/components/BatteryRecentUpdates';
 import SwapHistory from './features/swapBattery/components/SwapHistoryList';
 import Reputation from'./features/user/components/ReputationBadge';
+import PendingReservationSwap from "./features/confirmReserve/component/PendingReservationSwap";
 function App() {
   return (
       <BrowserRouter>
@@ -61,7 +62,6 @@ function App() {
                   <Route path="/reservation/preReserve" element={<Reservation />} />
                   <Route path="/reservation/history" element={<ReservationHistory />} />
                   <Route path="/swap/history" element={<SwapHistory />} />
-                  <Route path="/user/reputation" element={<Reputation />} />
               </Route>
 
               {/* Admin pages with sidebar layout */}
@@ -85,6 +85,8 @@ function App() {
               <Route element={<StaffLayout />}>
                   <Route path="/staff/swap/status" element={<ConfirmPage/>}/>
                   <Route path="/staff/battery/station-list" element={<BatteryStation/>}/>
+                  <Route path="/reservation/pending-reservation-swap" element={<PendingReservationSwap/>}/>
+
               </Route>
           </Routes>
       </BrowserRouter>
