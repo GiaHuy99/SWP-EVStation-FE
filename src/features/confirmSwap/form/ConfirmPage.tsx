@@ -1,25 +1,36 @@
 // src/features/staff-swap/components/PendingSwapList.tsx
-
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
 import {
     fetchPendingSwaps,
     rejectSwap,
-    fetchReservationSwaps,
-    fetchReservationBattery,
-    confirmSwap, // ← DÙNG CHÍNH CÁI NÀY
+    confirmSwap,
+    fetchBatteriesAtStation,
 } from "../ConfirmThunks";
-import { clearReservedDetail } from "../ConfirmSlices";
-import { clearMessages } from "../ConfirmSlices";
+import { clearReservedDetail, clearMessages } from "../ConfirmSlices";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import {
-    Table, TableBody, TableCell, TableHead, TableRow,
-    Button, CircularProgress, Alert, Box, Chip,
-    Dialog, DialogTitle, DialogContent, DialogActions,
-    TextField, Autocomplete, Stack, Typography,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableRow,
+    Button,
+    CircularProgress,
+    Alert,
+    Box,
+    Chip,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    TextField,
+    Autocomplete,
+    Stack,
+    Typography,
 } from "@mui/material";
-import { CheckCircleOutline as CheckIcon, Close as CloseIcon } from "@mui/icons-material";
+import { CheckCircleOutline as CheckIcon, Close as CloseIcon, Lock as LockIcon } from "@mui/icons-material";
 import { PageContainer, ListCard, Title, TableWrapper } from "../../../styles/AdminDashboardStyles";
 
 type ItemType = "SWAP" | "RESERVED";
@@ -38,13 +49,16 @@ interface ListItem {
 
 const PendingSwapList = () => {
     const dispatch = useAppDispatch();
+
     const {
         pendingList = [],
         reservedList = [],
         reservedDetail,
+        batteriesAtStation = [],
         loading = false,
         loadingReserved = false,
         loadingDetail = false,
+        batteriesLoading = false,
         actionLoading = {},
         error,
         successMessage,
@@ -57,7 +71,6 @@ const PendingSwapList = () => {
 
     useEffect(() => {
         dispatch(fetchPendingSwaps());
-        dispatch(fetchReservationSwaps());
     }, [dispatch]);
 
     useEffect(() => {
@@ -74,7 +87,8 @@ const PendingSwapList = () => {
         setOpenConfirm(true);
 
         if (item.type === "RESERVED") {
-            dispatch(fetchReservationBattery(item.id));
+        } else {
+            dispatch(fetchBatteriesAtStation());
         }
     };
 
@@ -82,27 +96,39 @@ const PendingSwapList = () => {
         setOpenConfirm(false);
         setSelectedItem(null);
         setSelectedBattery(null);
+        setEndPercent("0");
         dispatch(clearReservedDetail());
     };
 
-    // CHỖ QUAN TRỌNG NHẤT – DÙNG CHÍNH confirmSwap CỦA BẠN
     const handleConfirm = async () => {
         if (!selectedItem || !selectedBattery) {
-            alert("Vui lòng chọn pin để cấp!");
+            alert("Vui lòng chọn pin hợp lệ!");
             return;
         }
 
-        const percent = parseInt(endPercent);
+        let newBatteryId: number;
+        if (selectedItem.type === "RESERVED") {
+            newBatteryId = selectedBattery.batterySerialId;
+        } else {
+            newBatteryId = selectedBattery.id || selectedBattery.batterySerialId;
+        }
+
+        if (!newBatteryId || isNaN(newBatteryId)) {
+            alert("ID pin không hợp lệ!");
+            return;
+        }
+
+        const percent = selectedItem.type === "RESERVED" ? 100 : parseInt(endPercent);
         if (isNaN(percent) || percent < 0 || percent > 100) {
-            alert("Phần trăm phải từ 0 - 100!");
+            alert("Phần trăm pin cũ phải từ 0 - 100!");
             return;
         }
 
         try {
             const result = await dispatch(
                 confirmSwap({
-                    requestId: selectedItem.id,           // ← Đây là ID của yêu cầu (swap/reservation)
-                    newBatteryId: selectedBattery.id,     // ← ID của pin mới (từ availableBatteries)
+                    requestId: selectedItem.id,
+                    newBatteryId,
                     endPercent: percent,
                 })
             );
@@ -115,17 +141,28 @@ const PendingSwapList = () => {
                 );
                 handleCloseDialog();
             } else {
-                throw new Error(result.payload as string);
+                throw new Error((result.payload as string) || "Thao tác thất bại");
             }
         } catch (err: any) {
-            alert(err.message || "Thao tác thất bại!");
+            alert(err.message || "Có lỗi xảy ra!");
         }
     };
 
+    const pendingItems = Array.isArray(pendingList) ? pendingList : [];
+    const reservedItems = Array.isArray(reservedList) ? reservedList : [];
     const allItems = [
-        ...pendingList.map((i: any) => ({ ...i, type: "SWAP" as const })),
-        ...reservedList.map((i: any) => ({ ...i, type: "RESERVED" as const })),
+        ...pendingItems.map((i: any) => ({ ...i, type: "SWAP" as const })),
+        ...reservedItems.map((i: any) => ({ ...i, type: "RESERVED" as const })),
     ];
+
+    // Nguồn pin để hiển thị
+    const availableBatteryOptions =
+        selectedItem?.type === "RESERVED"
+            ? reservedDetail?.availableBatteries || []
+            : batteriesAtStation;
+
+    const isLoadingBatteries =
+        selectedItem?.type === "RESERVED" ? loadingDetail : batteriesLoading;
 
     return (
         <PageContainer maxWidth="lg">
@@ -136,9 +173,13 @@ const PendingSwapList = () => {
                 {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
 
                 {(loading || loadingReserved) ? (
-                    <Box textAlign="center" py={8}><CircularProgress size={60} /></Box>
+                    <Box textAlign="center" py={8}>
+                        <CircularProgress size={60} />
+                    </Box>
                 ) : allItems.length === 0 ? (
-                    <Alert severity="info" sx={{ p: 4 }}>Không có yêu cầu nào đang chờ xử lý</Alert>
+                    <Alert severity="info" sx={{ p: 4 }}>
+                        Không có yêu cầu nào đang chờ xử lý
+                    </Alert>
                 ) : (
                     <TableWrapper>
                         <Table>
@@ -159,29 +200,46 @@ const PendingSwapList = () => {
                                     <TableRow key={item.id} hover>
                                         <TableCell><strong>{item.username}</strong></TableCell>
                                         <TableCell>
-                                            <code style={{
-                                                background: item.type === "RESERVED" ? "#ecfccb" : "#fee2e2",
-                                                color: item.type === "RESERVED" ? "#365314" : "#991b1b",
-                                                padding: "4px 8px",
-                                                borderRadius: 4,
-                                            }}>
+                                            <code
+                                                style={{
+                                                    background: item.type === "RESERVED" ? "#ecfccb" : "#fee2e2",
+                                                    color: item.type === "RESERVED" ? "#365314" : "#991b1b",
+                                                    padding: "4px 8px",
+                                                    borderRadius: 4,
+                                                }}
+                                            >
                                                 {item.oldBatterySerialNumber || "Đặt trước"}
                                             </code>
                                         </TableCell>
                                         <TableCell>
-                                            <Typography fontWeight="bold" color={(item.oldBatterySoH ?? 100) < 80 ? "#dc2626" : "#10b981"}>
+                                            <Typography
+                                                fontWeight="bold"
+                                                color={(item.oldBatterySoH ?? 100) < 80 ? "#dc2626" : "#10b981"}
+                                            >
                                                 {(item.oldBatterySoH ?? 100)}%
                                             </Typography>
                                         </TableCell>
-                                        <TableCell><Chip label={item.stationName} color={item.type === "RESERVED" ? "warning" : "info"} size="small" /></TableCell>
-                                        <TableCell>{format(new Date(item.timestamp || item.reservedAt || Date.now()), "dd/MM HH:mm", { locale: vi })}</TableCell>
+                                        <TableCell>
+                                            <Chip label={item.stationName} color={item.type === "RESERVED" ? "warning" : "info"} size="small" />
+                                        </TableCell>
+                                        <TableCell>
+                                            {format(
+                                                new Date(item.timestamp || item.reservedAt || Date.now()),
+                                                "dd/MM HH:mm",
+                                                { locale: vi }
+                                            )}
+                                        </TableCell>
                                         <TableCell>
                                             {item.type === "RESERVED" && item.remainingMinutes != null ? (
                                                 <Chip label={`${item.remainingMinutes} phút`} color="error" size="small" />
                                             ) : "-"}
                                         </TableCell>
                                         <TableCell>
-                                            <Chip label={item.type === "RESERVED" ? "ĐẶT TRƯỚC" : "ĐỔI PIN"} color={item.type === "RESERVED" ? "warning" : "primary"} size="small" />
+                                            <Chip
+                                                label={item.type === "RESERVED" ? "ĐẶT TRƯỚC" : "ĐỔI PIN"}
+                                                color={item.type === "RESERVED" ? "warning" : "primary"}
+                                                size="small"
+                                            />
                                         </TableCell>
                                         <TableCell align="center">
                                             {item.type === "RESERVED" ? (
@@ -229,7 +287,7 @@ const PendingSwapList = () => {
                 )}
             </ListCard>
 
-            {/* Dialog xác nhận */}
+            {/* Dialog Xác Nhận – PHIÊN BẢN PRO */}
             <Dialog open={openConfirm} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
                 <DialogTitle sx={{ bgcolor: "#10b981", color: "white" }}>
                     {selectedItem?.type === "RESERVED" ? "Cấp Pin Đặt Trước" : "Xác Nhận Đổi Pin"} - ID: {selectedItem?.id}
@@ -237,26 +295,74 @@ const PendingSwapList = () => {
                 <DialogContent dividers>
                     <Stack spacing={3} sx={{ mt: 2 }}>
                         <Alert severity="info">
-                            <strong>{selectedItem?.username}</strong> đang {selectedItem?.type === "RESERVED" ? "nhận pin đặt trước" : "đổi pin"} tại <strong>{selectedItem?.stationName}</strong>
+                            <strong>{selectedItem?.username}</strong> đang{" "}
+                            {selectedItem?.type === "RESERVED" ? "nhận pin đặt trước" : "đổi pin"} tại{" "}
+                            <strong>{selectedItem?.stationName}</strong>
                         </Alert>
 
                         <Autocomplete
-                            options={
-                                selectedItem?.type === "RESERVED"
-                                    ? reservedDetail?.availableBatteries || []
-                                    : selectedItem?.availableBatteries || []
-                            }
+                            options={availableBatteryOptions}
                             getOptionLabel={(opt: any) =>
-                                `${opt.serialNumber} | ${opt.batteryModel} | ${opt.chargePercent}% | SoH ${opt.stateOfHealth}%`
+                                `${opt.serialNumber} | ${opt.batteryModel || opt.model} | ${opt.currentCharge || opt.chargePercent || 0}% | SoH ${opt.soh || opt.stateOfHealth || 0}%`
                             }
-                            loading={loadingDetail}
                             value={selectedBattery}
                             onChange={(_, val) => setSelectedBattery(val)}
+                            loading={isLoadingBatteries}
+                            noOptionsText="Không có pin phù hợp"
+                            filterOptions={(options) => {
+                                if (selectedItem?.type === "RESERVED") return options;
+                                return options.filter((opt: any) => {
+                                    const isReserved = opt.status === "RESERVED" || opt.reserved === true;
+                                    return !isReserved;
+                                });
+                            }}
+                            renderOption={(props, option) => {
+                                const isReserved = option.status === "RESERVED" || option.reserved === true;
+                                const isThisReservationBattery = selectedItem?.type === "RESERVED" &&
+                                    reservedDetail?.availableBatteries?.some((b: any) =>
+                                        b.batterySerialId === option.batterySerialId
+                                    );
+
+                                const canSelect = selectedItem?.type === "RESERVED"
+                                    ? isThisReservationBattery
+                                    : !isReserved;
+
+                                return (
+                                    <li {...props} style={{ opacity: canSelect ? 1 : 0.5, pointerEvents: canSelect ? "auto" : "none" }}>
+                                        <Box sx={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                                            <Box>
+                                                <Typography variant="body1" fontWeight="medium">
+                                                    {option.serialNumber}
+                                                </Typography>
+                                                <Typography variant="caption" color="text.secondary">
+                                                    {option.batteryModel || option.model} • {(option.currentCharge || option.chargePercent || 0)}% • SoH {(option.soh || option.stateOfHealth || 0)}%
+                                                </Typography>
+                                            </Box>
+                                            <Chip
+                                                icon={isReserved ? <LockIcon fontSize="small" /> : undefined}
+                                                label={isReserved ? "ĐÃ ĐẶT TRƯỚC" : "SẴN SÀNG"}
+                                                size="small"
+                                                color={isReserved ? "warning" : "success"}
+                                                variant={isReserved ? "outlined" : "filled"}
+                                                sx={{ ml: 2, fontWeight: "bold" }}
+                                            />
+                                        </Box>
+                                    </li>
+                                );
+                            }}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
-                                    label={selectedItem?.type === "RESERVED" ? "Chọn pin đã đặt trước" : "Chọn pin mới"}
-                                    required
+                                    label={
+                                        selectedItem?.type === "RESERVED"
+                                            ? "Pin đã được đặt trước"
+                                            : "Chọn pin để cấp (xanh = có thể chọn, cam = đã reserve)"
+                                    }
+                                    helperText={
+                                        selectedItem?.type === "RESERVED"
+                                            ? "Chỉ được chọn đúng pin đã đặt trước"
+                                            : "Pin màu cam đã được khách khác đặt trước → không được chọn!"
+                                    }
                                 />
                             )}
                         />
@@ -269,6 +375,7 @@ const PendingSwapList = () => {
                             InputProps={{ inputProps: { min: 0, max: 100 } }}
                             helperText={selectedItem?.type === "RESERVED" ? "Thường để 100%" : "Ví dụ: 15"}
                             fullWidth
+                            disabled={selectedItem?.type === "RESERVED"}
                         />
                     </Stack>
                 </DialogContent>

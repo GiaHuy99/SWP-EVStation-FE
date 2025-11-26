@@ -5,8 +5,7 @@ import {
     fetchPendingSwaps,
     confirmSwap,
     rejectSwap,
-    fetchReservationSwaps,      // Danh sách yêu cầu đặt trước (chỉ thông tin)
-    fetchReservationBattery, fetchBatteriesAtStation,    // Lấy chi tiết + pin đã reserve khi mở dialog
+  fetchBatteriesAtStation,   // Lấy chi tiết + pin đã reserve khi mở dialog
 } from "./ConfirmThunks";
 import { BatterySwapRecord } from "./types/ConfirmTypes";
 
@@ -76,32 +75,6 @@ const staffSwapSlice = createSlice({
             })
             .addCase(fetchPendingSwaps.rejected, (state) => {
                 state.loading = false;
-            })
-
-            // 2. Danh sách yêu cầu đặt trước (chỉ thông tin)
-            .addCase(fetchReservationSwaps.pending, (state) => {
-                state.loadingReserved = true;
-            })
-            .addCase(fetchReservationSwaps.fulfilled, (state, action: PayloadAction<BatterySwapRecord[]>) => {
-                state.loadingReserved = false;
-                state.reservedList = action.payload;
-            })
-            .addCase(fetchReservationSwaps.rejected, (state) => {
-                state.loadingReserved = false;
-            })
-
-            // 3. Lấy chi tiết + pin đã reserve khi bấm "Cấp Pin"
-            .addCase(fetchReservationBattery.pending, (state) => {
-                state.loadingDetail = true;
-                state.reservedDetail = null;
-            })
-            .addCase(fetchReservationBattery.fulfilled, (state, action: PayloadAction<BatterySwapRecord[]>) => {
-                state.loadingDetail = false;
-                state.reservedDetail = action.payload[0] || null; // Vì chỉ lấy 1 reservation
-            })
-            .addCase(fetchReservationBattery.rejected, (state) => {
-                state.loadingDetail = false;
-                state.reservedDetail = null;
             })
 
             // 4. Xác nhận (cả đổi pin và cấp pin đặt trước) – DÙNG CHÍNH confirmSwap bạn đang có
