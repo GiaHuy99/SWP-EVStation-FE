@@ -6,7 +6,7 @@ import {
     confirmSwap,
     rejectSwap,
     fetchReservationSwaps,      // Danh sách yêu cầu đặt trước (chỉ thông tin)
-    fetchReservationBattery,    // Lấy chi tiết + pin đã reserve khi mở dialog
+    fetchReservationBattery, fetchBatteriesAtStation,    // Lấy chi tiết + pin đã reserve khi mở dialog
 } from "./ConfirmThunks";
 import { BatterySwapRecord } from "./types/ConfirmTypes";
 
@@ -14,7 +14,8 @@ interface StaffSwapState {
     pendingList: BatterySwapRecord[];        // Đổi pin thường
     reservedList: BatterySwapRecord[];       // Yêu cầu đặt trước (chỉ thông tin cơ bản)
     reservedDetail: BatterySwapRecord | null; // Chi tiết reservation + danh sách pin đã reserve
-
+    batteriesAtStation: any[];        // ← THÊM DÒNG NÀY
+    batteriesLoading: boolean;
     loading: boolean;
     loadingReserved: boolean;
     loadingDetail: boolean;
@@ -35,7 +36,8 @@ const initialState: StaffSwapState = {
     loadingDetail: false,
 
     actionLoading: {},
-
+    batteriesAtStation: [],
+    batteriesLoading: false,
     error: null,
     successMessage: null,
 };
@@ -54,6 +56,16 @@ const staffSwapSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
+            .addCase(fetchBatteriesAtStation.pending, (state) => {
+                state.batteriesLoading = true;
+            })
+            .addCase(fetchBatteriesAtStation.fulfilled, (state, action) => {
+                state.batteriesLoading = false;
+                state.batteriesAtStation = action.payload;
+            })
+            .addCase(fetchBatteriesAtStation.rejected, (state) => {
+                state.batteriesLoading = false;
+            })
             // 1. Danh sách đổi pin
             .addCase(fetchPendingSwaps.pending, (state) => {
                 state.loading = true;

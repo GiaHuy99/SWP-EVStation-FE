@@ -78,8 +78,7 @@ interface BatteryHistoryItem {
 
 const StaffBatteryAtStationList: React.FC = () => {
     const dispatch = useAppDispatch();
-    const { batteries = [], batteriesLoading = false } = useAppSelector((state) => state.staffSwap);
-
+    const { batteriesAtStation: batteries = [], batteriesLoading } = useAppSelector(state => state.staffSwap);
     const [openDetail, setOpenDetail] = useState(false);
     const [selectedBattery, setSelectedBattery] = useState<BatteryDetail | null>(null);
     const [detailLoading, setDetailLoading] = useState(false);
