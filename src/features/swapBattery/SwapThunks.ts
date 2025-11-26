@@ -5,8 +5,8 @@ import {
     SwapBatteryPayload,
     SwapBatteryResponse,
     VehicleDetail,
-    // Battery (Không cần import ở đây, vì nó nằm trong VehicleDetail)
-    StationDetail
+    StationDetail,
+    SwapHistoryResponse
 } from "./types/SwapBatteryType"; // Import từ file types
 
 /**
@@ -75,4 +75,19 @@ export const swapBattery = createAsyncThunk<
         }
     }
 );
-
+export const fetchSwapHistory = createAsyncThunk<
+    SwapHistoryResponse,
+    { page?: number; pageSize?: number },
+    { rejectValue: string }
+>(
+    "swapHistory/fetch",
+    async ({ page = 1, pageSize = 20 }, { rejectWithValue }) => {
+        try {
+            const data = await swapBatteryService.getSwapHistory(page, pageSize);
+            return data;
+        } catch (err: any) {
+            const msg = err.response?.data?.message || "Tải lịch sử đổi pin thất bại";
+            return rejectWithValue(msg);
+        }
+    }
+);

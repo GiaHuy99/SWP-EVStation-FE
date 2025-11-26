@@ -13,8 +13,9 @@ import {
     CreditCard,
     AccountBalanceWallet as AccountBalanceWalletIcon,
     CalendarMonth as CalendarMonthIcon,
-    Logout
+    Logout, SwapHoriz as SwapHorizIcon
 } from '@mui/icons-material';
+import UserMenuDropdown from "./UserMenuDropdown";
 
 const UserPageLayout: React.FC = () => {
     const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -33,10 +34,7 @@ const UserPageLayout: React.FC = () => {
     };
 
     const navItems = [
-        { label: 'Profile', path: '/user/profile', icon: <PersonIcon /> },
-        { label: 'Change Plan', path: '/subcriptionPlan/changePlanPage', icon: <CreditCard /> },
-        { label: 'Invoice History', path: '/invoice/history', icon: <AccountBalanceWalletIcon /> },
-        { label: 'Reservation History', path: '/reservation/history', icon: <CalendarMonthIcon /> },
+
     ];
 
     const drawer = (
@@ -112,44 +110,11 @@ const UserPageLayout: React.FC = () => {
                         </Button>
 
                         {/* Desktop Navigation */}
-                        <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1, alignItems: 'center' }}>
-                            {navItems.map((item) => (
-                                <Button
-                                    key={item.path}
-                                    component={Link}
-                                    to={item.path}
-                                    startIcon={item.icon}
-                                    sx={{
-                                        color: theme.palette.common.white,
-                                        backgroundColor: 'transparent',
-                                        borderRadius: theme.shape.borderRadius,
-                                        '&:hover': {
-                                            backgroundColor: 'rgba(4, 191, 51, 0.15)',
-                                            color: theme.palette.primary.main,
-                                            transform: 'translateY(-1px)',
-                                        },
-                                    }}
-                                >
-                                    {item.label}
-                                </Button>
-                            ))}
 
-                            <Button
-                                onClick={handleLogout}
-                                startIcon={<Logout />}
-                                variant="outlined"
-                                sx={{
-                                    color: theme.palette.primary.main,
-                                    borderColor: theme.palette.primary.main,
-                                    '&:hover': {
-                                        backgroundColor: 'rgba(4, 191, 51, 0.15)',
-                                        borderColor: theme.palette.primary.main,
-                                        transform: 'translateY(-1px)',
-                                    },
-                                }}
-                            >
-                                Logout
-                            </Button>
+                        <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 2, alignItems: 'center' }}>
+
+                            <UserMenuDropdown />
+
                         </Box>
 
                         {/* Mobile Menu Button */}

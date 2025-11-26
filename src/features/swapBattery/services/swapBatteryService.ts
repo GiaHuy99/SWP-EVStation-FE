@@ -38,6 +38,12 @@ class SwapBatteryService {
         const res = await axiosInstance.post<SwapBatteryResponse>("/user/swap", payload);
         return res.data;
     }
+    async getSwapHistory(page: number = 1, pageSize: number = 20) {
+        const response = await axiosInstance.get("/user/swap/history", {
+            params: { page, pageSize }
+        });
+        return response.data; // { history: [...], total: 150, ... }
+    }
 }
 
 // THAY ĐỔI Ở ĐÂY: Tạo một instance và export nó

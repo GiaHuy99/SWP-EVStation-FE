@@ -1,16 +1,20 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { User } from "./types/UserType";
-import { fetchUsers, createUser, updateUser, deleteUser } from "./UserThunks";
+import {User, UserReputation} from "./types/UserType";
+import {fetchUsers, createUser, updateUser, deleteUser, fetchUserReputation} from "./UserThunks";
 
 interface UserState {
     users: User[];
+    reputation: UserReputation | null;
     loading: boolean;
+    loadingReputation: boolean;
     error: string | null;
 }
 
 const initialState: UserState = {
     users: [],
+    reputation: null,
     loading: false,
+    loadingReputation: false,
     error: null,
 };
 
@@ -61,6 +65,19 @@ const userSlice = createSlice({
                 state.users = state.users.filter((u) => u.id !== action.payload);
             })
             .addCase(deleteUser.rejected, (state, action) => {
+                state.error = action.payload as string;
+            });
+        builder
+            .addCase(fetchUserReputation.pending, (state) => {
+                state.loadingReputation = true;
+                state.error = null;
+            })
+            .addCase(fetchUserReputation.fulfilled, (state, action) => {
+                state.loadingReputation = false;
+                state.reputation = action.payload;
+            })
+            .addCase(fetchUserReputation.rejected, (state, action) => {
+                state.loadingReputation = false;
                 state.error = action.payload as string;
             });
     },

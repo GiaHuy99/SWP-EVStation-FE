@@ -11,7 +11,7 @@ export interface BatterySwapRecord {
     availableBatteries: AvailableBattery[];
     status: SwapStatus;
     timestamp: string; // hoặc Date nếu bạn parse sau
-    createdAt?: string; // nếu backend có thêm
+    createdAt?: string;
 }
 export interface AvailableBattery {
     id: number;

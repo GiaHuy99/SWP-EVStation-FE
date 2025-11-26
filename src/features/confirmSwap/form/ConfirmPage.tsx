@@ -1,49 +1,94 @@
 // src/features/staff-swap/components/PendingSwapList.tsx
+
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/Hooks";
-import { fetchPendingSwaps, rejectSwap } from "../ConfirmThunks";
+import {
+    fetchPendingSwaps,
+    rejectSwap,
+    fetchReservationSwaps,
+    fetchReservationBattery,
+    confirmSwap, // ← DÙNG CHÍNH CÁI NÀY
+} from "../ConfirmThunks";
+import { clearReservedDetail } from "../ConfirmSlices";
 import { clearMessages } from "../ConfirmSlices";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import {
-    Table, TableBody, TableCell, TableHead, TableRow, Button, CircularProgress,
-    Alert, Box, Typography, Chip, Dialog, DialogTitle, DialogContent, DialogActions,
-    TextField, Autocomplete, Stack
+    Table, TableBody, TableCell, TableHead, TableRow,
+    Button, CircularProgress, Alert, Box, Chip,
+    Dialog, DialogTitle, DialogContent, DialogActions,
+    TextField, Autocomplete, Stack, Typography,
 } from "@mui/material";
-import { CheckCircleOutline as CheckIcon, Close as CloseIcon, Sync as SwapIcon } from "@mui/icons-material";
+import { CheckCircleOutline as CheckIcon, Close as CloseIcon } from "@mui/icons-material";
 import { PageContainer, ListCard, Title, TableWrapper } from "../../../styles/AdminDashboardStyles";
-import axiosInstance from "../../../shared/utils/AxiosInstance";
+
+type ItemType = "SWAP" | "RESERVED";
+
+interface ListItem {
+    id: number;
+    username: string;
+    oldBatterySerialNumber?: string;
+    oldBatterySoH?: number;
+    stationName: string;
+    timestamp?: string;
+    reservedAt?: string;
+    remainingMinutes?: number;
+    type: ItemType;
+}
 
 const PendingSwapList = () => {
     const dispatch = useAppDispatch();
-    const { pendingList, loading, error, successMessage } = useAppSelector(state => state.confimSwap);
+    const {
+        pendingList = [],
+        reservedList = [],
+        reservedDetail,
+        loading = false,
+        loadingReserved = false,
+        loadingDetail = false,
+        actionLoading = {},
+        error,
+        successMessage,
+    } = useAppSelector((state) => state.staffSwap);
 
     const [openConfirm, setOpenConfirm] = useState(false);
-    const [selectedSwap, setSelectedSwap] = useState<any>(null);
+    const [selectedItem, setSelectedItem] = useState<ListItem | null>(null);
     const [selectedBattery, setSelectedBattery] = useState<any>(null);
     const [endPercent, setEndPercent] = useState<string>("0");
-    const [confirming, setConfirming] = useState(false);
 
     useEffect(() => {
         dispatch(fetchPendingSwaps());
+        dispatch(fetchReservationSwaps());
     }, [dispatch]);
 
     useEffect(() => {
         if (successMessage || error) {
-            setTimeout(() => dispatch(clearMessages()), 5000);
+            const timer = setTimeout(() => dispatch(clearMessages()), 5000);
+            return () => clearTimeout(timer);
         }
     }, [successMessage, error, dispatch]);
 
-    const handleOpenConfirm = (swap: any) => {
-        setSelectedSwap(swap);
+    const handleOpenConfirm = async (item: ListItem) => {
+        setSelectedItem(item);
         setSelectedBattery(null);
-        setEndPercent("0");
+        setEndPercent(item.type === "RESERVED" ? "100" : "0");
         setOpenConfirm(true);
+
+        if (item.type === "RESERVED") {
+            dispatch(fetchReservationBattery(item.id));
+        }
     };
 
-    const handleConfirmSwap = async () => {
-        if (!selectedSwap || !selectedBattery) {
-            alert("Vui lòng chọn pin mới!");
+    const handleCloseDialog = () => {
+        setOpenConfirm(false);
+        setSelectedItem(null);
+        setSelectedBattery(null);
+        dispatch(clearReservedDetail());
+    };
+
+    // CHỖ QUAN TRỌNG NHẤT – DÙNG CHÍNH confirmSwap CỦA BẠN
+    const handleConfirm = async () => {
+        if (!selectedItem || !selectedBattery) {
+            alert("Vui lòng chọn pin để cấp!");
             return;
         }
 
@@ -53,88 +98,128 @@ const PendingSwapList = () => {
             return;
         }
 
-        setConfirming(true);
         try {
-            const response = await axiosInstance.put(
-                `/staff/swap/${selectedSwap.id}/confirm`, // ← ID của giao dịch pending
-                {
+            const result = await dispatch(
+                confirmSwap({
+                    requestId: selectedItem.id,           // ← Đây là ID của yêu cầu (swap/reservation)
+                    newBatteryId: selectedBattery.id,     // ← ID của pin mới (từ availableBatteries)
                     endPercent: percent,
-                    newBatterySerialId: selectedBattery.id // ← ID của pin được chọn (trong availableBatteries)
-                }
+                })
             );
 
-            alert(response.data?.message || "Đổi pin thành công!");
-            dispatch(fetchPendingSwaps()); // Refresh danh sách
-            setOpenConfirm(false);
+            if (confirmSwap.fulfilled.match(result)) {
+                alert(
+                    selectedItem.type === "RESERVED"
+                        ? "Cấp pin đặt trước thành công!"
+                        : "Đổi pin thành công!"
+                );
+                handleCloseDialog();
+            } else {
+                throw new Error(result.payload as string);
+            }
         } catch (err: any) {
-            alert(err.response?.data?.message || "Đổi pin thất bại!");
-        } finally {
-            setConfirming(false);
+            alert(err.message || "Thao tác thất bại!");
         }
     };
+
+    const allItems = [
+        ...pendingList.map((i: any) => ({ ...i, type: "SWAP" as const })),
+        ...reservedList.map((i: any) => ({ ...i, type: "RESERVED" as const })),
+    ];
 
     return (
         <PageContainer maxWidth="lg">
             <ListCard>
-                <Title>Duyệt Yêu Cầu Đổi Pin</Title>
+                <Title>Duyệt Yêu Cầu Đổi Pin & Cấp Pin Đặt Trước</Title>
 
                 {successMessage && <Alert severity="success" sx={{ mb: 3 }}>{successMessage}</Alert>}
                 {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
 
-                {loading ? (
+                {(loading || loadingReserved) ? (
                     <Box textAlign="center" py={8}><CircularProgress size={60} /></Box>
-                ) : pendingList.length === 0 ? (
-                    <Alert severity="info" sx={{ p: 4 }}>Không có yêu cầu nào đang chờ duyệt</Alert>
+                ) : allItems.length === 0 ? (
+                    <Alert severity="info" sx={{ p: 4 }}>Không có yêu cầu nào đang chờ xử lý</Alert>
                 ) : (
                     <TableWrapper>
                         <Table>
                             <TableHead>
                                 <TableRow sx={{ backgroundColor: "#f0fdf4" }}>
                                     <TableCell><strong>Người dùng</strong></TableCell>
-                                    <TableCell><strong>Pin cũ </strong></TableCell>
-                                    <TableCell><strong>SoH cũ</strong></TableCell>
+                                    <TableCell><strong>Pin cũ</strong></TableCell>
+                                    <TableCell><strong>SoH</strong></TableCell>
                                     <TableCell><strong>Trạm</strong></TableCell>
                                     <TableCell><strong>Thời gian</strong></TableCell>
+                                    <TableCell><strong>Còn lại</strong></TableCell>
+                                    <TableCell><strong>Loại</strong></TableCell>
                                     <TableCell align="center"><strong>Hành động</strong></TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {pendingList.map((swap: any) => (
-                                    <TableRow key={swap.id} hover>
-                                        <TableCell><strong>{swap.username}</strong></TableCell>
+                                {allItems.map((item) => (
+                                    <TableRow key={item.id} hover>
+                                        <TableCell><strong>{item.username}</strong></TableCell>
                                         <TableCell>
-                                            <code style={{ background: "#fee2e2", color: "#991b1b", px: 1, borderRadius: 4 }}>
-                                                {swap.oldBatterySerialNumber}
+                                            <code style={{
+                                                background: item.type === "RESERVED" ? "#ecfccb" : "#fee2e2",
+                                                color: item.type === "RESERVED" ? "#365314" : "#991b1b",
+                                                padding: "4px 8px",
+                                                borderRadius: 4,
+                                            }}>
+                                                {item.oldBatterySerialNumber || "Đặt trước"}
                                             </code>
-
                                         </TableCell>
                                         <TableCell>
-                                            <Typography fontWeight="bold" color={swap.oldBatterySoH < 80 ? "#dc2626" : "#10b981"}>
-                                                {swap.oldBatterySoH}%
+                                            <Typography fontWeight="bold" color={(item.oldBatterySoH ?? 100) < 80 ? "#dc2626" : "#10b981"}>
+                                                {(item.oldBatterySoH ?? 100)}%
                                             </Typography>
                                         </TableCell>
-                                        <TableCell><Chip label={swap.stationName} color="info" size="small" /></TableCell>
-                                        <TableCell>{format(new Date(swap.timestamp), "dd/MM HH:mm", { locale: vi })}</TableCell>
+                                        <TableCell><Chip label={item.stationName} color={item.type === "RESERVED" ? "warning" : "info"} size="small" /></TableCell>
+                                        <TableCell>{format(new Date(item.timestamp || item.reservedAt || Date.now()), "dd/MM HH:mm", { locale: vi })}</TableCell>
+                                        <TableCell>
+                                            {item.type === "RESERVED" && item.remainingMinutes != null ? (
+                                                <Chip label={`${item.remainingMinutes} phút`} color="error" size="small" />
+                                            ) : "-"}
+                                        </TableCell>
+                                        <TableCell>
+                                            <Chip label={item.type === "RESERVED" ? "ĐẶT TRƯỚC" : "ĐỔI PIN"} color={item.type === "RESERVED" ? "warning" : "primary"} size="small" />
+                                        </TableCell>
                                         <TableCell align="center">
-                                            <Button
-                                                variant="contained"
-                                                size="small"
-                                                color="success"
-                                                startIcon={<CheckIcon />}
-                                                onClick={() => handleOpenConfirm(swap)}
-                                            >
-                                                Duyệt
-                                            </Button>
-                                            <Button
-                                                variant="outlined"
-                                                size="small"
-                                                color="error"
-                                                startIcon={<CloseIcon />}
-                                                onClick={() => dispatch(rejectSwap(swap.id))}
-                                                sx={{ ml: 1 }}
-                                            >
-                                                Từ chối
-                                            </Button>
+                                            {item.type === "RESERVED" ? (
+                                                <Button
+                                                    variant="contained"
+                                                    size="small"
+                                                    color="success"
+                                                    startIcon={<CheckIcon />}
+                                                    onClick={() => handleOpenConfirm(item)}
+                                                    disabled={actionLoading[item.id]}
+                                                >
+                                                    {actionLoading[item.id] ? <CircularProgress size={20} /> : "Cấp Pin"}
+                                                </Button>
+                                            ) : (
+                                                <>
+                                                    <Button
+                                                        variant="contained"
+                                                        size="small"
+                                                        color="success"
+                                                        startIcon={<CheckIcon />}
+                                                        onClick={() => handleOpenConfirm(item)}
+                                                        disabled={actionLoading[item.id]}
+                                                    >
+                                                        Duyệt
+                                                    </Button>
+                                                    <Button
+                                                        variant="outlined"
+                                                        size="small"
+                                                        color="error"
+                                                        startIcon={<CloseIcon />}
+                                                        onClick={() => dispatch(rejectSwap(item.id))}
+                                                        sx={{ ml: 1 }}
+                                                        disabled={actionLoading[item.id]}
+                                                    >
+                                                        Từ chối
+                                                    </Button>
+                                                </>
+                                            )}
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -144,47 +229,58 @@ const PendingSwapList = () => {
                 )}
             </ListCard>
 
-            {/* POPUP XÁC NHẬN – SIÊU CHUẨN */}
-            <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)} maxWidth="sm" fullWidth>
+            {/* Dialog xác nhận */}
+            <Dialog open={openConfirm} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
                 <DialogTitle sx={{ bgcolor: "#10b981", color: "white" }}>
-                    Xác Nhận Đổi Pin - ID: {selectedSwap?.id}
+                    {selectedItem?.type === "RESERVED" ? "Cấp Pin Đặt Trước" : "Xác Nhận Đổi Pin"} - ID: {selectedItem?.id}
                 </DialogTitle>
                 <DialogContent dividers>
                     <Stack spacing={3} sx={{ mt: 2 }}>
                         <Alert severity="info">
-                            <strong>{selectedSwap?.username}</strong> đang đổi pin tại <strong>{selectedSwap?.stationName}</strong>
+                            <strong>{selectedItem?.username}</strong> đang {selectedItem?.type === "RESERVED" ? "nhận pin đặt trước" : "đổi pin"} tại <strong>{selectedItem?.stationName}</strong>
                         </Alert>
 
                         <Autocomplete
-                            options={selectedSwap?.availableBatteries || []}
-                            getOptionLabel={(opt: any) => `${opt.serialNumber} | ${opt.batteryModel} | ${opt.chargePercent}% | SoH ${opt.stateOfHealth}%`}
+                            options={
+                                selectedItem?.type === "RESERVED"
+                                    ? reservedDetail?.availableBatteries || []
+                                    : selectedItem?.availableBatteries || []
+                            }
+                            getOptionLabel={(opt: any) =>
+                                `${opt.serialNumber} | ${opt.batteryModel} | ${opt.chargePercent}% | SoH ${opt.stateOfHealth}%`
+                            }
+                            loading={loadingDetail}
                             value={selectedBattery}
-                            onChange={(_, value) => setSelectedBattery(value)}
+                            onChange={(_, val) => setSelectedBattery(val)}
                             renderInput={(params) => (
-                                <TextField {...params} label="Chọn pin mới để cấp" required />
+                                <TextField
+                                    {...params}
+                                    label={selectedItem?.type === "RESERVED" ? "Chọn pin đã đặt trước" : "Chọn pin mới"}
+                                    required
+                                />
                             )}
                         />
 
                         <TextField
-                            label="Phần trăm pin cũ khi tháo ra (endPercent)"
+                            label="Phần trăm pin cũ khi tháo ra"
                             type="number"
                             value={endPercent}
                             onChange={(e) => setEndPercent(e.target.value)}
                             InputProps={{ inputProps: { min: 0, max: 100 } }}
-                            helperText="Ví dụ: 15% → nhập 15"
+                            helperText={selectedItem?.type === "RESERVED" ? "Thường để 100%" : "Ví dụ: 15"}
                             fullWidth
                         />
                     </Stack>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setOpenConfirm(false)}>Hủy</Button>
+                    <Button onClick={handleCloseDialog}>Hủy</Button>
                     <Button
                         variant="contained"
                         color="success"
-                        onClick={handleConfirmSwap}
-                        disabled={!selectedBattery || confirming}
+                        onClick={handleConfirm}
+                        disabled={!selectedBattery || actionLoading[selectedItem?.id!]}
                     >
-                        {confirming ? <CircularProgress size={24} /> : "Xác Nhận Đổi Pin"}
+                        {actionLoading[selectedItem?.id!] ? <CircularProgress size={24} /> : "Xác Nhận"}
                     </Button>
                 </DialogActions>
             </Dialog>

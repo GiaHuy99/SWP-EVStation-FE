@@ -1,37 +1,40 @@
 // src/features/staff-swap/StaffSwapSlice.ts
+
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { BatterySwapRecord } from "./types/ConfirmTypes";
 import {
     fetchPendingSwaps,
     confirmSwap,
     rejectSwap,
-    fetchBatteriesAtStation
+    fetchReservationSwaps,      // Danh sách yêu cầu đặt trước (chỉ thông tin)
+    fetchReservationBattery,    // Lấy chi tiết + pin đã reserve khi mở dialog
 } from "./ConfirmThunks";
+import { BatterySwapRecord } from "./types/ConfirmTypes";
 
 interface StaffSwapState {
-    // === ĐỔI PIN ===
-    pendingList: BatterySwapRecord[];
+    pendingList: BatterySwapRecord[];        // Đổi pin thường
+    reservedList: BatterySwapRecord[];       // Yêu cầu đặt trước (chỉ thông tin cơ bản)
+    reservedDetail: BatterySwapRecord | null; // Chi tiết reservation + danh sách pin đã reserve
+
     loading: boolean;
-    actionLoading: { [key: number]: boolean };
+    loadingReserved: boolean;
+    loadingDetail: boolean;
 
-    // === DANH SÁCH PIN TẠI TRẠM ===
-    batteries: any[];           // ← ĐÃ THÊM
-    batteriesLoading: boolean;  // ← ĐÃ THÊM (tách riêng để không ảnh hưởng đổi pin)
-    batteriesError: string | null; // ← ĐÃ THÊM
+    actionLoading: { [key: number]: boolean }; // Loading cho từng nút hành động
 
-    // === CHUNG ===
     error: string | null;
     successMessage: string | null;
 }
 
 const initialState: StaffSwapState = {
     pendingList: [],
-    loading: false,
-    actionLoading: {},
+    reservedList: [],
+    reservedDetail: null,
 
-    batteries: [],              // ← BẮT BUỘC PHẢI CÓ
-    batteriesLoading: false,    // ← BẮT BUỘC PHẢI CÓ
-    batteriesError: null,       // ← BẮT BUỘC PHẢI CÓ
+    loading: false,
+    loadingReserved: false,
+    loadingDetail: false,
+
+    actionLoading: {},
 
     error: null,
     successMessage: null,
@@ -44,68 +47,84 @@ const staffSwapSlice = createSlice({
         clearMessages(state) {
             state.error = null;
             state.successMessage = null;
-            state.batteriesError = null; // Xóa luôn lỗi pin
+        },
+        clearReservedDetail(state) {
+            state.reservedDetail = null;
         },
     },
     extraReducers: (builder) => {
         builder
-            // === FETCH PENDING SWAPS ===
+            // 1. Danh sách đổi pin
             .addCase(fetchPendingSwaps.pending, (state) => {
                 state.loading = true;
-                state.error = null;
             })
-            .addCase(fetchPendingSwaps.fulfilled, (state, action) => {
+            .addCase(fetchPendingSwaps.fulfilled, (state, action: PayloadAction<BatterySwapRecord[]>) => {
                 state.loading = false;
                 state.pendingList = action.payload;
             })
-            .addCase(fetchPendingSwaps.rejected, (state, action) => {
+            .addCase(fetchPendingSwaps.rejected, (state) => {
                 state.loading = false;
-                state.error = action.error.message || "Lỗi tải danh sách yêu cầu";
             })
 
-            // === CONFIRM SWAP ===
+            // 2. Danh sách yêu cầu đặt trước (chỉ thông tin)
+            .addCase(fetchReservationSwaps.pending, (state) => {
+                state.loadingReserved = true;
+            })
+            .addCase(fetchReservationSwaps.fulfilled, (state, action: PayloadAction<BatterySwapRecord[]>) => {
+                state.loadingReserved = false;
+                state.reservedList = action.payload;
+            })
+            .addCase(fetchReservationSwaps.rejected, (state) => {
+                state.loadingReserved = false;
+            })
+
+            // 3. Lấy chi tiết + pin đã reserve khi bấm "Cấp Pin"
+            .addCase(fetchReservationBattery.pending, (state) => {
+                state.loadingDetail = true;
+                state.reservedDetail = null;
+            })
+            .addCase(fetchReservationBattery.fulfilled, (state, action: PayloadAction<BatterySwapRecord[]>) => {
+                state.loadingDetail = false;
+                state.reservedDetail = action.payload[0] || null; // Vì chỉ lấy 1 reservation
+            })
+            .addCase(fetchReservationBattery.rejected, (state) => {
+                state.loadingDetail = false;
+                state.reservedDetail = null;
+            })
+
+            // 4. Xác nhận (cả đổi pin và cấp pin đặt trước) – DÙNG CHÍNH confirmSwap bạn đang có
             .addCase(confirmSwap.pending, (state, action) => {
-                state.actionLoading[action.meta.arg] = true;
+                const id = action.meta.arg; // id được truyền vào confirmSwap(id)
+                state.actionLoading[id] = true;
             })
             .addCase(confirmSwap.fulfilled, (state, action) => {
-                state.actionLoading[action.payload.id] = false;
-                state.successMessage = "Đã duyệt thành công!";
-                state.pendingList = state.pendingList.filter(s => s.id !== action.payload.id);
+                const id = action.payload.id;
+                state.actionLoading[id] = false;
+                state.successMessage = "Thao tác thành công!";
+
+                // Xóa khỏi cả 2 danh sách
+                state.pendingList = state.pendingList.filter((s) => s.id !== id);
+                state.reservedList = state.reservedList.filter((s) => s.id !== id);
+
+                // Nếu đang mở dialog chi tiết → clear luôn
+                if (state.reservedDetail?.id === id) {
+                    state.reservedDetail = null;
+                }
             })
             .addCase(confirmSwap.rejected, (state, action) => {
-                state.actionLoading[action.meta.arg] = false;
-                state.error = action.payload as string;
+                const id = action.meta.arg as number;
+                state.actionLoading[id] = false;
+                state.error = (action.payload as string) || "Xác nhận thất bại";
             })
 
-            // === REJECT SWAP ===
-            .addCase(rejectSwap.pending, (state, action) => {
-                state.actionLoading[action.meta.arg] = true;
-            })
+            // 5. Từ chối đổi pin
             .addCase(rejectSwap.fulfilled, (state, action) => {
-                state.actionLoading[action.payload.id] = false;
+                const id = action.payload.id;
+                state.pendingList = state.pendingList.filter((s) => s.id !== id);
                 state.successMessage = "Đã từ chối yêu cầu!";
-                state.pendingList = state.pendingList.filter(s => s.id !== action.payload.id);
-            })
-            .addCase(rejectSwap.rejected, (state, action) => {
-                state.actionLoading[action.meta.arg] = false;
-                state.error = action.payload as string;
-            })
-
-            // === FETCH BATTERIES AT STATION ===
-            .addCase(fetchBatteriesAtStation.pending, (state) => {
-                state.batteriesLoading = true;
-                state.batteriesError = null;
-            })
-            .addCase(fetchBatteriesAtStation.fulfilled, (state, action) => {
-                state.batteriesLoading = false;
-                state.batteries = action.payload;
-            })
-            .addCase(fetchBatteriesAtStation.rejected, (state, action) => {
-                state.batteriesLoading = false;
-                state.batteriesError = action.payload as string;
             });
     },
 });
 
-export const { clearMessages } = staffSwapSlice.actions;
+export const { clearMessages, clearReservedDetail } = staffSwapSlice.actions;
 export default staffSwapSlice.reducer;

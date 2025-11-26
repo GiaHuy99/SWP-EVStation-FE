@@ -1,33 +1,14 @@
-/**
- * Các trạng thái có thể có của một cục pin.
- */
+
 export type BatteryStatus = "IN_USE" | "AVAILABLE" | "DAMAGED" | "MAINTENANCE" | "EMPTY"; // Thêm EMPTY cho khớp API trạm
 
-/**
- * --------------------------------------------------------------------------
- * 1. PIN (Battery)
- * --------------------------------------------------------------------------
- */
 
-/**
- * Định nghĩa một cục pin, dựa trên mảng 'batteries' từ API /user/vehicles
- */
+
 export interface Battery {
     id: number;
     serialNumber: string;
     status: BatteryStatus;
 }
 
-
-/**
- * --------------------------------------------------------------------------
- * 2. XE (Vehicle)
- * --------------------------------------------------------------------------
- */
-
-/**
- * ⚡️ MỚI: Dữ liệu thô trả về từ API /user/vehicles
- */
 export interface VehicleApiResponse {
     vehicleId: number;
     vin: string;
@@ -37,10 +18,6 @@ export interface VehicleApiResponse {
     batteries: Battery[]; // API này trả về pin của xe
 }
 
-/**
- * ⚡️ CẬP NHẬT: Dữ liệu xe đã qua xử lý (lưu trong Redux state)
- * Giờ đây nó chứa 'id', 'vehicleName', 'currentPlan', và 'batteries'
- */
 export interface VehicleDetail {
     id: number;           // Lấy từ vehicleId
     vehicleName: string;  // Lấy từ vin
@@ -49,15 +26,6 @@ export interface VehicleDetail {
 }
 
 
-/**
- * --------------------------------------------------------------------------
- * 3. TRẠM (Station)
- * --------------------------------------------------------------------------
- */
-
-/**
- * ⚡️ CẬP NHẬT: Khớp với API /api/stations
- */
 export interface StationDetail {
     id: number;
     name: string;
@@ -70,15 +38,7 @@ export interface StationDetail {
 }
 
 
-/**
- * --------------------------------------------------------------------------
- * 4. SWAP (Hành động đổi pin)
- * --------------------------------------------------------------------------
- */
 
-/**
- * Dữ liệu gửi đi khi gọi API POST /user/swap
- */
 export interface SwapBatteryPayload {
     vehicleId: number;
     batterySerialId: number; // Đây là ID của pin (ví dụ: 11, 12)
@@ -86,10 +46,6 @@ export interface SwapBatteryPayload {
     endPercent: number; // Gửi 0.8 hay 80 tùy API (component đang gửi 80)
 }
 
-/**
- * Dữ liệu trả về khi swap thành công
- * (Khớp với các thuộc tính bạn đã liệt kê)
- */
 export interface SwapBatteryResponse {
     message: string;
     oldSerialNumber: string;
@@ -106,3 +62,27 @@ export interface SwapBatteryResponse {
     status: BatteryStatus;
 }
 
+export type SwapStatus = "PENDING" | "COMPLETED" | "CANCELLED" | "FAILED";
+
+export interface SwapHistoryItem {
+    id: number;
+    stationName: string;
+    oldBatterySerial: string;
+    newBatterySerial: string;
+    energyUsed: number;        // kWh
+    distance: number;          // km
+    cost: number;              // VND
+    status: SwapStatus;
+    timestamp: string;         // ISO string
+    confirmedAt?: string | null;
+    // Có thể thêm sau:
+    // vehicleVin?: string;
+    // userName?: string;
+}
+
+export interface SwapHistoryResponse {
+    history: SwapHistoryItem[];
+    total: number;
+    page: number;
+    pageSize: number;
+}

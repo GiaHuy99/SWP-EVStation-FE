@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import UserService from "./services/UserService";
-import { User, CreateUserPayload, UpdateUserPayload } from "./types/UserType";
+import {User, CreateUserPayload, UpdateUserPayload, UserReputation} from "./types/UserType";
 
 export const fetchUsers = createAsyncThunk<User[], void, { rejectValue: string }>(
     "user/fetchUsers",
@@ -43,6 +43,22 @@ export const deleteUser = createAsyncThunk<number, number, { rejectValue: string
             return userId;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || "Lỗi khi xóa người dùng");
+        }
+    }
+);
+export const fetchUserReputation = createAsyncThunk<
+    UserReputation,
+    void,
+    { rejectValue: string }
+>(
+    "user/fetchReputation",
+    async (_, { rejectWithValue }) => {
+        try {
+            return await UserService.getUserReputation();
+        } catch (error: any) {
+            return rejectWithValue(
+                error.response?.data?.message || "Không thể tải điểm uy tín"
+            );
         }
     }
 );

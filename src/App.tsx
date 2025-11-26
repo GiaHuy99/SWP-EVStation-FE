@@ -35,6 +35,8 @@ import StaffManagement from "./features/staffManagement/components/StaffManageme
 import StaffLayout from './shared/utils/StaffLayout/StaffLayout';
 import BatteryStation from './features/confirmSwap/form/StaffBatteryAtStationList';
 import BatteryHistory from'./features/BatterySerials/components/BatteryRecentUpdates';
+import SwapHistory from './features/swapBattery/components/SwapHistoryList';
+import Reputation from'./features/user/components/ReputationBadge';
 function App() {
   return (
       <BrowserRouter>
@@ -50,7 +52,7 @@ function App() {
               {/* User-facing pages with standalone layout */}
               <Route element={<UserPageLayout />}>
                   <Route path="/linkVehicle/regist" element={<LinkVehiclePage />} />
-                  <Route path="/subcriptionPlan/changePlanPage" element={<ChangePlanPage />} />
+                  <Route path="/subscriptionPlan/changePlanPage" element={<ChangePlanPage />} />
                   <Route path="/subscriptions" element={<UserSubscriptionsPage />} />
                   <Route path="/swapBattery" element={<SwapBatteryPage />} />
                   <Route path="/Map" element={<BaseMap />} />
@@ -58,6 +60,8 @@ function App() {
                   <Route path="/user/profile" element={<ProfilePage />} />
                   <Route path="/reservation/preReserve" element={<Reservation />} />
                   <Route path="/reservation/history" element={<ReservationHistory />} />
+                  <Route path="/swap/history" element={<SwapHistory />} />
+                  <Route path="/user/reputation" element={<Reputation />} />
               </Route>
 
               {/* Admin pages with sidebar layout */}

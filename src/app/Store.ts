@@ -18,6 +18,7 @@ import profile from "../features/profileUser/ProfileSlice";
 import usermanagent from "../features/user/UserSlice";
 import reservation from "../features/reservation/reservationSlice";
 import StaffManagement  from "../features/staffManagement/StaffManagementSlice"
+import swapHistoryReducer from "../features/swapBattery/SwapHistorySlice";
 export const store = configureStore({
     reducer: {
         auth: authReducer,
@@ -32,13 +33,13 @@ export const store = configureStore({
         swapBattery:swapBattery,
         stationMap:stationMap,
         batterySerials:batterySerials,
-        confimSwap:confimSwap,
+        staffSwap:confimSwap,
         invoice:invoice,
         profile:profile,
         user:usermanagent,
         reservation:reservation,
         staffManagement:StaffManagement,
-
+        swapHistory:swapHistoryReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(notificationMiddleware),

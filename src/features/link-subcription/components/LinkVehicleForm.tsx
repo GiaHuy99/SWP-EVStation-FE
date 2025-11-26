@@ -108,7 +108,7 @@ const LinkVehicleForm: React.FC = () => {
     return (
         <PageContainer>
             <FormCard sx={{ border: "1px solid #E8F5E8", maxWidth: 800, mx: "auto" }}>
-                <Title variant="h5">Đăng ký xe & gói thuê pin</Title>
+                <Title variant="h1">Đăng ký xe & gói thuê pin</Title>
 
                 {/* ==================== FORM SELECT ==================== */}
                 <FormRow>
