@@ -15,7 +15,7 @@ export const FormCard = styled(Card)(({ theme }) => ({
     boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
     backgroundColor: "#ffffff",
 }));
-
+/
 export const ListCard = styled(Card)(({ theme }) => ({
     maxWidth: 1200,
     margin: "0 auto",
