@@ -65,7 +65,6 @@ const staffSwapSlice = createSlice({
             .addCase(fetchBatteriesAtStation.rejected, (state) => {
                 state.batteriesLoading = false;
             })
-            // 1. Danh sách đổi pin
             .addCase(fetchPendingSwaps.pending, (state) => {
                 state.loading = true;
             })
@@ -77,7 +76,6 @@ const staffSwapSlice = createSlice({
                 state.loading = false;
             })
 
-            // 4. Xác nhận (cả đổi pin và cấp pin đặt trước) – DÙNG CHÍNH confirmSwap bạn đang có
             .addCase(confirmSwap.pending, (state, action) => {
                 const id = action.meta.arg; // id được truyền vào confirmSwap(id)
                 state.actionLoading[id] = true;
@@ -87,11 +85,9 @@ const staffSwapSlice = createSlice({
                 state.actionLoading[id] = false;
                 state.successMessage = "Thao tác thành công!";
 
-                // Xóa khỏi cả 2 danh sách
                 state.pendingList = state.pendingList.filter((s) => s.id !== id);
                 state.reservedList = state.reservedList.filter((s) => s.id !== id);
 
-                // Nếu đang mở dialog chi tiết → clear luôn
                 if (state.reservedDetail?.id === id) {
                     state.reservedDetail = null;
                 }
@@ -102,7 +98,6 @@ const staffSwapSlice = createSlice({
                 state.error = (action.payload as string) || "Xác nhận thất bại";
             })
 
-            // 5. Từ chối đổi pin
             .addCase(rejectSwap.fulfilled, (state, action) => {
                 const id = action.payload.id;
                 state.pendingList = state.pendingList.filter((s) => s.id !== id);
